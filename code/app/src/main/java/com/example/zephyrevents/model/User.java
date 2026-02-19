@@ -38,6 +38,60 @@ public class User {
         this(name, email, phone, false, TimeZone.getDefault().getID());
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
 
+    // DeviceID should stay immutable, setter added because of firebase deserialization.
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isNotificationsOptOut() {
+        return notificationsOptOut;
+    }
+
+    public void setNotificationsOptOut(boolean notificationsOptOut) {
+        this.notificationsOptOut = notificationsOptOut;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getUserTimeZone() {
+        return UserTimeZone;
+    }
+
+    public void setUserTimeZone(String userTimeZone) {
+        UserTimeZone = userTimeZone;
+    }
 }
