@@ -24,13 +24,20 @@ public class User {
         this.UserTimeZone = UserTimeZone;
         this.name = name;
     }
-    User(String name, String email, String phone, boolean notificationsOptOut){
-        this.deviceId = GenerateId.getUniqueId();
-        this.email = email;
-        this.location = location;
-        this.phone = phone;
-        this.notificationsOptOut = notificationsOptOut;
-        this.UserTimeZone = TimeZone.getDefault().getID();
-        this.name = name;
+
+    // constructor with default timezone
+    public User(String name, String email, String phone, boolean notificationsOptOut ){
+        this(name, email, phone, notificationsOptOut, TimeZone.getDefault().getID());
     }
+    // constructor with default (false) notificationsOptOut
+    public User(String name, String email, String phone,  String UserTimeZone ){
+        this(name, email, phone, false, UserTimeZone);
+    }
+    // constructor with default (false) notificationsOptOut and default timezone
+    public User(String name, String email, String phone ){
+        this(name, email, phone, false, TimeZone.getDefault().getID());
+    }
+
+
+
 }
