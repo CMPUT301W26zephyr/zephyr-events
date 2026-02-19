@@ -1,5 +1,8 @@
 package com.example.zephyrevents.model;
 
+import com.example.zephyrevents.util.GenerateId;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 /**
@@ -8,7 +11,45 @@ import java.time.LocalDateTime;
 public class Event {
     private  String id;
     private  String name;
-    private  LocalDateTime startTime;
-    private  LocalDateTime endTime;
+    private  long startTime;
+    private  long endTime;
 
+    Event(String name, long endTime){
+        this.id = GenerateId.getUniqueId();
+        this.name = name;
+        this.startTime = System.currentTimeMillis();;
+        this.endTime = endTime;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
