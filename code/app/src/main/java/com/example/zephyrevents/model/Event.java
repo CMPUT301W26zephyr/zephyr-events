@@ -1,6 +1,7 @@
 package com.example.zephyrevents.model;
 
 import com.example.zephyrevents.util.GenerateId;
+import com.example.zephyrevents.util.TimeHelper;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public class Event {
     Event(String name, long endTime){
         this.id = GenerateId.getUniqueId();
         this.name = name;
-        this.startTime = System.currentTimeMillis();;
+        this.startTime = TimeHelper.now();;
         this.endTime = endTime;
     }
 

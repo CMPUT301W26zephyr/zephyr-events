@@ -30,6 +30,9 @@ public final class TimeHelper {
         return sdf.format(date);
 
     }
+    public static long timeDifference(long timeBeginning, long timeEnding){return timeBeginning-timeEnding;}
+
+
 
 
 }
