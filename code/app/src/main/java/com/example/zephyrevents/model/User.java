@@ -92,6 +92,6 @@ public class User {
     }
 
     public void setUserTimeZone(String userTimeZone) {
-        userTimeZone = userTimeZone;
+        this.userTimeZone = userTimeZone;
     }
 }

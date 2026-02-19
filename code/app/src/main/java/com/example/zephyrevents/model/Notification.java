@@ -14,7 +14,7 @@ public class Notification {
     boolean sent;
     boolean read;
 
-    Notification(
+    public Notification(
             String userId,
             String eventId,
             NotificationType type,
@@ -31,5 +31,7 @@ public class Notification {
         this.sent = sent;
         this.read = read;
     }
+
+
 
 }
