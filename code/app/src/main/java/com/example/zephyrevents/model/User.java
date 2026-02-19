@@ -14,14 +14,14 @@ public class User {
     private String name;
     private boolean notificationsOptOut; // Opt out of all notifications account wide?
     private String phone;
-    private String UserTimeZone; // Should be something like America/Edmonton
-    User(String name, String email, String phone, boolean notificationsOptOut, String UserTimeZone){
+    private String userTimeZone; // Should be something like America/Edmonton
+    public User(String name, String email, String phone, boolean notificationsOptOut, String userTimeZone){
         this.deviceId = GenerateId.getUniqueId();
         this.email = email;
         this.location = location;
         this.phone = phone;
         this.notificationsOptOut = notificationsOptOut;
-        this.UserTimeZone = UserTimeZone;
+        this.userTimeZone = userTimeZone;
         this.name = name;
     }
 
@@ -30,8 +30,8 @@ public class User {
         this(name, email, phone, notificationsOptOut, TimeZone.getDefault().getID());
     }
     // constructor with default (false) notificationsOptOut
-    public User(String name, String email, String phone,  String UserTimeZone ){
-        this(name, email, phone, false, UserTimeZone);
+    public User(String name, String email, String phone,  String userTimeZone ){
+        this(name, email, phone, false, userTimeZone);
     }
     // constructor with default (false) notificationsOptOut and default timezone
     public User(String name, String email, String phone ){
@@ -88,10 +88,10 @@ public class User {
     }
 
     public String getUserTimeZone() {
-        return UserTimeZone;
+        return userTimeZone;
     }
 
     public void setUserTimeZone(String userTimeZone) {
-        UserTimeZone = userTimeZone;
+        userTimeZone = userTimeZone;
     }
 }
