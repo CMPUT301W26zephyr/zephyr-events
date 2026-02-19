@@ -2,6 +2,9 @@ package com.example.zephyrevents.model;
 
 import com.example.zephyrevents.util.GenerateId;
 
+/**
+ * This is a class that defines an notification.
+ */
 public class Notification {
 
     String notificationId;
