@@ -8,33 +8,34 @@ import java.util.TimeZone;
  * This is a class that defines a user.
  */
 public class User {
+    private ContactInfo contactInfo;
     private String deviceId;
-    private String email;
     private String location; // Should this be a string? or lat lon? I'm leaning string.
     private String name;
     private boolean notificationsOptOut; // Opt out of all notifications account wide?
-    private String phone;
     private String userTimeZone; // Should be something like America/Edmonton
-    public User(String name, String email, String phone, boolean notificationsOptOut, String userTimeZone){
+
+    //Firebase no arg constructor
+    public User() {}
+    public User(String name, String email, String phone, boolean notificationsOptOut, String userTimeZone, String location){
+        this.contactInfo = new ContactInfo(email, phone);
         this.deviceId = GenerateId.getUniqueId();
-        this.email = email;
         this.location = location;
-        this.phone = phone;
+        this.name = name;
         this.notificationsOptOut = notificationsOptOut;
         this.userTimeZone = userTimeZone;
-        this.name = name;
     }
 
     // constructor with default timezone
-    public User(String name, String email, String phone, boolean notificationsOptOut ){
-        this(name, email, phone, notificationsOptOut, TimeZone.getDefault().getID());
+    public User(String name, String email, String phone, boolean notificationsOptOut, String location ){
+        this(name, email, phone, notificationsOptOut, TimeZone.getDefault().getID(), location);
     }
     // constructor with default (false) notificationsOptOut
-    public User(String name, String email, String phone,  String userTimeZone ){
-        this(name, email, phone, false, userTimeZone);
+    public User(String name, String email, String phone,  String userTimeZone, String location ){
+        this(name, email, phone, false, userTimeZone, location);
     }
     // constructor with default (false) notificationsOptOut and default timezone
-    public User(String name, String email, String phone ){
+    public User(String name, String email, String phone, String location){
         this(name, email, phone, false, TimeZone.getDefault().getID());
     }
 
@@ -45,14 +46,6 @@ public class User {
     // DeviceID should stay immutable, setter added because of firebase deserialization.
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getLocation() {
@@ -79,13 +72,6 @@ public class User {
         this.notificationsOptOut = notificationsOptOut;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 
     public String getUserTimeZone() {
         return userTimeZone;
@@ -93,5 +79,13 @@ public class User {
 
     public void setUserTimeZone(String userTimeZone) {
         this.userTimeZone = userTimeZone;
+    }
+
+    public ContactInfo getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
     }
 }
