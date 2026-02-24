@@ -12,14 +12,25 @@ import java.time.LocalDateTime;
 public class Event {
     private  String id;
     private  String name;
+    private String description;
     private  long startTime;
     private  long endTime;
 
-    Event(String name, long endTime){
-        this.id = GenerateId.getUniqueId();
+    // no arg constructor for firebase
+    public Event() {};
+
+    public Event(String id, String name, String description, long startTime,  long endTime ){
         this.name = name;
-        this.startTime = TimeHelper.now();;
+        this.id = id;
+        this.startTime = startTime;
         this.endTime = endTime;
+        this.description = description;
+    }
+
+
+    // Constructor to autogenerate string id.
+    public Event(String name, String description, long startTime, long endTime){
+        this(GenerateId.getUniqueId(), name, description, startTime, endTime);
     }
 
     public String getId() {
@@ -32,6 +43,14 @@ public class Event {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public long getStartTime() {

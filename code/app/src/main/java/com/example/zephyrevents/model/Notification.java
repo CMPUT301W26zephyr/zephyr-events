@@ -17,23 +17,38 @@ public class Notification {
     boolean sent;
     boolean read;
 
-    // gonna adjust this class later and add more constructors when its stable.
+    // no arg constructor for firebase
+    public Notification() {}
+
+    // Default constructor
     public Notification(
             String userId,
             String eventId,
             NotificationType type,
             String text,
             boolean sent,
-            boolean read
+            boolean read,
+            String notificationId
+
     ){
 
-        this.notificationId = GenerateId.getUniqueId();
+        this.notificationId = notificationId;
         this.userId = userId;
         this.eventId = eventId;
         this.type = type;
         this.text = text;
         this.sent = sent;
         this.read = read;
+    }
+    // constructor but auto generate id.
+    public Notification(            String userId,
+                                    String eventId,
+                                    NotificationType type,
+                                    String text,
+                                    boolean sent,
+                                    boolean read
+                                    ){
+        this(userId, eventId, type, text, sent, read, GenerateId.getUniqueId());
     }
 
     public String getNotificationId() {
