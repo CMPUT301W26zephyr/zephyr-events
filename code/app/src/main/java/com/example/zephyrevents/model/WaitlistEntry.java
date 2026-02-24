@@ -8,7 +8,7 @@ public class WaitlistEntry {
     private String eventId;
     private long timestamp; // Could use type Instant, but had android api version issues.
 
-    private Coordinates coordinates;
+    private Coordinate coordinate;
     // Using enum here instead of string.
     private EventStatus status;
 
@@ -24,7 +24,7 @@ public class WaitlistEntry {
         this.eventId = eventId;
         this.timestamp = System.currentTimeMillis();
         this.status = EventStatus.PENDING;
-        this.coordinates = new Coordinates(lat,lng);
+        this.coordinate = new Coordinate(lat,lng);
     }
 
     public EventStatus getStatus() {
@@ -59,12 +59,12 @@ public class WaitlistEntry {
         this.eventId = eventId;
     }
 
-    public Coordinates getCoordinates() {
-        return coordinates;
+    public Coordinate getCoordinates() {
+        return coordinate;
     }
 
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
+    public void setCoordinates(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 
     public void setTimestamp(long timestamp) {

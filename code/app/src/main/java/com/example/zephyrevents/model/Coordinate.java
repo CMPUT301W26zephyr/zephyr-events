@@ -1,13 +1,13 @@
 package com.example.zephyrevents.model;
 
-public class Coordinates {
+public class Coordinate {
     private double lat;
     private double lng;
 
     // no arg constructor for firebase
-    public Coordinates() {};
+    public Coordinate() {};
 
-    public Coordinates(double lat,double lng){
+    public Coordinate(double lat, double lng){
         this.lat = lat;
         this.lng = lng;
     }
