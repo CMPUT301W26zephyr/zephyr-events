@@ -1,9 +1,5 @@
 package com.example.zephyrevents.model;
 
-import android.os.Build;
-
-import java.time.Instant;
-
 /**
  * This is a class that defines a waitlist.
  */
@@ -12,10 +8,7 @@ public class WaitlistEntry {
     private String eventId;
     private long timestamp; // Could use type Instant, but had android api version issues.
 
-    // latitude and longitude for now, unless if android has a better way
-    // used for potential location enforcement.
-    private  double lat;
-    private  double lng;
+    private Coordinate coordinate;
     // Using enum here instead of string.
     private EventStatus status;
 
@@ -30,9 +23,8 @@ public class WaitlistEntry {
         this.userId = userId;
         this.eventId = eventId;
         this.timestamp = System.currentTimeMillis();
-        this.lat = lat;
-        this.lng = lng;
         this.status = EventStatus.PENDING;
+        this.coordinate = new Coordinate(lat,lng);
     }
 
     public EventStatus getStatus() {
@@ -55,15 +47,8 @@ public class WaitlistEntry {
         return timestamp;
     }
 
-    public double getLat() {
-        return lat;
-    }
-
-    public double getLng() {
-        return lng;
-    }
     /**
-     * The only Attribute in this class that should be mutable is status
+     * The only Attribute in this class that should be mutable is status and maybe coordinates
      * The setters below are because firebase might have issues deserializing without them.
      */
     public void setUserId(String userId) {
@@ -74,15 +59,16 @@ public class WaitlistEntry {
         this.eventId = eventId;
     }
 
+    public Coordinate getCoordinates() {
+        return coordinate;
+    }
+
+    public void setCoordinates(Coordinate coordinate) {
+        this.coordinate = coordinate;
+    }
+
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public void setLng(double lng) {
-        this.lng = lng;
-    }
 }
