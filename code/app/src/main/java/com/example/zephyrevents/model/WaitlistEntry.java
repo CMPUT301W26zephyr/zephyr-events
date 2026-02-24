@@ -19,6 +19,7 @@ public class WaitlistEntry {
     // Using enum here instead of string.
     private EventStatus status;
 
+    // no arg constructor for firebase
     public WaitlistEntry() {}
     public WaitlistEntry(
             String userId,
