@@ -46,7 +46,7 @@ public final class DistanceHelper {
      * @return A boolean value, if two coordinates further than distanceKm away from each other.
      */
     public static boolean isWithinDistance(Coordinate cord1, Coordinate cord2, double distanceKm){
-        return (haversineDistance(cord1, cord2) < distanceKm);
+        return (haversineDistance(cord1, cord2) <= distanceKm);
     }
 
     }
