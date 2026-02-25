@@ -11,7 +11,7 @@ public enum DateTimeFormat {
     DateTimeFormat(String pattern){
         this.pattern = pattern;
     }
-    public String pattern() {
+    public String Pattern() {
         return pattern;
     }
 }

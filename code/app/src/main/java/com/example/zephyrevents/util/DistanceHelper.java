@@ -50,5 +50,3 @@ public final class DistanceHelper {
     }
 
     }
-
-
