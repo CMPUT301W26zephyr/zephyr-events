@@ -1,5 +1,12 @@
 package com.example.zephyrevents.util;
 
+/**
+ * Enum representing a fixed set of date/time format options.
+ *
+ * An enum in Java is a special type that allows us to define a group
+ * of constants. Instead of passing raw strings like "MM/dd/yyyy",
+ * we use these predefined options to prevent typos and keep formatting consistent.
+ */
 public enum DateTimeFormat {
     MONTH_DAY_YEAR("MM/dd/yyyy"), // 02/18/2026
     DAY_MONTH_YEAR("dd-M-yyyy"), // 18/02/2026

@@ -9,7 +9,7 @@ import java.util.TimeZone;
  */
 public class User {
     private ContactInfo contactInfo;
-    private String deviceId;
+    private String id;
     private String location; // Should this be a string? or lat lon? I'm leaning string.
     private String name;
     private boolean notificationsOptOut; // Opt out of all notifications account wide?
@@ -19,7 +19,7 @@ public class User {
     public User() {}
     public User(String name, String email, String phone, boolean notificationsOptOut, String userTimeZone, String location){
         this.contactInfo = new ContactInfo(email, phone);
-        this.deviceId = GenerateId.getUniqueId();
+        this.id = GenerateId.getUniqueId();
         this.location = location;
         this.name = name;
         this.notificationsOptOut = notificationsOptOut;
@@ -36,16 +36,16 @@ public class User {
     }
     // constructor with default (false) notificationsOptOut and default timezone
     public User(String name, String email, String phone, String location){
-        this(name, email, phone, false, TimeZone.getDefault().getID());
+        this(name, email, phone, false, TimeZone.getDefault().getID(), location);
     }
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getId() {
+        return id;
     }
 
     // DeviceID should stay immutable, setter added because of firebase deserialization.
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getLocation() {
@@ -68,7 +68,7 @@ public class User {
         return notificationsOptOut;
     }
 
-    public void setNotificationsOptOut(boolean notificationsOptOut) {
+    public void setNotificationsOptOut( boolean notificationsOptOut) {
         this.notificationsOptOut = notificationsOptOut;
     }
 
