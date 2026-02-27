@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.zephyrevents.model"},{"l":"com.example.zephyrevents.util"}];updateSearchResults();
