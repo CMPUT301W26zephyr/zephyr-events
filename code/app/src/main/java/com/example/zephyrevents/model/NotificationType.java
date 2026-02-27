@@ -1,15 +1,25 @@
 package com.example.zephyrevents.model;
 
 /**
- * Different types of notifications that can be sent.
- * Using an enum instead of strings ensures type safety and prevents invalid values.
+ * Represents the different types of notifications that can exist in our system.
  *
- * Going to update this later when I'm more sure of how our notification system will be setup.
+ * This is an enum. An enum in Java is a special type that lets us define a fixed
+ * set of constants. In this case, these are the ONLY valid notification types.
+ *
+ * Why use an enum instead of strings?
+ * - Prevents typos (e.g., "event_start" vs "EVENT_START")
+ * - Ensures only valid values can be used
+ * - Makes the code easier to read and maintain
+ *
+ * Example usage:
+ *     NotificationType type = NotificationType.EVENT_START;
+ *
+ * You cannot create new values at runtime — only the ones listed here are allowed.
  */
 public enum NotificationType {
     EVENT_START,
     EVENT_END,
     WON_EVENT,
     LOST_EVENT
-    // Add more later
+    // Add more later if needed.
 }

@@ -10,7 +10,7 @@ public final class DistanceHelper {
 
 
     /**
-     * This is an internal function to calculate the km distance between two Coordinates
+     * This is an internal method to calculate the km distance between two Coordinates
      * This is pretty similar to some stuff i've done previously so Haversine is what is needed
      * https://www.geeksforgeeks.org/dsa/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
      * ^ Here is a site where I got the java implementation of the math.
@@ -50,5 +50,3 @@ public final class DistanceHelper {
     }
 
     }
-
-
