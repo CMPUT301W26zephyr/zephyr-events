@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1003973163713",
+    "project_id": "zephyr-events",
+    "storage_bucket": "zephyr-events.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003973163713:android:3d855f50f867ff6c58f240",
+        "android_client_info": {
+          "package_name": "com.example.zephyrevents"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeAEd3ppIQieV-YhTvScX8qIYSoP48a-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
