@@ -6,16 +6,16 @@ package com.example.zephyrevents.model;
  * Used as an nested object in the user class.
  */
 public class ContactInfo {
-private String email;
-private String phone;
+    private String email;
+    private String phone;
 
-// no arg constructor for firebase
-public ContactInfo() {};
+    // no arg constructor for firebase
+    public ContactInfo() {};
 
-public ContactInfo(String email, String phone) {
-    this.email = email;
-    this.phone = phone;
-}
+    public ContactInfo(String email, String phone) {
+        this.email = email;
+        this.phone = phone;
+    }
 
     public String getEmail() {
         return email;
