@@ -23,7 +23,7 @@ public class EventRepository {
         db = FirebaseFirestore.getInstance();
     }
 
-    public void createEvent(Event event, RepositoryCallback<Void> callback) {
+    public void saveEvent(Event event, RepositoryCallback<Void> callback) {
         if (event == null) {
             var e = new IllegalArgumentException("Event cannot be null");
             Log.w(TAG, "event passed had value of null", e);
@@ -56,13 +56,19 @@ public class EventRepository {
 
     }
 
+    public void createEvent(Event event, RepositoryCallback<Void> callback){
+        saveEvent(event, callback);
+    }
+
+    public void updateEvent(Event event, RepositoryCallback<Void> callback) {
+        saveEvent(event, callback);
+    }
+
+
     public void getEventById(String id, RepositoryCallback<Event> callback) {
         //TODO: FIREBASE CODE
     }
 
-    public void updateEvent(Event event, RepositoryCallback<Void> callback) {
-        //TODO: FIREBASE CODE
-    }
 
     public void deleteEvent(String id, RepositoryCallback<Void> callback) {
         //TODO: FIREBASE CODE
