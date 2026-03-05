@@ -13,6 +13,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
+/*
+    Gonna add better documentation later.
+    Here are some refs I used. def recommend reading if you are interested!
+    https://firebase.google.com/docs/firestore/manage-data/add-data#java_2
+    https://firebase.google.com/docs/database/admin/retrieve-data#java
+    https://developer.android.com/reference/android/util/Log
+ */
 
 public class EventRepository {
 
@@ -74,6 +81,11 @@ public class EventRepository {
         //TODO: FIREBASE CODE
     }
 
+    /* Pretty sure this is going to be a continuous stream, not a one shot callback.
+     Maybe look into recycler view for this, remember to tell team.
+     Maybe look into streaming chunks at a time into mem
+     and setting limits on how many can come in at a time.
+     */
     public void getAllEvents(RepositoryCallback<List<Event>> callback) {
         //TODO: FIREBASE CODE
     }
