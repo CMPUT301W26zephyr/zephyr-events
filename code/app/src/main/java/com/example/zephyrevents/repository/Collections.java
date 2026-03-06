@@ -5,4 +5,5 @@ public final class Collections {
     // constants for firebase collections, avoids magic strings everywhere, prevents bugs.
     public static final String EVENTS = "events";
 
+    public static final String USERS = "users";
 }
