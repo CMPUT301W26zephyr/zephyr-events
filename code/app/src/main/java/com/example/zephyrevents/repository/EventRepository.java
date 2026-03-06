@@ -8,9 +8,13 @@ import com.example.zephyrevents.model.Event;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.model.Document;
 
 
 /*
@@ -103,7 +107,37 @@ public class EventRepository {
 
 
     public void getEventById(String id, RepositoryCallback<Event> callback) {
-        //TODO: FIREBASE CODE
+        if (id == null || id.trim().isEmpty()){
+            var e = new IllegalArgumentException("event id passed has no value");
+            Log.w(TAG, "invalid event id", e);
+            callback.onFailure(e);
+            return; // exit before network call.
+        }
+        db.collection(Collections.EVENTS)
+                .document(id)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot doc) {
+                        // is onSuccess guaranteed to be not null? Idk tbh.
+                        if (doc == null || !doc.exists()){
+                            var e = new IllegalArgumentException("document returned doesn't exist");
+                            Log.w(TAG, "event document not found for id: "+id, e);
+                            callback.onFailure(e);
+                        }else{
+                                Log.d(TAG, "DocumentSnapshot data: " + doc.getData());
+                                callback.onSuccess(doc.toObject(Event.class));
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "error getting doc by id: "+id+"\n exception returned: ", e);
+                callback.onFailure(e);
+            }
+        });
+
     }
 
 
