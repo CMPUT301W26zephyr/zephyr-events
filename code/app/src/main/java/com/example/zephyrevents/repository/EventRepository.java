@@ -142,7 +142,29 @@ public class EventRepository {
 
 
     public void deleteEvent(String id, RepositoryCallback<Void> callback) {
-        //TODO: FIREBASE CODE
+        if (id == null || id.trim().isEmpty()){
+            var e = new IllegalArgumentException("event id passed has no value");
+            Log.w(TAG, "invalid event id", e);
+            callback.onFailure(e);
+            return; // exit before network call.
+        }
+        db.collection(Collections.EVENTS)
+                .document(id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "event deleted successfully id: " + id);
+                            callback.onSuccess(null);
+                        }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "error deleting event with id: "+id+"\n exception returned: ", e);
+                        callback.onFailure(e);
+                    }
+                });
     }
 
     /* Pretty sure this is going to be a continuous stream, not a one shot callback.
