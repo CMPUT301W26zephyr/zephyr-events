@@ -6,15 +6,11 @@ import androidx.annotation.NonNull;
 
 import com.example.zephyrevents.model.Event;
 import java.util.List;
-import java.util.Objects;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.model.Document;
 
 
 /*
@@ -41,19 +37,19 @@ public class EventRepository {
             callback.onFailure(e);
             return;
         }
-        if (event.getId() == null || event.getId().trim().isEmpty()){
+        if (event.getEventId() == null || event.getEventId().trim().isEmpty()){
             var e = new IllegalArgumentException("Event id passed has no value");
             Log.w(TAG, "event has no associated id", e);
             callback.onFailure(e);
             return; // exit before network call.
         }
         db.collection(Collections.EVENTS)
-                .document(event.getId())
+                .document(event.getEventId())
                 .set(event)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Firestore event added object id: " + event.getId());
+                        Log.d(TAG, "Firestore event added object id: " + event.getEventId());
                         callback.onSuccess(null);
                     }
                 })

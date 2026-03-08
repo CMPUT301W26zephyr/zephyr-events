@@ -1,30 +1,43 @@
 package com.example.zephyrevents.model;
 
 import com.example.zephyrevents.util.GenerateId;
-import com.example.zephyrevents.util.TimeHelper;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
 
 /**
  * This is a class that defines an event.
  */
 public class Event {
-    private  String id;
+    private  String eventId;
     private  String name;
     private String description;
     private  long startTime;
     private  long endTime;
+    private Location location;
+    private double price;
+    private int capacity;
+    private int applicantCount;
+    private long registrationEndTime;
+    private String organizerId;
+    private String imageUrl;
+    private String status;
 
     // no arg constructor for firebase
     public Event() {};
 
-    public Event(String id, String name, String description, long startTime,  long endTime ){
+
+    public Event(String name, String description, long startTime, long endTime, String location, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, String status) {
+        this.Id = GenerateId.getUniqueId();
         this.name = name;
-        this.id = id;
+        this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.description = description;
+        this.location = location;
+        this.price = price;
+        this.capacity = capacity;
+        this.applicantCount = applicantCount;
+        this.registrationEndTime = registrationEndTime;
+        this.organizerId = organizerId;
+        this.imageUrl = imageUrl;
+        this.status = status;
     }
 
 
@@ -33,8 +46,8 @@ public class Event {
         this(GenerateId.getUniqueId(), name, description, startTime, endTime);
     }
 
-    public String getId() {
-        return id;
+    public String getEventId() {
+        return eventId;
     }
 
     public String getName() {
@@ -69,7 +82,7 @@ public class Event {
         this.startTime = startTime;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 }
