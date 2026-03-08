@@ -17,7 +17,6 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_organizer_event);
 
-        // Apply insets to the container so fragments don't overlap system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fragment_container), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -28,13 +27,19 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
             navigateToFragment(new EventDetailsFragment(), false);
         }
     }
-
-    // Call this method from any Fragment to go to the next screen!
     public void navigateToFragment(Fragment fragment, boolean addToBackStack) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.slide_out_left,
+                R.anim.slide_in_left,
+                R.anim.slide_out_right);
+        transaction.setReorderingAllowed(true);
+
         transaction.replace(R.id.fragment_container, fragment);
         if (addToBackStack) {
-            transaction.addToBackStack(null); // Allows the hardware back button to work
+            transaction.addToBackStack(null);
         }
         transaction.commit();
     }
