@@ -43,7 +43,7 @@ public final class TimeHelper {
      *
      */
     public static String format(long millis, DateTimeFormat fmt, String timeZoneId){
-        return format(millis, fmt.Pattern(), TimeZone.getTimeZone(timeZoneId));
+        return format(millis, fmt.pattern(), TimeZone.getTimeZone(timeZoneId));
     }
 
     /**
@@ -76,7 +76,7 @@ public final class TimeHelper {
      * </pre>
      */
     public static String format(long millis, DateTimeFormat fmt){
-        return format(millis, fmt.Pattern(), TimeZone.getDefault());
+        return format(millis, fmt.pattern(), TimeZone.getDefault());
     }
 
     /**
@@ -96,9 +96,9 @@ public final class TimeHelper {
 
     /**
      * Method for quickly checking the difference between two millisecond times.
-     * @param timeBeginning Start time in milliseconds
-     * @param timeEnding end time in milliseconds
+     * @param startTime Start time in milliseconds
+     * @param endTime end time in milliseconds
      * @return the difference in times in milliseconds.
      */
-    public static long timeDifference(long timeBeginning, long timeEnding){return timeEnding-timeBeginning;}
+    public static long timeDifference(long startTime, long endTime){return endTime-startTime;}
 }
