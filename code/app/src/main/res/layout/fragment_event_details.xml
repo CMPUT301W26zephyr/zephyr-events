@@ -5,11 +5,16 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+    <include
+        android:id="@+id/top_bar"
+        layout="@layout/layout_top_bar"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toTopOf="@+id/bottom_button_container">
 
         <LinearLayout
@@ -94,6 +99,7 @@
                 <TextView style="@style/FormAsterisk" />
                 <TextView style="@style/FormLabel" android:text="Attendee Count" />
             </LinearLayout>
+
             <EditText
                 android:id="@+id/input_attendee_count"
                 style="@style/FormInput"
