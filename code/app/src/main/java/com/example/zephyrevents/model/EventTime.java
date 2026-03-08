@@ -24,4 +24,20 @@ public class EventTime {
         var timeLeft = TimeHelper.timeDifference(endTime, timeNow);
         return TimeHelper.formatDuration(TimeHelper.timeDifference(timeNow, timeLeft));
     }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
 }
