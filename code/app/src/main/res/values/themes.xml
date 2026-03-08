@@ -6,4 +6,39 @@
     </style>
 
     <style name="Theme.ZephyrEvents" parent="Base.Theme.ZephyrEvents" />
+
+    <style name="FormLabelRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginTop">20dp</item>
+    </style>
+
+    <style name="FormAsterisk">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">*</item>
+        <item name="android:textColor">#F44336</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="FormLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#555555</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginStart">2dp</item>
+    </style>
+
+    <style name="FormInput">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:background">@drawable/bg_input_default</item>
+        <item name="android:paddingHorizontal">12dp</item>
+        <item name="android:textColorHint">#888888</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>
