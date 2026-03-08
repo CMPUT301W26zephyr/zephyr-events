@@ -53,4 +53,9 @@ dependencies {
 
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
+<<<<<<< Updated upstream
+=======
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("androidx.cardview:cardview:1.0.0")
+>>>>>>> Stashed changes
 }
