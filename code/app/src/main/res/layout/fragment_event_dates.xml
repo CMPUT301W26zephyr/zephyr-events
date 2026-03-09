@@ -5,14 +5,10 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <include
-        android:id="@+id/top_bar"
-        layout="@layout/layout_top_bar"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toTopOf="@+id/bottom_button_container">
@@ -25,48 +21,49 @@
 
             <LinearLayout style="@style/FormLabelRow" android:layout_marginTop="0dp">
                 <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Registration Open Date" />
+                <TextView style="@style/FormLabel" android:text="Registration Period" />
             </LinearLayout>
+
             <EditText
-                android:id="@+id/input_reg_start_date"
+                android:id="@+id/input_registration_period"
                 style="@style/FormInput"
-                android:hint="Select date"
+                android:hint="Start Date - End Date"
                 android:focusable="false"
                 android:drawableEnd="@drawable/ic_calendar" />
 
-            <LinearLayout style="@style/FormLabelRow">
+            <LinearLayout style="@style/FormLabelRow" android:layout_marginTop="24dp">
                 <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Event Start Date" />
+                <TextView style="@style/FormLabel" android:text="Event Date" />
             </LinearLayout>
-            <EditText
-                android:id="@+id/input_event_start_date"
-                style="@style/FormInput"
-                android:hint="Select date"
-                android:focusable="false"
-                android:drawableEnd="@drawable/ic_calendar" />
 
-            <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Event End Date" />
-            </LinearLayout>
-            <EditText
-                android:id="@+id/input_event_end_date"
-                style="@style/FormInput"
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true">
+
+                <CalendarView
+                    android:id="@+id/inline_event_calendar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/CustomInlineCalendar" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/text_selected_event_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginBottom="24dp"
-                android:hint="Select date"
-                android:focusable="false"
-                android:drawableEnd="@drawable/ic_calendar" />
+                android:text="Select a date above"
+                android:textColor="#888888"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>
 
-    <FrameLayout
-        android:id="@+id/bottom_button_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <include
-            android:id="@+id/next_button"
-            layout="@layout/button_primary" />
-    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

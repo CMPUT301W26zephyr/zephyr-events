@@ -5,14 +5,9 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <include
-        android:id="@+id/top_bar"
-        layout="@layout/layout_top_bar"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toTopOf="@+id/bottom_button_container">
 
@@ -23,34 +18,149 @@
             android:padding="24dp">
 
             <TextView
+                android:id="@+id/text_confirm_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Review &amp; Confirm"
-                android:textSize="24sp"
+                android:text="[Insert Event Name]"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#333333"
                 android:layout_marginBottom="16dp"/>
 
-            <TextView
+            <FrameLayout
                 android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#E0E0E0">
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_image_placeholder2"/>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Event Type: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+                <TextView
+                    android:id="@+id/text_confirm_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="[Insert Event Type]"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Date: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+                <TextView
+                    android:id="@+id/text_confirm_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="[Insert Event Date]"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Location: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+                <TextView
+                    android:id="@+id/text_confirm_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="[Insert Event Location]"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Price: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+                <TextView
+                    android:id="@+id/text_confirm_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="$[Insert Price if Applicable]"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Capacity: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+                <TextView
+                    android:id="@+id/text_confirm_capacity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="[Insert Capacity if Applicable]"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_confirm_description"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Placeholder text bruh ksandjkasndjkasn."
-                android:textColor="#666666" />
+                android:layout_marginTop="20dp"
+                android:text="Description. kjasndkjasndkjasndkjnaskjdnsajkdnjaskndjasndjsandkjasndjkasnkdnasjkdnjkasndkjas. "
+                android:textSize="16sp"
+                android:textColor="#555555" />
+
+
 
         </LinearLayout>
     </ScrollView>
 
-    <FrameLayout
-        android:id="@+id/bottom_button_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <include
-            android:id="@+id/next_button"
-            layout="@layout/button_primary"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_margin="16dp"
-            android:text="Confirm &amp; Create" />
-    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

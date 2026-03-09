@@ -17,4 +17,6 @@
     <color name="badge_selected">#4CAF50</color>
     <color name="badge_waiting">#FFC107</color>
     <color name="badge_not_selected">#F44336</color>
+    <!-- Theme Colours -->
+    <color name="secondary_red">#FFCCD8</color>
 </resources>

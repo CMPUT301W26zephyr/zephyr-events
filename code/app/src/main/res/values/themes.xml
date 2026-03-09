@@ -41,4 +41,14 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="CustomMaterialCalendar" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorPrimary">@color/primary_red</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
+
+    <style name="CustomInlineCalendar" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/primary_red</item>
+        <item name="colorPrimary">@color/primary_red</item>
+    </style>
+
 </resources>

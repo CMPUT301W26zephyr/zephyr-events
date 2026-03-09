@@ -5,14 +5,9 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <include
-        android:id="@+id/top_bar"
-        layout="@layout/layout_top_bar"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toTopOf="@+id/bottom_button_container">
@@ -34,7 +29,6 @@
                 android:hint="e.g. Beginner Swimming Lessons" />
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormAsterisk" />
                 <TextView style="@style/FormLabel"
                     android:text="Event Type" />
             </LinearLayout>
@@ -47,20 +41,19 @@
                 app:boxCornerRadiusBottomEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxStrokeColor="#CCCCCC">
+                app:boxCornerRadiusTopStart="8dp">
                 <AutoCompleteTextView
                     android:id="@+id/eventTypeDropdown"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
-                    android:inputType="none"
+                    android:inputType="text"
                     android:paddingHorizontal="12dp"
+                    android:popupBackground="@color/secondary_red"
                     android:textColor="#333333"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormAsterisk" />
                 <TextView style="@style/FormLabel"
                     android:text="Event Price" />
             </LinearLayout>
@@ -72,7 +65,6 @@
                 android:inputType="numberDecimal" />
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormAsterisk" />
                 <TextView style="@style/FormLabel"
                     android:text="Description" />
             </LinearLayout>
@@ -97,7 +89,7 @@
 
             <LinearLayout style="@style/FormLabelRow">
                 <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Attendee Count" />
+                <TextView style="@style/FormLabel" android:text="Attendee Capacity" />
             </LinearLayout>
 
             <EditText
@@ -110,17 +102,5 @@
         </LinearLayout>
     </ScrollView>
 
-    <FrameLayout
-        android:id="@+id/bottom_button_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <include
-            android:id="@+id/next_button"
-            layout="@layout/button_primary" />
-    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
