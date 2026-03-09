@@ -10,6 +10,9 @@ import java.util.TimeZone;
  * A class that helps with time related utilities with the goal to make working with milliseconds easier.
  */
 public final class TimeHelper {
+    private static final long MINUTE = 60;
+    private static final long HOUR = 60 * MINUTE;
+    private static final long DAY = 24 * HOUR;
     private TimeHelper() {}
 
     /**
@@ -101,4 +104,31 @@ public final class TimeHelper {
      * @return the difference in times in milliseconds.
      */
     public static long timeDifference(long startTime, long endTime){return endTime-startTime;}
+    public static String formatDuration(long millis) {
+        if (millis <= 0) {
+            return "0s";
+        }
+
+        long totalSeconds = millis / 1000;
+
+        long days = totalSeconds / DAY;
+        long hours = (totalSeconds % DAY) / HOUR;
+        long minutes = (totalSeconds % HOUR) / MINUTE;
+        long seconds = totalSeconds % MINUTE;
+
+        if (days > 0) {
+            return days + "d " + hours + "h";
+        }
+
+        if (hours > 0) {
+            return hours + "h " + minutes + "m";
+        }
+
+        if (minutes > 0) {
+            return minutes + "m " + seconds + "s";
+        }
+
+        return seconds + "s";
+    }
 }
+

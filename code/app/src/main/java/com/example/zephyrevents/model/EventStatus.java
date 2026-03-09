@@ -17,9 +17,10 @@ package com.example.zephyrevents.model;
  * You cannot create new values at runtime — only the ones listed here are allowed.
  */
 public enum EventStatus {
-    ACCEPTED,
-    DECLINED,
+    PENDING,
+    OPEN,
+    FULL,
+    CLOSED,
     CANCELLED,
-    SELECTED,
-    PENDING
+    COMPLETED
 }
