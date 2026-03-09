@@ -5,12 +5,20 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.zephyrevents.model.Event;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import com.example.zephyrevents.util.TimeHelper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.checkerframework.checker.units.qual.N;
 
 
 /*
@@ -163,12 +171,116 @@ public class EventRepository {
                 });
     }
 
-    /* Pretty sure this is going to be a continuous stream, not a one shot callback.
-     Maybe look into recycler view for this, remember to tell team.
-     Maybe look into streaming chunks at a time into mem
-     and setting limits on how many can come in at a time.
+    /*
+
      */
-    public void getAllEvents(RepositoryCallback<List<Event>> callback) {
-        //TODO: FIREBASE CODE
+    public void getAllEvents(RepositoryCallback<List<Event>> callback){
+        db.collection(Collections.EVENTS)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot querySnapshot) {
+
+
+                        List<Event> events = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot doc : querySnapshot) {
+                            Event event = doc.toObject(Event.class);
+                            events.add(event);
+                        }
+
+                        callback.onSuccess(events);
+                    }
+                })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error getting events", e);
+                            callback.onFailure(e);
+                        }
+                    });
+    }
+
+    public void getOpenEvents(RepositoryCallback<List<Event>> callback){
+        db.collection(Collections.EVENTS)
+                .whereGreaterThan("time.endTime", TimeHelper.now())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot querySnapshot) {
+
+
+                        List<Event> events = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot doc : querySnapshot) {
+                            Event event = doc.toObject(Event.class);
+                            events.add(event);
+                        }
+
+                        callback.onSuccess(events);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error getting events", e);
+                        callback.onFailure(e);
+                    }
+                });
+    }
+       public void getUpcomingEvents(RepositoryCallback<List<Event>> callback){
+        db.collection(Collections.EVENTS)
+                .whereGreaterThan("time.startTime", TimeHelper.now())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot querySnapshot) {
+
+
+                        List<Event> events = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot doc : querySnapshot) {
+                            Event event = doc.toObject(Event.class);
+                            events.add(event);
+                        }
+
+                        callback.onSuccess(events);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error getting events", e);
+                        callback.onFailure(e);
+                    }
+                });
+    }
+    public void getEventsHappeningNow(RepositoryCallback<List<Event>> callback){
+        db.collection(Collections.EVENTS)
+                .whereLessThanOrEqualTo("time.startTime", TimeHelper.now())
+                .whereGreaterThanOrEqualTo("time.endTime", TimeHelper.now())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot querySnapshot) {
+
+
+                        List<Event> events = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot doc : querySnapshot) {
+                            Event event = doc.toObject(Event.class);
+                            events.add(event);
+                        }
+
+                        callback.onSuccess(events);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error getting events", e);
+                        callback.onFailure(e);
+                    }
+                });
     }
 }
