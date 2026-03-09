@@ -104,6 +104,8 @@ public class EventRepository {
     so ill fix it later, but I was on the bus and was just like, that's a perfect
     example of a race condition that might not be obvious to someone.
     it wasn't obvious to me last night until I thought about it more.
+
+    Honestly for now we are not gonna run into a race condition, Imma just leave it for now.
      */
     public void updateEvent(Event event, RepositoryCallback<Void> callback) {
         saveEvent(event, callback);
