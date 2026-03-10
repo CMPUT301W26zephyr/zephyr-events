@@ -3,6 +3,7 @@ package com.example.zephyrevents.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,7 @@ public class MyEventsActivity extends AppCompatActivity {
     private ListView listView;
     private Button tabLotteries;
     private Button tabHistory;
+    private ImageButton notifications;
     private MyEventListAdapter lotteryAdapter;
     private MyEventListAdapter historyAdapter;
     private boolean showingLotteries = true;
@@ -40,6 +42,7 @@ public class MyEventsActivity extends AppCompatActivity {
         listView = findViewById(R.id.my_events_list);
         tabLotteries = findViewById(R.id.tab_lotteries);
         tabHistory = findViewById(R.id.tab_history);
+        notifications = findViewById(R.id.toolbar_notifications);
 
         EventController controller = EventController.getInstance();
         List<WaitlistEntry> lotteryEntries = controller.getLotteryEntries();
@@ -62,6 +65,10 @@ public class MyEventsActivity extends AppCompatActivity {
                 intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, entry.getStatus() == Status.SELECTED);
                 startActivity(intent);
             }
+        });
+
+        notifications.setOnClickListener(v -> {
+            startActivity(new Intent(MyEventsActivity.this, UserNotificationListView.class));
         });
 
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());

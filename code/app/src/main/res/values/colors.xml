@@ -19,4 +19,5 @@
     <color name="badge_not_selected">#F44336</color>
     <!-- Theme Colours -->
     <color name="secondary_red">#FFCCD8</color>
+    <color name="notification_background">#FAFAFA</color>
 </resources>
