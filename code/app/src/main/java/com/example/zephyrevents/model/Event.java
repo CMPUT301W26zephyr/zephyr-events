@@ -4,10 +4,12 @@ import com.example.zephyrevents.util.GenerateId;
 
 /**
  * This is a class that defines an event.
+ * Holds basic info (name, description, times) and optional detail fields
+ * used on the event detail screen (price, location, organizer, waitlist capacity).
  */
 public class Event {
-    private  String eventId;
-    private  String name;
+    private String eventId;
+    private String name;
     private String description;
     private EventTime time;
     private Location location;
@@ -19,16 +21,28 @@ public class Event {
     private String imageUrl;
     private EventStatus status;
 
+    /**
+     * Optional: organizer display name. Used on event detail screen.
+     */
+    private String organizerName;
+    /**
+     * Optional: max number of participants. Used for waitlist info.
+     */
+    private int currentApplicants;
+
     // no arg constructor for firebase
-    public Event() {};
+    public Event() {
+    }
+
+    ;
 
 
-    public Event(String name, String description, long startTime, long endTime, String location,long lng,long lat,  double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status) {
+    public Event(String name, String description, long startTime, long endTime, String location, long lng, long lat, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status) {
         this.eventId = GenerateId.getUniqueId();
         this.name = name;
         this.description = description;
         this.time = new EventTime(startTime, endTime);
-        this.location = new Location(lat,lng,location);
+        this.location = new Location(lat, lng, location);
         this.price = price;
         this.capacity = capacity;
         this.applicantCount = applicantCount;
@@ -38,8 +52,45 @@ public class Event {
         this.status = status;
     }
 
+    /**
+     * Full constructor including detail fields for the event detail screen.
+     */
+
+    // Constructor to autogenerate string id.
+    public Event(String name, String description, EventTime time, Location location, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status, String organizerName, int currentApplicants) {
+        this(GenerateId.getUniqueId(), name, description, time, location, price, capacity, applicantCount, registrationEndTime, organizerId, imageUrl, status, organizerName, currentApplicants);
+    }
+
+    public Event(String eventId, String name, String description, EventTime time, Location location, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status, String organizerName, int currentApplicants) {
+        this.eventId = eventId;
+        this.name = name;
+        this.description = description;
+        this.time = time;
+        this.location = location;
+        this.price = price;
+        this.capacity = capacity;
+        this.applicantCount = applicantCount;
+        this.registrationEndTime = registrationEndTime;
+        this.organizerId = organizerId;
+        this.imageUrl = imageUrl;
+        this.status = status;
+        this.organizerName = organizerName;
+        this.currentApplicants = currentApplicants;
+    }
+
+    /**
+     * Returns true if the event waitlist has reached capacity (no more join allowed).
+     */
+    public boolean isCapacityFull() {
+        return capacity > 0 && currentApplicants >= capacity;
+    }
+
     public String getEventId() {
         return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 
     public String getName() {
@@ -58,13 +109,12 @@ public class Event {
         this.description = description;
     }
 
-
-    public double getPrice() {
-        return price;
+    public EventTime getTime() {
+        return time;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setTime(EventTime time) {
+        this.time = time;
     }
 
     public Location getLocation() {
@@ -75,12 +125,12 @@ public class Event {
         this.location = location;
     }
 
-    public EventTime getTime() {
-        return time;
+    public double getPrice() {
+        return price;
     }
 
-    public void setTime(EventTime time) {
-        this.time = time;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public int getCapacity() {
@@ -89,10 +139,6 @@ public class Event {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
-    }
-
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
     }
 
     public int getApplicantCount() {
@@ -133,5 +179,21 @@ public class Event {
 
     public void setStatus(EventStatus status) {
         this.status = status;
+    }
+
+    public String getOrganizerName() {
+        return organizerName;
+    }
+
+    public void setOrganizerName(String organizerName) {
+        this.organizerName = organizerName;
+    }
+
+    public int getCurrentApplicants() {
+        return currentApplicants;
+    }
+
+    public void setCurrentApplicants(int currentApplicants) {
+        this.currentApplicants = currentApplicants;
     }
 }

@@ -4,18 +4,18 @@ import android.util.Log;
 
 public class Location {
     public Coordinate coordinate;
-    public String location;
+    public String locationString;
     private static final String TAG = "Location";
 
 
     Location(){}
 
-    Location(Coordinate coordinate,String location){
+    public Location(Coordinate coordinate,String locationString){
         this.coordinate = coordinate;
-        this.location = location;
+        this.locationString = locationString;
     }
-    Location(double lat,double lng,String location){
-        this(new Coordinate(lat, lng), location);
+    public Location(double lat,double lng,String locationString){
+        this(new Coordinate(lat, lng), locationString);
     }
 
 
@@ -32,12 +32,12 @@ public class Location {
         this.coordinate = coordinate;
     }
 
-    public String getLocation() {
-        return location;
+    public String getLocationString() {
+        return locationString;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocationString(String locationString) {
+        this.locationString = locationString;
     }
 }
 
