@@ -1,16 +1,18 @@
 package com.example.zephyrevents.model;
 
+import com.example.zephyrevents.util.TimeHelper;
+
 /**
  * This is a class that defines a waitlist.
  */
 public class WaitlistEntry {
     private String userId;
     private String eventId;
-    private long timestamp; // Could use type Instant, but had android api version issues.
+    private long timestamp; // Time user joined in millis
 
     private Coordinate coordinate;
     // Using enum here instead of string.
-    private EventStatus status;
+    private Status status;
 
     // no arg constructor for firebase
     public WaitlistEntry() {}
@@ -18,20 +20,21 @@ public class WaitlistEntry {
             String userId,
             String eventId,
             double lat,
-            double lng
+            double lng,
+            Status status
     ) {
         this.userId = userId;
         this.eventId = eventId;
-        this.timestamp = System.currentTimeMillis();
-        this.status = EventStatus.PENDING;
+        this.timestamp = TimeHelper.now();
+        this.status = status;
         this.coordinate = new Coordinate(lat,lng);
     }
 
-    public EventStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(EventStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
