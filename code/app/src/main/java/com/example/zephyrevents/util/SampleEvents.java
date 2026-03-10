@@ -1,6 +1,9 @@
 package com.example.zephyrevents.util;
 
 import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.model.EventStatus;
+import com.example.zephyrevents.model.EventTime;
+import com.example.zephyrevents.model.Location;
 
 import java.util.Calendar;
 
@@ -38,22 +41,30 @@ public final class SampleEvents {
     /**
      * Beginner Swimming Lessons: registration open, capacity 67, 20 applicants.
      */
+
     private static Event buildSwimmingEvent() {
         Calendar cal = Calendar.getInstance();
         cal.set(2025, Calendar.FEBRUARY, 10, 23, 59, 59);
         long regEnd = cal.getTimeInMillis();
+
+        long start = TimeHelper.now();
+        long end = start + 3600000;
+
         return new Event(
                 KEY_SWIMMING,
                 "Beginner Swimming Lessons",
                 "Learn essential skills like floating, kicking, and basic strokes with certified instructors in a safe, supportive, and fun environment.",
-                System.currentTimeMillis(),
-                System.currentTimeMillis() + 3600000,
-                "$50.00",
-                "Edmonton, Alberta",
-                "John Doe",
+                new EventTime(start, end),
+                new Location(53.5461, -113.4938, "Edmonton, Alberta"),
+                50.00,
                 67,
                 20,
-                regEnd
+                regEnd,
+                "organizer_john_doe",
+                null,
+                EventStatus.OPEN,
+                "John Doe",
+                20
         );
     }
 
@@ -64,20 +75,28 @@ public final class SampleEvents {
         Calendar cal = Calendar.getInstance();
         cal.set(2025, Calendar.FEBRUARY, 15, 23, 59, 59);
         long regEnd = cal.getTimeInMillis();
+
+        long start = TimeHelper.now();
+        long end = start + 3600000;
+
         return new Event(
                 KEY_PIANO,
                 "Piano Lessons",
                 "Learn piano at your own pace with fun, personalized lessons that build skills and confidence perfect for beginners and aspiring musicians alike.",
-                System.currentTimeMillis(),
-                System.currentTimeMillis() + 3600000,
-                "$120.00",
-                "Edmonton, Alberta",
-                "Sally Brown",
+                new EventTime(start, end),
+                new Location(53.5461, -113.4938, "Edmonton, Alberta"),
+                120.00,
                 15,
                 150,
-                regEnd
+                regEnd,
+                "organizer_sally_brown",
+                null,
+                EventStatus.CLOSED,
+                "Sally Brown",
+                150
         );
     }
+
 
     /**
      * Yoga Lessons: same format as swimming, $20. Used to demonstrate Accept/Decline invite flow (SELECTED).
@@ -86,18 +105,25 @@ public final class SampleEvents {
         Calendar cal = Calendar.getInstance();
         cal.set(2025, Calendar.FEBRUARY, 10, 23, 59, 59);
         long regEnd = cal.getTimeInMillis();
+        Location l = new Location(53.5461, -113.4938, "Edmonton, Alberta"); // example coordinates
+        long start = TimeHelper.now();
+        long end = start + 3600000;
         return new Event(
                 KEY_YOGA,
                 "Yoga Lessons",
                 "Learn essential skills like breathing, stretching, and basic poses with certified instructors in a safe, supportive, and fun environment.",
-                System.currentTimeMillis(),
-                System.currentTimeMillis() + 3600000,
-                "$20.00",
-                "Edmonton, Alberta",
-                "John Doe",
+                new EventTime(start, end),
+                new Location(53.5461, -113.4938, "Edmonton, Alberta"), // example coordinates
+                20.00,
                 67,
                 20,
-                regEnd
+                regEnd,
+                "organizer_john_doe",
+                null, // imageUrl
+                EventStatus.OPEN,
+                "John Doe",
+                20
         );
+
     }
 }

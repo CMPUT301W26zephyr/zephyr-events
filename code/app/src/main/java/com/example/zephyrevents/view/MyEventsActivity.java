@@ -12,6 +12,8 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.EventStatus;
 import com.example.zephyrevents.model.MyEventEntry;
+import com.example.zephyrevents.model.Status;
+import com.example.zephyrevents.model.WaitlistEntry;
 
 import java.util.List;
 
@@ -40,8 +42,8 @@ public class MyEventsActivity extends AppCompatActivity {
         tabHistory = findViewById(R.id.tab_history);
 
         EventController controller = EventController.getInstance();
-        List<MyEventEntry> lotteryEntries = controller.getLotteryEntries();
-        List<MyEventEntry> historyEntries = controller.getHistoryEntries();
+        List<WaitlistEntry> lotteryEntries = controller.getLotteryEntries();
+        List<WaitlistEntry> historyEntries = controller.getHistoryEntries();
         lotteryAdapter = new MyEventListAdapter(this, lotteryEntries);
         historyAdapter = new MyEventListAdapter(this, historyEntries);
 
@@ -51,13 +53,13 @@ public class MyEventsActivity extends AppCompatActivity {
         tabHistory.setOnClickListener(v -> showHistory());
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            MyEventEntry entry = (MyEventEntry) parent.getItemAtPosition(position);
+            WaitlistEntry entry = (WaitlistEntry) parent.getItemAtPosition(position);
             if (entry == null || entry.isPlaceholder()) return;
-            String eventKey = entry.getEventKey();
+            String eventKey = entry.getEventId();
             if (eventKey != null) {
                 Intent intent = new Intent(this, EventDetailViewActivity.class);
                 intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, eventKey);
-                intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, entry.getStatus() == EventStatus.SELECTED);
+                intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, entry.getStatus() == Status.SELECTED);
                 startActivity(intent);
             }
         });

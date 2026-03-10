@@ -1,6 +1,8 @@
 package com.example.zephyrevents.controller;
 
 import com.example.zephyrevents.model.MyEventEntry;
+import com.example.zephyrevents.model.User;
+import com.example.zephyrevents.model.WaitlistEntry;
 import com.example.zephyrevents.util.MyEventsStore;
 import com.example.zephyrevents.util.SampleEvents;
 import com.example.zephyrevents.model.Event;
@@ -68,7 +70,7 @@ public class EventController {
      * Adds the user to the waitlist for the event (Join Waitlist action).
      */
     public void addToWaitlist(String eventKey) {
-        MyEventsStore.addJoinedEvent(eventKey);
+        MyEventsStore.addJoinedEvent(eventKey, new User());
     }
 
     /**
@@ -81,14 +83,14 @@ public class EventController {
     /**
      * Returns entries for the Lotteries tab (events user joined / selected).
      */
-    public List<MyEventEntry> getLotteryEntries() {
+    public List<WaitlistEntry> getLotteryEntries() {
         return MyEventsStore.getLotteryEntries();
     }
 
     /**
      * Returns entries for the History tab (declined invites).
      */
-    public List<MyEventEntry> getHistoryEntries() {
+    public List<WaitlistEntry> getHistoryEntries() {
         return MyEventsStore.getHistoryEntries();
     }
 
@@ -96,7 +98,7 @@ public class EventController {
      * Records that the user declined an invite; moves event from Lotteries to History.
      */
     public void addDeclinedEvent(String eventKey) {
-        MyEventsStore.addDeclinedEvent(eventKey);
+        MyEventsStore.addDeclinedEvent(eventKey,new User());
     }
 
     /**

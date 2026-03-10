@@ -59,7 +59,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         }
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
         EventController controller = EventController.getInstance();
-        isOnWaitlist = event.getId() != null && controller.isOnWaitlist(event.getId());
+        isOnWaitlist = event.getEventId() != null && controller.isOnWaitlist(event.getEventId());
 
         findViews();
         setupBackButton();
@@ -96,9 +96,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private void bindEventToViews() {
         eventTitle.setText(event.getName());
-        eventPrice.setText(event.getPrice() != null ? event.getPrice() : "");
+        eventPrice.setText(String.valueOf(event.getPrice()));
         eventDate.setText(getString(R.string.date));
-        eventLocation.setText(event.getLocation() != null ? event.getLocation() : getString(R.string.location));
+        eventLocation.setText(event.getLocation().getLocationString() != null ? event.getLocation().getLocationString() : getString(R.string.location));
         organizerName.setText(event.getOrganizerName() != null ? event.getOrganizerName() : "");
         eventAbout.setText(event.getDescription() != null ? event.getDescription() : "");
 
@@ -110,10 +110,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
             statusTag.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_status_tag));
         }
 
-        waitlistCapacity.setText(getString(R.string.total_capacity) + ": " + event.getCapacity());
-        waitlistApplicants.setText(getString(R.string.applicants) + ": " + event.getCurrentApplicants());
+        // Could be a source of ui bugs due to locale, but I doubt it, just in case, commenting.
+        waitlistCapacity.setText(String.format("%s: %d", getString(R.string.total_capacity), event.getCapacity()));
+        waitlistApplicants.setText(String.format("%s: %d", getString(R.string.applicants), event.getCurrentApplicants()));
         if (event.getRegistrationEndTime() > 0) {
-            waitlistRegistrationEnds.setText(getString(R.string.registration_ends) + ": " + formatRegistrationEnd(event.getRegistrationEndTime()));
+            waitlistRegistrationEnds.setText(String.format("%s: %s", getString(R.string.registration_ends), formatRegistrationEnd(event.getRegistrationEndTime())));
         } else {
             waitlistRegistrationEnds.setText("");
         }
@@ -121,7 +122,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     }
 
     private void setPlaceholderBackgroundByEvent() {
-        String id = event.getId();
+        String id = event.getEventId();
         if (id != null && id.equals(EventController.KEY_PIANO)) {
             eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_piano));
         } else {
@@ -154,7 +155,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> {
             isOnWaitlist = true;
-            if (event.getId() != null) EventController.getInstance().addToWaitlist(event.getId());
+            if (event.getEventId() != null) EventController.getInstance().addToWaitlist(event.getEventId());
             updateButtonState();
             Toast.makeText(this, R.string.join_waitlist, Toast.LENGTH_SHORT).show();
         });
@@ -170,7 +171,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.primary_red));
         buttonPrimary.setOnClickListener(v -> {
             isOnWaitlist = false;
-            if (event.getId() != null) EventController.getInstance().removeFromWaitlist(event.getId());
+            if (event.getEventId() != null) EventController.getInstance().removeFromWaitlist(event.getEventId());
             updateButtonState();
             Toast.makeText(this, R.string.leave_waitlist, Toast.LENGTH_SHORT).show();
         });
@@ -208,7 +209,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private void openInviteDeclinedScreen() {
         Intent intent = new Intent(this, InviteDeclinedActivity.class);
         intent.putExtra(InviteDeclinedActivity.EXTRA_EVENT_NAME, event.getName());
-        intent.putExtra(InviteDeclinedActivity.EXTRA_EVENT_KEY, event.getId());
+        intent.putExtra(InviteDeclinedActivity.EXTRA_EVENT_KEY, event.getEventId());
         startActivity(intent);
         finish();
     }

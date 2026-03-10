@@ -16,6 +16,8 @@ import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventStatus;
 import com.example.zephyrevents.model.MyEventEntry;
+import com.example.zephyrevents.model.Status;
+import com.example.zephyrevents.model.WaitlistEntry;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,11 +27,11 @@ import java.util.concurrent.TimeUnit;
  * Shows event title, duration ("1 day ago" / "3 days ago"), and status badge
  * (SELECTED, WAITING, or NOT SELECTED).
  */
-public class MyEventListAdapter extends ArrayAdapter<MyEventEntry> {
+public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
 
     private final LayoutInflater inflater;
 
-    public MyEventListAdapter(@NonNull Context context, @NonNull List<MyEventEntry> entries) {
+    public MyEventListAdapter(@NonNull Context context, @NonNull List<WaitlistEntry> entries) {
         super(context, R.layout.item_my_event_card, entries);
         this.inflater = LayoutInflater.from(context);
     }
@@ -42,7 +44,7 @@ public class MyEventListAdapter extends ArrayAdapter<MyEventEntry> {
             row = inflater.inflate(R.layout.item_my_event_card, parent, false);
         }
 
-        MyEventEntry entry = getItem(position);
+        WaitlistEntry entry = getItem(position);
         if (entry == null) {
             return row;
         }
@@ -56,9 +58,10 @@ public class MyEventListAdapter extends ArrayAdapter<MyEventEntry> {
             duration.setText("");
             setStatusBadge(status, null, true);
         } else {
-            Event event = EventController.getInstance().getEvent(entry.getEventKey());
-            title.setText(event != null ? event.getName() : entry.getEventKey());
-            duration.setText(formatDuration(entry.getJoinedAtMillis()));
+            // This is probably wrong, we probably want the title here not the id.
+            Event event = EventController.getInstance().getEvent(entry.getEventId());
+            title.setText(event != null ? event.getName() : entry.getEventId());
+            duration.setText(formatDuration(entry.getTimestamp()));
             setStatusBadge(status, entry.getStatus(), false);
         }
 
@@ -68,27 +71,43 @@ public class MyEventListAdapter extends ArrayAdapter<MyEventEntry> {
     /**
      * Sets the status badge text and style (green SELECTED, yellow WAITING, red NOT SELECTED / DECLINED).
      */
-    private void setStatusBadge(TextView statusView, EventStatus eventStatus, boolean notSelected) {
-        if (notSelected || eventStatus == null) {
+
+    // not my cleanest enum switch tbh, I'll clean it up later hopefully.
+    private void setStatusBadge(TextView statusView, Status userEventStatus, boolean notSelected){
+        if (notSelected || userEventStatus == null){
             statusView.setText(R.string.status_not_selected);
             statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_not_selected));
             statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
             return;
         }
-        if (eventStatus == EventStatus.DECLINED) {
-            statusView.setText(R.string.status_declined);
-            statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_not_selected));
-            statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-            return;
-        }
-        if (eventStatus == EventStatus.SELECTED) {
-            statusView.setText(R.string.status_selected);
-            statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_selected));
-            statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-        } else {
-            statusView.setText(R.string.status_waiting);
-            statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_waiting));
-            statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        switch (userEventStatus){
+            case REMOVED:
+                statusView.setText(R.string.status_declined);
+                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_not_selected));
+                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                return;
+            case DECLINED:
+                statusView.setText(R.string.status_declined);
+                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_not_selected));
+                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                return;
+            case SELECTED:
+                statusView.setText(R.string.status_selected);
+                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_selected));
+                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+            case ACCEPTED:
+                statusView.setText(R.string.status_selected);
+                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_selected));
+                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+            case WAITLISTED:
+                statusView.setText(R.string.status_waiting);
+                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_waiting));
+                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+
+            default:
+                statusView.setText(R.string.status_waiting);
+                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_waiting));
+                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
         }
     }
 

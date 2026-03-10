@@ -52,8 +52,8 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         TextView price = row.findViewById(R.id.item_event_price);
 
         title.setText(event.getName());
-        String dateStr = event.getStartTime() > 0 ? dateFormat.format(new Date(event.getStartTime())) : "";
-        String locationStr = event.getLocation() != null ? event.getLocation() : "";
+        String dateStr = event.getTime().getStartTime() > 0 ? dateFormat.format(new Date(event.getTime().getStartTime())) : "";
+        String locationStr = event.getLocation() != null ? event.getLocation().getLocationString() : "";
         String dateLocationStr;
         if (dateStr.isEmpty() && locationStr.isEmpty()) {
             dateLocationStr = getContext().getString(R.string.date_location);
@@ -61,7 +61,7 @@ public class EventListAdapter extends ArrayAdapter<Event> {
             dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : ", " + locationStr);
         }
         dateLocation.setText(dateLocationStr);
-        price.setText(event.getPrice() != null ? event.getPrice() : "");
+        price.setText(String.valueOf(event.getPrice()));
 
         return row;
     }

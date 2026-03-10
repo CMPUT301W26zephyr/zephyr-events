@@ -42,9 +42,9 @@ public class EventsListActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Event event = (Event) parent.getItemAtPosition(position);
-            if (event != null && event.getId() != null) {
-                boolean invited = controller.isInvitedEvent(event.getId());
-                openEventDetail(event.getId(), invited);
+            if (event != null && event.getEventId() != null) {
+                boolean invited = controller.isInvitedEvent(event.getEventId());
+                openEventDetail(event.getEventId(), invited);
             }
         });
 
