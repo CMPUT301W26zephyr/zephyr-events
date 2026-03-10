@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
         <activity
-            android:name=".MainActivity"
+            android:name=".view.EventsListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +20,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.EventDetailViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.YoureInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.InviteDeclinedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.MyEventsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

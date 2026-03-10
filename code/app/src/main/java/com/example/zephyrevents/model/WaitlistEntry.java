@@ -13,9 +13,11 @@ public class WaitlistEntry {
     private Coordinate coordinate;
     // Using enum here instead of string.
     private Status status;
+    private String placeholderTitle;
+
 
     // no arg constructor for firebase
-    public WaitlistEntry() {}
+    public WaitlistEntry(String placeholderTitle) {}
     public WaitlistEntry(
             String userId,
             String eventId,
@@ -73,5 +75,17 @@ public class WaitlistEntry {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+    // Pretty sure these are just for the MyEventListAdapter.
+    // merging MyEventEntry into WaitlistEntry cause they are so similar
+    // placeholder attribute is temp so shania
+    public boolean isPlaceholder() {
+        return placeholderTitle != null;
+    }
+
+    public String getPlaceholderTitle() {
+        return placeholderTitle;
+    }
+
 
 }
