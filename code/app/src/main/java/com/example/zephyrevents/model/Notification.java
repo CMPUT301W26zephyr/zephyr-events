@@ -39,6 +39,7 @@ public class Notification {
         this.text = text;
         this.sent = sent;
         this.read = read;
+        this.time = System.currentTimeMillis();
     }
     // constructor but auto generate id.
     public Notification(            String userId,
