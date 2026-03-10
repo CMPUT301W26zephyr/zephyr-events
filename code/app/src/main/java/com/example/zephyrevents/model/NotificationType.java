@@ -20,6 +20,7 @@ public enum NotificationType {
     EVENT_START,
     EVENT_END,
     WON_EVENT,
-    LOST_EVENT
+    LOST_EVENT,
+    MANUAL
     // Add more later if needed.
 }

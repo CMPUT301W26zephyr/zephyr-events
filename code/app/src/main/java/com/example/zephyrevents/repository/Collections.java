@@ -6,4 +6,7 @@ public final class Collections {
     public static final String EVENTS = "events";
 
     public static final String USERS = "users";
+
+    public static final String NOTIFICATIONS = "notifications";
+    public static final String WAITLIST = "waitlist";
 }
