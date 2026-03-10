@@ -50,7 +50,7 @@ public class EventDetailsFragment extends Fragment {
         dropdownType.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes));
 
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
-                "Create Event", "Next", v -> {
+                "Create Event", "NEXT", v -> {
                     boolean isValid = true;
 
                     if (inputTitle.getText().toString().trim().isEmpty()) {

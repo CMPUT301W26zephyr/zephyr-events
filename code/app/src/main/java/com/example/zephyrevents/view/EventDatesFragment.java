@@ -55,7 +55,7 @@ public class EventDatesFragment extends Fragment {
         });
 
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
-                "Create Event", "Next", v -> {
+                "Create Event", "NEXT", v -> {
                     boolean isValid = true;
                     if (inputRegPeriod.getText().toString().isEmpty()) { inputRegPeriod.setError("Required"); isValid = false; }
                     if (viewModel.eventDate.isEmpty()) {

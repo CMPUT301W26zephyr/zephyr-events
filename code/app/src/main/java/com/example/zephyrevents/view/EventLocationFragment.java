@@ -28,17 +28,19 @@ public class EventLocationFragment extends Fragment {
         EventViewModel viewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
 
         EditText inputLocation = view.findViewById(R.id.input_location);
+        EditText inputAddress = view.findViewById(R.id.input_address);
         SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
 
         inputLocation.setText(viewModel.location);
         switchGeo.setChecked(viewModel.requireGeolocation);
 
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
-                "Create Event", "Next", v -> {
+                "Create Event", "NEXT", v -> {
                     if (inputLocation.getText().toString().trim().isEmpty()) {
                         inputLocation.setError("Location is required");
                     } else {
                         viewModel.location = inputLocation.getText().toString().trim();
+                        viewModel.address = inputAddress.getText().toString().trim();
                         viewModel.requireGeolocation = switchGeo.isChecked();
                         ((OrganizerEventAddEditView) requireActivity()).navigateToFragment(new EventDatesFragment(), true);
                     }

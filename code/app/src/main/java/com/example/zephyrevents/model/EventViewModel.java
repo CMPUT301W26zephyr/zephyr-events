@@ -11,6 +11,7 @@ public class EventViewModel extends ViewModel {
     public String attendeeCount = "";
 
     public String location = "";
+    public String address = "";
     public boolean requireGeolocation = true;
 
     public String registrationPeriod = "";

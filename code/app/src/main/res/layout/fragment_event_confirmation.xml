@@ -39,128 +39,177 @@
             </FrameLayout>
 
             <LinearLayout
+                android:id="@+id/row_type"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:text="Event Type: "
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#555555" />
+                    android:textColor="@color/primary_red" />
                 <TextView
                     android:id="@+id/text_confirm_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="[Insert Event Type]"
                     android:textSize="16sp"
                     android:textColor="#555555" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Date: "
+                    android:text="Event Date: "
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#555555" />
+                    android:textColor="@color/primary_red" />
                 <TextView
                     android:id="@+id/text_confirm_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="[Insert Event Date]"
                     android:textSize="16sp"
                     android:textColor="#555555" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:text="Registration Period: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_red" />
+                <TextView
+                    android:id="@+id/text_confirm_reg_period"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Location: "
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#555555" />
+                    android:textColor="@color/primary_red" />
                 <TextView
                     android:id="@+id/text_confirm_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="[Insert Event Location]"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/row_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_red" />
+                <TextView
+                    android:id="@+id/text_confirm_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textColor="#555555" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:text="Geolocation Requirement: "
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_red" />
+                <TextView
+                    android:id="@+id/text_confirm_geo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/row_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Price: "
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#555555" />
+                    android:textColor="@color/primary_red" />
                 <TextView
                     android:id="@+id/text_confirm_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="$[Insert Price if Applicable]"
                     android:textSize="16sp"
                     android:textColor="#555555" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:text="Capacity: "
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#555555" />
+                    android:textColor="@color/primary_red" />
                 <TextView
                     android:id="@+id/text_confirm_capacity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="[Insert Capacity if Applicable]"
                     android:textSize="16sp"
                     android:textColor="#555555" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/text_confirm_description"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Description. kjasndkjasndkjasndkjnaskjdnsajkdnjaskndjasndjsandkjasndjkasnkdnasjkdnjkasndkjas. "
+                android:layout_marginTop="16dp"
                 android:textSize="16sp"
                 android:textColor="#555555" />
 
-
-
         </LinearLayout>
     </ScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
