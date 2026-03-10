@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".EventDetailViewActivity">
+    tools:context=".view.EventDetailViewActivity">
 
     <!-- Top bar with back arrow -->
     <ImageButton

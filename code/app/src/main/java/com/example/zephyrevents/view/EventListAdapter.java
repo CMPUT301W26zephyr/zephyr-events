@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.Event;
 
 import java.text.SimpleDateFormat;

@@ -1,6 +1,7 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.util;
 
 import com.example.zephyrevents.model.EventStatus;
+import com.example.zephyrevents.model.MyEventEntry;
 
 import java.util.ArrayList;
 import java.util.List;

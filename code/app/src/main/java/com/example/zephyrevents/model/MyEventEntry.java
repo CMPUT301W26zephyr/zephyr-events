@@ -1,6 +1,6 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.model;
 
-import com.example.zephyrevents.model.EventStatus;
+import com.example.zephyrevents.util.SampleEvents;
 
 /**
  * Represents one event in "My Events" (either in Lotteries or History).

@@ -1,8 +1,8 @@
 package com.example.zephyrevents.controller;
 
-import com.example.zephyrevents.MyEventEntry;
-import com.example.zephyrevents.MyEventsStore;
-import com.example.zephyrevents.SampleEvents;
+import com.example.zephyrevents.model.MyEventEntry;
+import com.example.zephyrevents.util.MyEventsStore;
+import com.example.zephyrevents.util.SampleEvents;
 import com.example.zephyrevents.model.Event;
 
 import java.util.ArrayList;

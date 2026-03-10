@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:padding="24dp"
-    tools:context=".YoureInActivity">
+    tools:context=".view.YoureInActivity">
 
     <ImageButton
         android:id="@+id/button_back"

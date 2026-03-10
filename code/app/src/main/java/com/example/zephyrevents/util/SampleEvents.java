@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.util;
 
 import com.example.zephyrevents.model.Event;
 

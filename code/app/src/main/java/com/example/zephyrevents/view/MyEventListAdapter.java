@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,9 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventStatus;
+import com.example.zephyrevents.model.MyEventEntry;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

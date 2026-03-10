@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_grey"
-    tools:context=".EventsListActivity">
+    tools:context=".view.EventsListActivity">
 
     <!-- Toolbar: perfectly centered title -->
     <androidx.constraintlayout.widget.ConstraintLayout

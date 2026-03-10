@@ -1,42 +1,36 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.example.zephyrevents.controller.EventController;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-/**
- * Shown after the user declines an event invitation (lottery).
- * Adds the event to My Events → History with DECLINED. "View My Events" opens the My Events page.
- */
-public class InviteDeclinedActivity extends AppCompatActivity {
+import com.example.zephyrevents.R;
 
-    /** Intent extra key for the event name. */
+/**
+ * Shown after the user accepts an event invitation (lottery).
+ * Displays "You're In!" and a confirmation message; "View My Events" is implemented later.
+ */
+public class YoureInActivity extends AppCompatActivity {
+
+    /** Intent extra key for the event name (e.g. "Beginner Swimming Lessons"). */
     public static final String EXTRA_EVENT_NAME = "extra_event_name";
-    /** Intent extra key for the event key (so we can add to History as DECLINED). */
-    public static final String EXTRA_EVENT_KEY = "extra_event_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_invite_declined);
+        setContentView(R.layout.activity_youre_in);
 
         String eventName = getIntent().getStringExtra(EXTRA_EVENT_NAME);
         if (eventName == null) {
             eventName = "";
         }
-        String eventKey = getIntent().getStringExtra(EXTRA_EVENT_KEY);
-        if (eventKey != null) {
-            EventController.getInstance().addDeclinedEvent(eventKey);
-        }
 
         TextView message = findViewById(R.id.message);
-        message.setText(getString(R.string.invite_declined_message, eventName));
+        message.setText(getString(R.string.youre_in_message, eventName));
 
         ImageButton back = findViewById(R.id.button_back);
         back.setOnClickListener(v -> finish());
