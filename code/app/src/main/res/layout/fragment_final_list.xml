@@ -4,25 +4,14 @@
     android:layout_height="match_parent"
     android:background="#FAFAFA">
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_final_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_buttons"
         android:clipToPadding="false"
-        android:paddingBottom="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="8dp">
-
-            <include layout="@layout/layout_entrant_card" />
-            <include layout="@layout/layout_entrant_card" />
-            <include layout="@layout/layout_entrant_card" />
-            <include layout="@layout/layout_entrant_card" />
-        </LinearLayout>
-    </ScrollView>
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp" />
 
     <LinearLayout
         android:id="@+id/bottom_buttons"

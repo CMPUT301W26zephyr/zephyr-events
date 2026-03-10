@@ -22,6 +22,7 @@
         <!--            android:background="@drawable/bg_circle_red_light"-->
 
         <TextView
+            android:id="@+id/text_popup_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -31,6 +32,7 @@
             android:textColor="#000000"/>
 
         <TextView
+            android:id="@+id/text_popup_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -47,6 +49,7 @@
             android:weightSum="2">
 
             <Button
+                android:id="@+id/btn_popup_cancel"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1"
@@ -60,6 +63,7 @@
                 />
 
             <Button
+                android:id="@+id/btn_popup_confirm"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1"

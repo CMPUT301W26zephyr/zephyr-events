@@ -9,7 +9,14 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.model.Entrant;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FinalListFragment extends Fragment {
     @Nullable
@@ -27,5 +34,15 @@ public class FinalListFragment extends Fragment {
 
         Button btnExport = view.findViewById(R.id.btn_export);
         if (btnExport != null) btnExport.setText("EXPORT CSV");
+
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_final_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        List<Entrant> mockWaitlist = new ArrayList<>();
+        mockWaitlist.add(new Entrant("Hornet", "Pharloom", false));
+        mockWaitlist.add(new Entrant("Hollow Knight", "Hallownest", false));
+
+        EntrantAdapter adapter = new EntrantAdapter(mockWaitlist);
+        recyclerView.setAdapter(adapter);
     }
 }
