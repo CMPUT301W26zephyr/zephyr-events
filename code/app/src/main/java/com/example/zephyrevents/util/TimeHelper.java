@@ -10,6 +10,9 @@ import java.util.TimeZone;
  * A class that helps with time related utilities with the goal to make working with milliseconds easier.
  */
 public final class TimeHelper {
+    private static final long MINUTE = 60;
+    private static final long HOUR = 60 * MINUTE;
+    private static final long DAY = 24 * HOUR;
     private TimeHelper() {}
 
     /**
@@ -43,7 +46,7 @@ public final class TimeHelper {
      *
      */
     public static String format(long millis, DateTimeFormat fmt, String timeZoneId){
-        return format(millis, fmt.Pattern(), TimeZone.getTimeZone(timeZoneId));
+        return format(millis, fmt.pattern(), TimeZone.getTimeZone(timeZoneId));
     }
 
     /**
@@ -76,7 +79,7 @@ public final class TimeHelper {
      * </pre>
      */
     public static String format(long millis, DateTimeFormat fmt){
-        return format(millis, fmt.Pattern(), TimeZone.getDefault());
+        return format(millis, fmt.pattern(), TimeZone.getDefault());
     }
 
     /**
@@ -96,9 +99,36 @@ public final class TimeHelper {
 
     /**
      * Method for quickly checking the difference between two millisecond times.
-     * @param timeBeginning Start time in milliseconds
-     * @param timeEnding end time in milliseconds
+     * @param startTime Start time in milliseconds
+     * @param endTime end time in milliseconds
      * @return the difference in times in milliseconds.
      */
-    public static long timeDifference(long timeBeginning, long timeEnding){return timeEnding-timeBeginning;}
+    public static long timeDifference(long startTime, long endTime){return endTime-startTime;}
+    public static String formatDuration(long millis) {
+        if (millis <= 0) {
+            return "0s";
+        }
+
+        long totalSeconds = millis / 1000;
+
+        long days = totalSeconds / DAY;
+        long hours = (totalSeconds % DAY) / HOUR;
+        long minutes = (totalSeconds % HOUR) / MINUTE;
+        long seconds = totalSeconds % MINUTE;
+
+        if (days > 0) {
+            return days + "d " + hours + "h";
+        }
+
+        if (hours > 0) {
+            return hours + "h " + minutes + "m";
+        }
+
+        if (minutes > 0) {
+            return minutes + "m " + seconds + "s";
+        }
+
+        return seconds + "s";
+    }
 }
+
