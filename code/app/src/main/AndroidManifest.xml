@@ -32,6 +32,17 @@
         <activity
             android:name=".view.MyEventsActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".view.OrganizerEventAddEditView"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".view.OrganizerEntrantsListView"
+            android:exported="true">
+        </activity>
+
     </application>
 
 </manifest>

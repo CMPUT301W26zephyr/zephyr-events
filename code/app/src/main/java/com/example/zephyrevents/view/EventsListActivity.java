@@ -2,6 +2,7 @@ package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
@@ -51,6 +52,11 @@ public class EventsListActivity extends AppCompatActivity {
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
         findViewById(R.id.nav_my_events).setOnClickListener(v -> {
             startActivity(new Intent(this, MyEventsActivity.class));
+        });
+
+        ImageButton createEventBtn = findViewById(R.id.nav_create_event);
+        createEventBtn.setOnClickListener(v -> {
+            startActivity(new Intent(EventsListActivity.this, OrganizerEventAddEditView.class));
         });
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
         setupBackButton();
         bindEventToViews();
         updateButtonState();
+
+        LinearLayout btnViewEntrants = findViewById(R.id.btn_view_entrants);
+        btnViewEntrants.setOnClickListener(v -> {
+            startActivity(new Intent(EventDetailViewActivity.this, OrganizerEntrantsListView.class));
+        });
     }
 
     private Event getEventFromIntent() {

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_button_container">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout style="@style/FormLabelRow" android:layout_marginTop="0dp">
+                <TextView style="@style/FormAsterisk" />
+                <TextView style="@style/FormLabel" android:text="Location" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/input_location"
+                style="@style/FormInput"
+                android:hint="e.g. Sunset Beach, Remote, etc." />
+
+            <LinearLayout style="@style/FormLabelRow" >
+                <TextView style="@style/FormLabel"
+                    android:text="Address"/>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/input_address"
+                style="@style/FormInput"
+                android:hint="e.g.1234 State Avenue" />
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="24dp"
+                android:background="#E0E0E0">
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_image_placeholder2"/>
+            </FrameLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_geolocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:text="Require Geolocation for Registration"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                app:thumbTint="#FFFFFF"
+                app:trackTint="@color/primary_red"
+                android:checked="true"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

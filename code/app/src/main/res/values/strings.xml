@@ -51,4 +51,5 @@
     <string name="event_swimming_about">Learn essential skills like floating, kicking, and basic strokes with certified instructors in a safe, supportive, and fun environment.</string>
     <string name="event_piano_name">Piano Lessons</string>
     <string name="event_piano_about">Learn piano at your own pace with fun, personalized lessons that build skills and confidence perfect for beginners and aspiring musicians alike.</string>
+    <string name="cancel">Cancel</string>
 </resources>
