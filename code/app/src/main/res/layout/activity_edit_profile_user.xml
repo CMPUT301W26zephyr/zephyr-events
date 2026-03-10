@@ -8,31 +8,35 @@
     android:paddingStart="18dp"
     android:paddingEnd="18dp">
 
-
-    <ImageView
-        android:id="@+id/btnBack"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="16dp"
-        android:padding="6dp"
-        android:src="@drawable/outline_arrow_back_ios_24"
+    <androidx.appcompat.widget.Toolbar
+        android:id = "@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black" />
+        app:navigationIcon="@drawable/outline_arrow_back_ios_24" />
+
+
+
+
+
+
 
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:text="Edit Profile"
         android:textColor="@color/accent"
-        android:textSize="30sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="btnBack"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <ImageView
         android:id="@+id/avatar_img"
@@ -191,6 +195,7 @@
         app:layout_constraintStart_toEndOf="@id/btnCancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.48"/>
+
 
 
 

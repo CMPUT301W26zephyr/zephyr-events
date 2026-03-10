@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
+import android.view.LayoutInflater;
+
 
 
 public class UserProfileViewActivity extends AppCompatActivity {
@@ -96,7 +99,6 @@ public class UserProfileViewActivity extends AppCompatActivity {
         findViewById(R.id.btnEditAvatar).setOnClickListener(v -> openEditProfile());
         findViewById(R.id.rowNotifications).setOnClickListener(v -> openNotifications());
         findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
-        findViewById(R.id.rowTC).setOnClickListener(v -> openTermsAndConditions());
         findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
 
@@ -112,13 +114,44 @@ public class UserProfileViewActivity extends AppCompatActivity {
     }
 
     private void openNotifications(){
-        Intent intent = new Intent(this, NotifcationsSettingActivity.class);
+        Intent intent = new Intent(this, UserProfileSettingsViewActivity.class);
         startActivity(intent);
     }
 
-    private void openTermsAndConditions() {
-        Toast.makeText(this, "Terms and Conditions", Toast.LENGTH_SHORT).show();
-        // TODO: Open Terms screen or WebView
+    private void showDeleteConfirmDialog(){
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_profile_confirm, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            if (currentUser == null){
+                Toast.makeText(this, "No user to delete", Toast.LENGTH_SHORT).show();
+                return;
+
+            }
+            String userId = currentUser.getId();
+            dialog.dismiss();
+            userRepository.deleteUser(userId, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    setResult(RESULT_OK);
+                    finish();
+
+
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+
+                }
+            });
+
+        });
+        dialog.show();
+
+
     }
 
 

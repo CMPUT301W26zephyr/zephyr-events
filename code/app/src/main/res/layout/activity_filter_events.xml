@@ -7,17 +7,16 @@
     android:paddingStart="18dp"
     android:paddingEnd="18dp">
 
-    <!-- Back button -->
-    <ImageView
-        android:id="@+id/btnBack"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="16dp"
-        android:padding="6dp"
-        android:src="@drawable/outline_arrow_back_ios_24"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black" />
+        app:navigationIcon="@drawable/outline_arrow_back_ios_24" />
+
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
@@ -27,8 +26,8 @@
         android:textColor="@color/accent"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="btnBack"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintTop_toTopOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
     <TextView
@@ -41,7 +40,7 @@
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"/>
+        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCategory"

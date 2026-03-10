@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
@@ -28,6 +29,14 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_user);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        }
+
 
         userRepository = new UserRepository();
 
@@ -45,6 +54,15 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         setupClickListeners();
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupCountrySpinner() {
@@ -98,7 +116,6 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners(){
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         findViewById(R.id.btnCancel).setOnClickListener(v -> finish());
         findViewById(R.id.btnSave).setOnClickListener(v -> saveProfile());
 
@@ -126,7 +143,7 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
             public void onSuccess(Void result) {
                 Toast.makeText(UserProfileEditViewActivity.this, "Profile saved", Toast.LENGTH_SHORT).show();
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("USER_ID", currentUser.getId());
+                resultIntent.putExtra("USER", currentUser.getId());
                 setResult(RESULT_OK, resultIntent);
                 finish();
             }

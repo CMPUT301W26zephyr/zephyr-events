@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 
 public class UserProfileSettingsViewActivity extends AppCompatActivity {
@@ -51,6 +52,22 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
 
         loadSetting();
         setUpClickListener();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadSetting(){
@@ -65,7 +82,6 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
     }
 
     private void setUpClickListener(){
-        findViewById(R.id.btnNotificationSettingBack).setOnClickListener(v -> finish());
         CompoundButton.OnCheckedChangeListener listener = (buttonView, isChecked) -> saveSetting();
         swAppUpdate.setOnCheckedChangeListener(listener);
         sworganizerannoucement.setOnCheckedChangeListener(listener);

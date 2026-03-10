@@ -12,17 +12,38 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
         <activity
+            android:name=".FilterEventsActivity"
+            android:exported="true" />
+        <activity
             android:name=".SearchViewActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".UserProfileSettingsViewActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".UserProfileEditViewActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".UserProfileViewActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">

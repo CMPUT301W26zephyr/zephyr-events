@@ -7,19 +7,15 @@
     android:paddingStart="18dp"
     android:paddingEnd="18dp">
 
-    <!-- Back button -->
-    <ImageView
-        android:id="@+id/btnBack"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="16dp"
-        android:padding="6dp"
-        android:src="@drawable/outline_arrow_back_ios_24"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="48dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black" />
+        app:navigationIcon="@drawable/outline_arrow_back_ios_24" />
 
-    <!-- Back button -->
     <EditText
         android:id="@+id/etSearchBar"
         android:layout_width="0dp"
@@ -32,20 +28,27 @@
         android:hint="Search events"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintStart_toEndOf="@id/toolbar"
         app:layout_constraintEnd_toStartOf="@id/btnSearchFilter"
-        app:layout_constraintTop_toTopOf="@id/btnBack"/>
+        app:layout_constraintTop_toTopOf="@id/toolbar"/>
 
     <!-- Filter icon -->
-    <ImageView
+    <FrameLayout
         android:id="@+id/btnSearchFilter"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:paddding="6dp"
-        android:src="@drawable/outline_filter_alt_24"
-        app:tint="@color/black"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnBack"/>
+        app:layout_constraintTop_toTopOf="@id/toolbar">
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:padding="6dp"
+            android:src="@drawable/outline_filter_alt_24"
+            app:tint="@color/black"/>
+    </FrameLayout>
 
     <!-- Your history title -->
     <TextView
@@ -73,7 +76,7 @@
         app:layout_constraintTop_toBottomOf="@id/txtSearchHistoryTitle">
 
         <LinearLayout
-            android:id="@+id/historyTagsContainter"
+            android:id="@+id/historyTagsContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -99,7 +102,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:layout_paddingTop="8dp"
+        android:paddingTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/scrollHistory"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
