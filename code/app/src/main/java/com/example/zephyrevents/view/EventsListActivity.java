@@ -50,6 +50,12 @@ public class EventsListActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+
+        ImageButton searchBtn = findViewById(R.id.search_icon);
+        searchBtn.setOnClickListener(v -> {
+            startActivity(new Intent(EventsListActivity.this, SearchViewActivity.class));
+        });
+
         findViewById(R.id.nav_my_events).setOnClickListener(v -> {
             startActivity(new Intent(this, MyEventsActivity.class));
         });
@@ -57,6 +63,11 @@ public class EventsListActivity extends AppCompatActivity {
         ImageButton createEventBtn = findViewById(R.id.nav_create_event);
         createEventBtn.setOnClickListener(v -> {
             startActivity(new Intent(EventsListActivity.this, OrganizerEventAddEditView.class));
+        });
+
+        ImageButton profileBtn = findViewById(R.id.nav_profile);
+        profileBtn.setOnClickListener(v -> {
+            startActivity(new Intent(EventsListActivity.this, UserProfileViewActivity.class));
         });
     }
 

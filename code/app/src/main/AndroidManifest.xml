@@ -35,18 +35,35 @@
 
         <activity
             android:name=".view.OrganizerEventAddEditView"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
 
         <activity
             android:name=".view.OrganizerEntrantsListView"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
 
         <activity
             android:name=".view.UserNotificationListView"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
+
+        <activity
+            android:name=".view.FilterEventsActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.SearchViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileSettingsViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileEditViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileViewActivity"
+            android:exported="true" />
 
     </application>
 
