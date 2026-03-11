@@ -1,11 +1,12 @@
 package com.example.zephyrevents;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,12 +23,18 @@ public class FilterEventsActivity extends AppCompatActivity {
         rvCategory.setLayoutManager(new GridLayoutManager(this,3));
         rvCategory.setAdapter(new FilterCategoryAdapter());
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        View backBtn = findViewById(R.id.btnBack);
+        backBtn.setOnClickListener(v -> finish());
+        backBtn.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                finish();
+            }
+            return true;
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() { finish(); }
+        });
 
         RadioGroup radioDate = findViewById(R.id.radioDate);
 
@@ -39,12 +46,4 @@ public class FilterEventsActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

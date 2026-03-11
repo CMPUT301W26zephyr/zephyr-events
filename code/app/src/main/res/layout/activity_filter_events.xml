@@ -7,16 +7,6 @@
     android:paddingStart="18dp"
     android:paddingEnd="18dp">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/outline_arrow_back_ios_24" />
-
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
@@ -26,10 +16,10 @@
         android:textColor="@color/accent"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@id/toolbar"
-        app:layout_constraintBottom_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
     <TextView
         android:id="@+id/lblCategory"
         android:layout_width="wrap_content"
@@ -40,7 +30,7 @@
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+        app:layout_constraintTop_toBottomOf="@id/txtTitle"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCategory"
@@ -78,25 +68,25 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_button_filled"
+            android:background="@drawable/bg_filter_date_radio"
             android:button="@null"
             android:checked="true"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="Anytime"
-            android:textColor="@color/white"/>
+            android:textColor="@color/filter_date_radio_text"/>
         <RadioButton
             android:id="@+id/rbCustom"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_button_outline"
+            android:background="@drawable/bg_filter_date_radio"
             android:button="@null"
             android:checked="false"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="Custom"
-            android:textColor="@color/black"/>
+            android:textColor="@color/filter_date_radio_text"/>
     </RadioGroup>
 
     <LinearLayout
@@ -149,8 +139,20 @@
              android:layout_marginTop="16dp"/>
     </LinearLayout>
 
-
-
+    <!-- Back button arrow -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:elevation="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        android:scaleType="centerInside"
+        android:src="@drawable/outline_arrow_back_ios_24"
+        app:tint="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/txtTitle"
+        app:layout_constraintBottom_toBottomOf="@id/txtTitle"/>
 
 
 

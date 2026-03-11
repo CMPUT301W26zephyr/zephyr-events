@@ -2,14 +2,16 @@ package com.example.zephyrevents;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
@@ -29,14 +31,18 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_user);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        }
-
+        View backBtn = findViewById(R.id.btnBack);
+        backBtn.setOnClickListener(v -> finish());
+        backBtn.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                finish();
+            }
+            return true;
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() { finish(); }
+        });
 
         userRepository = new UserRepository();
 
@@ -54,15 +60,6 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         setupClickListeners();
 
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void setupCountrySpinner() {
@@ -118,6 +115,7 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     private void setupClickListeners(){
         findViewById(R.id.btnCancel).setOnClickListener(v -> finish());
         findViewById(R.id.btnSave).setOnClickListener(v -> saveProfile());
+
 
 
 

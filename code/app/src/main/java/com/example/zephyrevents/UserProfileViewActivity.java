@@ -101,8 +101,16 @@ public class UserProfileViewActivity extends AppCompatActivity {
         findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
         findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
-
-
+        View bottomNav = findViewById(R.id.bottom_nav_bar);
+        if (bottomNav != null) {
+            bottomNav.findViewById(R.id.bottom_nav_home).setOnClickListener(v -> {
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            });
+            bottomNav.findViewById(R.id.bottom_nav_profile).setOnClickListener(v -> {
+                findViewById(R.id.profile_scroll).scrollTo(0, 0);
+            });
+        }
     }
 
     private void openEditProfile(){

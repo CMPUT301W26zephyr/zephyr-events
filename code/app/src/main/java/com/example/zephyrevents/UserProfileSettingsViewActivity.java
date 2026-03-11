@@ -2,10 +2,12 @@ package com.example.zephyrevents;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 
 public class UserProfileSettingsViewActivity extends AppCompatActivity {
@@ -53,21 +55,18 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
         loadSetting();
         setUpClickListener();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
+        View backBtn = findViewById(R.id.btnBack);
+        backBtn.setOnClickListener(v -> finish());
+        backBtn.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                finish();
+            }
             return true;
-        }
-        return super.onOptionsItemSelected(item);
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() { finish(); }
+        });
     }
 
     private void loadSetting(){

@@ -5,15 +5,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.zephyrevents.model.Event;
@@ -31,7 +30,6 @@ public class SearchViewActivity extends AppCompatActivity {
     private static final String KEY_HISTORY = "history";
 
     private EditText etSearchBar;
-    private LinearLayout historyTagsContainer;
     private RecyclerView rvContent;
     private EventListAdapter eventAdapter;
     private SharedPreferences prefs;
@@ -46,7 +44,6 @@ public class SearchViewActivity extends AppCompatActivity {
         prefs = getSharedPreferences(SEARCH_PREFS, MODE_PRIVATE);
 
         etSearchBar = findViewById(R.id.etSearchBar);
-        historyTagsContainer = findViewById(R.id.historyTagsContainer);
         rvContent = findViewById(R.id.rvContent);
 
         rvContent.setLayoutManager(new LinearLayoutManager(this));
@@ -55,23 +52,25 @@ public class SearchViewActivity extends AppCompatActivity {
 
         rvContent.setAdapter(eventAdapter);
 
-        updateHistoryTags();
         loadSampleEvents();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        View backBtn = findViewById(R.id.btnBack);
+        backBtn.setOnClickListener(v -> finish());
+        backBtn.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                finish();
+            }
+            return true;
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() { finish(); }
+        });
+
         findViewById(R.id.btnSearchFilter).setOnClickListener(v -> {
             startActivity(new Intent(this, FilterEventsActivity.class));
         });
 
-        findViewById(R.id.btnClearSearch).setOnClickListener(v -> {
-            prefs.edit().remove(KEY_HISTORY).apply();
-            updateHistoryTags();
-        });
 
         etSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -88,15 +87,6 @@ public class SearchViewActivity extends AppCompatActivity {
             }
 
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void loadSampleEvents() {
@@ -125,39 +115,7 @@ public class SearchViewActivity extends AppCompatActivity {
         eventAdapter.updateEvents(filtered);
     }
 
-    private void addToHistory(String history_term) {
-        if (history_term.isEmpty()) return;
-
-        Set<String> history = prefs.getStringSet(KEY_HISTORY, new HashSet<>());
-        Set<String> updated = new HashSet<>(history);
-        updated.remove(history_term);
-        updated.add(history_term);
-
-        if (updated.size() > 9) {
-            List<String> list = new ArrayList<>(updated);
-            updated = new HashSet<>(list.subList(list.size() - 9, list.size()));
-        }
-        prefs.edit().putStringSet(KEY_HISTORY, updated).apply();
-        updateHistoryTags();
 
 
-    }
 
-    private void updateHistoryTags() {
-        historyTagsContainer.removeAllViews();
-        Set<String> history = prefs.getStringSet(KEY_HISTORY, new HashSet<>());
-        for (String tag : history) {
-            View chip = getLayoutInflater().inflate(R.layout.item_history_tag, historyTagsContainer, false);
-            android.widget.TextView txt = chip.findViewById(R.id.txtHistoryTag);
-            txt.setText(tag);
-            chip.setOnClickListener(v -> {
-                etSearchBar.setText(tag);
-                addToHistory(tag);
-                filterEvents(tag);
-            });
-            historyTagsContainer.addView(chip);
-
-
-        }
-    }
 }
