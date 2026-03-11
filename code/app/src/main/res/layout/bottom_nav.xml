@@ -14,11 +14,11 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/nav_home"
+        android:contentDescription="Home"
         android:src="@drawable/ic_home"
         android:scaleType="centerInside"
         android:padding="8dp"
-        app:tint="@color/primary_red" />
+        app:tint="#757575" />
 
     <ImageButton
         android:id="@+id/nav_my_events"

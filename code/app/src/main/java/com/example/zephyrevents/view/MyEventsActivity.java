@@ -11,10 +11,9 @@ import androidx.core.content.ContextCompat;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
-import com.example.zephyrevents.model.EventStatus;
-import com.example.zephyrevents.model.MyEventEntry;
 import com.example.zephyrevents.model.Status;
 import com.example.zephyrevents.model.WaitlistEntry;
+import com.example.zephyrevents.util.BottomNavHelper;
 
 import java.util.List;
 
@@ -72,7 +71,7 @@ public class MyEventsActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
-        findViewById(R.id.nav_home).setOnClickListener(v -> finish());
+        BottomNavHelper.setupBottomNav(this);
     }
 
     @Override

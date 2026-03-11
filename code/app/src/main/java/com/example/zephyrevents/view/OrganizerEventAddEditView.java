@@ -32,7 +32,8 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
         findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
 
         if (savedInstanceState == null) {
-            navigateToFragment(new EventDetailsFragment(), false);
+            // Load the new combined fragment instead!
+            navigateToFragment(new EventCreateFragment(), false);
         }
     }
 

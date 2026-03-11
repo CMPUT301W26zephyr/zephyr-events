@@ -18,6 +18,7 @@ import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
+import com.example.zephyrevents.util.BottomNavHelper;
 
 
 public class UserProfileViewActivity extends AppCompatActivity {
@@ -27,9 +28,6 @@ public class UserProfileViewActivity extends AppCompatActivity {
     private TextView txtName;
     private TextView txtContact;
     private ImageView avatarImg;
-
-
-
 
 
     @Override
@@ -52,9 +50,6 @@ public class UserProfileViewActivity extends AppCompatActivity {
             txtContact.setText("youremail@domain.com | +01 234 567 89");
         }
         setUpClickListener();
-
-
-
     }
 
     private void loadUser(String userId){
@@ -68,13 +63,9 @@ public class UserProfileViewActivity extends AppCompatActivity {
             @Override
             public void onFailure(Exception e){
                 Toast.makeText(UserProfileViewActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
-
-
             }
-
         });
     }
-
 
     private void updateUI(User user){
         if (user == null) return;
@@ -96,16 +87,7 @@ public class UserProfileViewActivity extends AppCompatActivity {
         findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
         findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
-        View bottomNav = findViewById(R.id.bottom_nav_bar);
-        if (bottomNav != null) {
-            bottomNav.findViewById(R.id.bottom_nav_home).setOnClickListener(v -> {
-                startActivity(new Intent(this, EventsListActivity.class));
-                finish();
-            });
-            bottomNav.findViewById(R.id.bottom_nav_profile).setOnClickListener(v -> {
-                findViewById(R.id.profile_scroll).scrollTo(0, 0);
-            });
-        }
+        BottomNavHelper.setupBottomNav(this);
     }
 
     private void openEditProfile(){

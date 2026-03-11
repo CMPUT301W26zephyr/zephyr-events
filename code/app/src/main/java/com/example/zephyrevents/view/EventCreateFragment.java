@@ -1,4 +1,219 @@
 package com.example.zephyrevents.view;
 
-public class EventCreateFragment {
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.CalendarView;
+import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.zephyrevents.R;
+import com.example.zephyrevents.model.EventViewModel;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+public class EventCreateFragment extends Fragment {
+
+    private EventViewModel viewModel;
+
+    // Date Tracking
+    private String selectedStartDate = "";
+    private String selectedEndDate = "";
+    private String selectedEventDate = "";
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_event_create, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+
+        // --- 1. DETAILS SETUP ---
+        EditText inputTitle = view.findViewById(R.id.input_event_title);
+        AutoCompleteTextView dropdownType = view.findViewById(R.id.eventTypeDropdown);
+        EditText inputPrice = view.findViewById(R.id.input_event_price);
+        EditText inputDesc = view.findViewById(R.id.input_event_desc);
+        EditText inputWaitlist = view.findViewById(R.id.input_waitlist);
+        EditText inputAttendeeCount = view.findViewById(R.id.input_attendee_count);
+
+        String[] eventTypes = new String[]{"Educational", "Workshop", "Corporate", "Social", "Recreation", "Entertainment", "Networking", "Other (Specify): "};
+        dropdownType.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes));
+
+        // Restore Details Data (If returning from confirmation)
+        inputTitle.setText(viewModel.title);
+        dropdownType.setText(viewModel.type, false);
+        inputPrice.setText(viewModel.price);
+        inputDesc.setText(viewModel.description);
+        inputWaitlist.setText(viewModel.waitlistCapacity);
+        inputAttendeeCount.setText(viewModel.attendeeCount);
+
+        // --- 2. LOCATION SETUP ---
+        EditText inputLocation = view.findViewById(R.id.input_location);
+        EditText inputAddress = view.findViewById(R.id.input_address);
+        SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
+
+        // Restore Location Data
+        inputLocation.setText(viewModel.location);
+        inputAddress.setText(viewModel.address);
+        switchGeo.setChecked(viewModel.requireGeolocation);
+
+        // --- 3. DATES SETUP ---
+        HorizontalScrollView scrollRegistration = view.findViewById(R.id.scroll_registration);
+        View columnRegEnd = view.findViewById(R.id.column_reg_end);
+        CalendarView calStart = view.findViewById(R.id.calendar_reg_start);
+        CalendarView calEnd = view.findViewById(R.id.calendar_reg_end);
+        CalendarView calEvent = view.findViewById(R.id.calendar_event);
+        TextView textRegPeriod = view.findViewById(R.id.text_reg_period);
+        TextView textEvent = view.findViewById(R.id.text_event_date);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+        long today = System.currentTimeMillis() - 1000;
+        calStart.setMinDate(today);
+        calEnd.setMinDate(today);
+        calEvent.setMinDate(today);
+
+        // Restore Calendar Data
+        restoreCalendarState(calStart, calEnd, calEvent, textRegPeriod, textEvent, sdf);
+
+        // Date Listeners
+        calStart.setOnDateChangeListener((calView, year, month, dayOfMonth) -> {
+            Calendar c = Calendar.getInstance(); c.set(year, month, dayOfMonth);
+            long selectedMillis = c.getTimeInMillis();
+            selectedStartDate = sdf.format(c.getTime());
+            updateRegistrationText(textRegPeriod);
+
+            calEnd.setMinDate(selectedMillis);
+            if (calEnd.getDate() < selectedMillis) {
+                calEnd.setDate(selectedMillis, true, true);
+                selectedEndDate = "";
+                updateRegistrationText(textRegPeriod);
+            }
+
+            if (calEvent.getMinDate() < selectedMillis) {
+                calEvent.setMinDate(selectedMillis);
+                if (calEvent.getDate() < selectedMillis) {
+                    calEvent.setDate(selectedMillis, true, true);
+                    selectedEventDate = "";
+                    textEvent.setText("Select an event date above");
+                    textEvent.setTextColor(Color.parseColor("#F44336"));
+                }
+            }
+            scrollRegistration.post(() -> scrollRegistration.smoothScrollTo(columnRegEnd.getLeft(), 0));
+        });
+
+        calEnd.setOnDateChangeListener((calView, year, month, dayOfMonth) -> {
+            Calendar c = Calendar.getInstance(); c.set(year, month, dayOfMonth);
+            long selectedMillis = c.getTimeInMillis();
+            selectedEndDate = sdf.format(c.getTime());
+            updateRegistrationText(textRegPeriod);
+
+            calEvent.setMinDate(selectedMillis);
+            if (calEvent.getDate() < selectedMillis) {
+                calEvent.setDate(selectedMillis, true, true);
+                selectedEventDate = "";
+                textEvent.setText("Select an event date above");
+                textEvent.setTextColor(Color.parseColor("#F44336"));
+            }
+        });
+
+        calEvent.setOnDateChangeListener((calView, year, month, dayOfMonth) -> {
+            Calendar c = Calendar.getInstance(); c.set(year, month, dayOfMonth);
+            selectedEventDate = sdf.format(c.getTime());
+            textEvent.setText("Official event date: " + selectedEventDate);
+            textEvent.setTextColor(Color.parseColor("#888888"));
+        });
+
+        // --- 4. VALIDATION AND NAVIGATION ---
+        ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
+                "Create Event", "NEXT", v -> {
+                    boolean isValid = true;
+
+                    // Details Validation
+                    if (inputTitle.getText().toString().trim().isEmpty()) { inputTitle.setError("Required"); isValid = false; }
+                    if (inputAttendeeCount.getText().toString().trim().isEmpty()) { inputAttendeeCount.setError("Required"); isValid = false; }
+
+                    // Location Validation
+                    if (inputLocation.getText().toString().trim().isEmpty()) { inputLocation.setError("Required"); isValid = false; }
+
+                    // Date Validation
+                    if (selectedStartDate.isEmpty() || selectedEndDate.isEmpty()) {
+                        Toast.makeText(requireContext(), "Please select Registration Start and End dates.", Toast.LENGTH_SHORT).show();
+                        isValid = false;
+                    } else if (selectedEventDate.isEmpty()) {
+                        Toast.makeText(requireContext(), "Please select an Official Event Date.", Toast.LENGTH_SHORT).show();
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        // Save ALL data to ViewModel
+                        viewModel.title = inputTitle.getText().toString().trim();
+                        viewModel.type = dropdownType.getText().toString().trim();
+                        viewModel.price = inputPrice.getText().toString().trim();
+                        viewModel.description = inputDesc.getText().toString().trim();
+                        viewModel.waitlistCapacity = inputWaitlist.getText().toString().trim();
+                        viewModel.attendeeCount = inputAttendeeCount.getText().toString().trim();
+                        viewModel.location = inputLocation.getText().toString().trim();
+                        viewModel.address = inputAddress.getText().toString().trim();
+                        viewModel.requireGeolocation = switchGeo.isChecked();
+                        viewModel.registrationPeriod = selectedStartDate + " - " + selectedEndDate;
+                        viewModel.eventDate = selectedEventDate;
+
+                        // Jump straight to Confirmation!
+                        ((OrganizerEventAddEditView) requireActivity()).navigateToFragment(new EventConfirmationFragment(), true);
+                    }
+                }
+        );
+    }
+
+    private void updateRegistrationText(TextView textView) {
+        String startText = selectedStartDate.isEmpty() ? "..." : selectedStartDate;
+        String endText = selectedEndDate.isEmpty() ? "..." : selectedEndDate;
+        textView.setText("Registration: " + startText + " to " + endText);
+        if (!selectedStartDate.isEmpty() && !selectedEndDate.isEmpty()) {
+            textView.setTextColor(Color.parseColor("#888888"));
+        } else {
+            textView.setTextColor(Color.parseColor("#F44336"));
+        }
+    }
+
+    private void restoreCalendarState(CalendarView calStart, CalendarView calEnd, CalendarView calEvent, TextView textRegPeriod, TextView textEvent, SimpleDateFormat sdf) {
+        try {
+            if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
+                String[] parts = viewModel.registrationPeriod.split(" - ");
+                selectedStartDate = parts[0]; selectedEndDate = parts[1];
+                Date startDate = sdf.parse(selectedStartDate); Date endDate = sdf.parse(selectedEndDate);
+
+                if (startDate != null) { calStart.setDate(startDate.getTime(), false, true); calEnd.setMinDate(startDate.getTime()); }
+                if (endDate != null) { calEnd.setDate(endDate.getTime(), false, true); calEvent.setMinDate(endDate.getTime()); }
+                updateRegistrationText(textRegPeriod);
+            }
+            if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
+                selectedEventDate = viewModel.eventDate;
+                Date eventDate = sdf.parse(selectedEventDate);
+                if (eventDate != null) { calEvent.setDate(eventDate.getTime(), false, true); }
+                textEvent.setText("Official event date: " + selectedEventDate);
+                textEvent.setTextColor(Color.parseColor("#888888"));
+            }
+        } catch (ParseException e) { e.printStackTrace(); }
+    }
 }
