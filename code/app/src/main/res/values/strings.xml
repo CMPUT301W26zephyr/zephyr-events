@@ -1,3 +1,55 @@
 <resources>
     <string name="app_name">Zephyr Events</string>
+    <string name="back">Back</string>
+    <string name="all_events">All Events</string>
+    <string name="date_location">Date, Location</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_my_events">My Events / Lotteries</string>
+    <string name="nav_create_event">Create Event</string>
+    <string name="nav_scan_qr">Scan QR</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- My Events -->
+    <string name="my_events">My Events</string>
+    <string name="tab_lotteries">Lotteries</string>
+    <string name="tab_history">History</string>
+    <string name="status_selected">SELECTED</string>
+    <string name="status_waiting">WAITING</string>
+    <string name="status_not_selected">NOT SELECTED</string>
+    <string name="status_declined">DECLINED</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="days_ago">%1$d days ago</string>
+    <string name="one_day_ago">1 day ago</string>
+    <string name="notifications">Notifications</string>
+
+    <!-- Event detail -->
+    <string name="registration_open">REGISTRATION OPEN</string>
+    <string name="registration_closed_full">REGISTRATION CLOSED - FULL</string>
+    <string name="event_organizer">Event Organizer</string>
+    <string name="about">About</string>
+    <string name="waitlist_information">Waitlist Information</string>
+    <string name="total_capacity">Total Capacity</string>
+    <string name="applicants">Applicants</string>
+    <string name="registration_ends">Registration Ends</string>
+    <string name="date">Date</string>
+    <string name="location">Location</string>
+
+    <string name="join_waitlist">Join Waitlist</string>
+    <string name="leave_waitlist">Leave Waitlist</string>
+    <string name="capacity_full">CAPACITY FULL</string>
+    <string name="accept_invite">Accept Invite</string>
+    <string name="decline_invite">Decline Invite</string>
+
+    <string name="youre_in_title">You\'re In!</string>
+    <string name="youre_in_message">Your spot for \'%1$s\' is confirmed.</string>
+    <string name="invite_declined_title">Invite Declined</string>
+    <string name="invite_declined_message">You have declined the invitation for %1$s</string>
+    <string name="view_my_events">View My Events</string>
+
+    <!-- Sample events -->
+    <string name="event_swimming_name">Beginner Swimming Lessons</string>
+    <string name="event_swimming_about">Learn essential skills like floating, kicking, and basic strokes with certified instructors in a safe, supportive, and fun environment.</string>
+    <string name="event_piano_name">Piano Lessons</string>
+    <string name="event_piano_about">Learn piano at your own pace with fun, personalized lessons that build skills and confidence perfect for beginners and aspiring musicians alike.</string>
+    <string name="cancel">Cancel</string>
 </resources>

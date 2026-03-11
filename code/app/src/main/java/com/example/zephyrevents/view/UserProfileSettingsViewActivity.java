@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.view;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.zephyrevents.R;
 
 
 public class UserProfileSettingsViewActivity extends AppCompatActivity {

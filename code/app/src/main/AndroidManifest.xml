@@ -12,22 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
         <activity
-            android:name=".FilterEventsActivity"
-            android:exported="true" />
-        <activity
-            android:name=".SearchViewActivity"
-            android:exported="true">
-        </activity>
-        <activity
-            android:name=".UserProfileSettingsViewActivity"
-            android:exported="true">
-
-        </activity>
-        <activity
-            android:name=".UserProfileEditViewActivity"
-            android:exported="true" />
-        <activity
-            android:name=".UserProfileViewActivity"
+            android:name=".view.EventsListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,6 +20,51 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.EventDetailViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.YoureInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.InviteDeclinedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.MyEventsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.OrganizerEventAddEditView"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.OrganizerEntrantsListView"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserNotificationListView"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.FilterEventsActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.SearchViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileSettingsViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileEditViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileViewActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>

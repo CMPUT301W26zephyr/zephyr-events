@@ -2,6 +2,24 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="light_grey">#F5F5F5</color>
+    <!-- Event detail / waitlist UI -->
+    <color name="primary_red">#FF3B5C</color>
+    <color name="status_registration_open">#4CAF50</color>
+    <color name="status_registration_closed">#FF9800</color>
+    <color name="organizer_card_bg">#FFE4EC</color>
+    <color name="capacity_full_button">#E0E0E0</color>
+    <color name="event_placeholder_swimming">#E3F2FD</color>
+    <color name="event_placeholder_piano">#FFFDE7</color>
+    <color name="youre_in_green">#4CAF50</color>
+    <color name="invite_declined_red">#F44336</color>
+    <!-- My Events badges -->
+    <color name="badge_selected">#4CAF50</color>
+    <color name="badge_waiting">#FFC107</color>
+    <color name="badge_not_selected">#F44336</color>
+    <!-- Theme Colours -->
+    <color name="secondary_red">#FFCCD8</color>
+    <color name="notification_background">#FAFAFA</color>
     <color name="accent">#E84D6D</color>
     <color name="header_pink">#F6B5C4</color>
     <color name="light_stroke">#ECECEC</color>

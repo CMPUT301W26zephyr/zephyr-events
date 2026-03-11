@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.view;
 
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -9,6 +9,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.zephyrevents.R;
 
 
 public class FilterEventsActivity extends AppCompatActivity {

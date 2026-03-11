@@ -19,6 +19,9 @@ public class UserRepository {
     public UserRepository() {
         db = FirebaseFirestore.getInstance();
     }
+    public UserRepository(FirebaseFirestore db) {
+        this.db = db;
+    }
 
     private static final String TAG = "UserRepository";
     public void createUser(User user, RepositoryCallback<Void> callback) {
@@ -91,8 +94,9 @@ public class UserRepository {
 
     }
 
+    // Potential race condition, update later if needed.
     public void updateUser(User user, RepositoryCallback<Void> callback) {
-        // TODO: FIREBASE CODE
+        saveUser(user, callback);
     }
 
     public void deleteUser(String id, RepositoryCallback<Void> callback) {
@@ -120,9 +124,18 @@ public class UserRepository {
                     }
                 });    }
 
-    public void updateNotificationOptOut(String userId,
+    // Potential race condition, but... realistically how many people are updating user?
+    public void updateNotificationOptOut(User user, String userId,
                                          boolean optOut,
                                          RepositoryCallback<Void> callback) {
-        // TODO: FIREBASE CODE
+        if (user == null){
+            var e = new IllegalArgumentException("user has no value");
+            Log.w(TAG, "error user with id: "+userId+"\n exception returned: ", e);
+            return; // return before network call
+        }
+        // break out before the network call if input param == data field.
+        if (user.isNotificationsOptOut() == optOut){ return;}
+        user.setNotificationsOptOut(optOut);
+        saveUser(user, callback);
     }
 }

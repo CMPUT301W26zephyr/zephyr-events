@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.view;
 
 
 import android.view.LayoutInflater;
@@ -7,14 +7,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder>   {
+public class SearchEventListAdapter extends RecyclerView.Adapter<SearchEventListAdapter.ViewHolder>   {
     private List<Event> events = new ArrayList<>();
 
-    public EventListAdapter(List<Event> events){
+    public SearchEventListAdapter(List<Event> events){
         this.events = events;
     }
 

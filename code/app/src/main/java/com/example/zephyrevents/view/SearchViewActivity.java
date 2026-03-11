@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,21 +8,17 @@ import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.Event;
-import com.example.zephyrevents.repository.EventRepository;
-import com.example.zephyrevents.repository.RepositoryCallback;
+
 import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class SearchViewActivity extends AppCompatActivity {
@@ -31,7 +27,7 @@ public class SearchViewActivity extends AppCompatActivity {
 
     private EditText etSearchBar;
     private RecyclerView rvContent;
-    private EventListAdapter eventAdapter;
+    private SearchEventListAdapter eventAdapter;
     private SharedPreferences prefs;
     private List<Event> allEvents = new ArrayList<>();
 
@@ -48,7 +44,7 @@ public class SearchViewActivity extends AppCompatActivity {
 
         rvContent.setLayoutManager(new LinearLayoutManager(this));
 
-        eventAdapter = new EventListAdapter(new ArrayList<>());
+        eventAdapter = new SearchEventListAdapter(new ArrayList<>());
 
         rvContent.setAdapter(eventAdapter);
 
