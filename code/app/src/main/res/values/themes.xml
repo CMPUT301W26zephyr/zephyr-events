@@ -51,4 +51,73 @@
         <item name="colorPrimary">@color/primary_red</item>
     </style>
 
+    <!-- Splash Screen Theme -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primary_red</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_app_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.ZephyrEvents</item>
+    </style>
+
+    <!-- Primary button -->
+    <style name="Button.Filled" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/bg_button_filled</item>
+        <item name="backgroundTint">@null</item>
+    </style>
+
+    <!-- Secondary button -->
+    <style name="Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:textColor">#FF3B5C</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/bg_button_outline</item>
+        <item name="backgroundTint">@null</item>
+    </style>
+
+    <!-- Title Text -->
+    <style name="TxtTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#333333</item>
+    </style>
+
+    <!-- Subtitle Text -->
+    <style name="TxtSub">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#999999</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <!-- Terms of Service Body Text -->
+    <style name="TxtTos">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#666666</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="SignupFormInput">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">42dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:background">@drawable/bg_input_default</item>
+        <item name="android:paddingHorizontal">12dp</item>
+        <item name="android:textColorHint">#888888</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+
 </resources>

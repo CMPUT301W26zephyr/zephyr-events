@@ -53,4 +53,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
+
+//    // Use Navigation Graph?
+//    implementation("androidx.navigation:navigation-fragment:2.9.7")
+//    implementation("androidx.navigation:navigation-ui:2.9.7")
+
+    // Splash screen api
+    implementation("androidx.core:core-splashscreen:1.2.0")
+
 }
