@@ -206,16 +206,18 @@ public class EventDetailViewActivity extends AppCompatActivity {
     }
 
     private void openYoureInScreen() {
-        Intent intent = new Intent(this, YoureInActivity.class);
-        intent.putExtra(YoureInActivity.EXTRA_EVENT_NAME, event.getName());
+        Intent intent = new Intent(this, EventStatusActivity.class);
+        intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
+        intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_ACCEPTED);
         startActivity(intent);
         finish();
     }
 
     private void openInviteDeclinedScreen() {
-        Intent intent = new Intent(this, InviteDeclinedActivity.class);
-        intent.putExtra(InviteDeclinedActivity.EXTRA_EVENT_NAME, event.getName());
-        intent.putExtra(InviteDeclinedActivity.EXTRA_EVENT_KEY, event.getEventId());
+        Intent intent = new Intent(this, EventStatusActivity.class);
+        intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
+        intent.putExtra(EventStatusActivity.EXTRA_EVENT_KEY, event.getEventId());
+        intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_DECLINED);
         startActivity(intent);
         finish();
     }

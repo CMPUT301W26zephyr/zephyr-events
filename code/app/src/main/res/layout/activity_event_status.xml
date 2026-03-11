@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:padding="24dp"
-    tools:context=".view.YoureInActivity">
+    android:padding="24dp">
 
     <ImageButton
         android:id="@+id/button_back"
@@ -30,27 +29,30 @@
         app:layout_constraintTop_toBottomOf="@id/button_back">
 
         <ImageView
+            android:id="@+id/status_icon"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/ic_check_circle"
-            app:tint="@color/youre_in_green" />
+            tools:src="@drawable/ic_check_circle" />
+
         <TextView
+            android:id="@+id/status_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/youre_in_title"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            tools:text="You're In!" />
+
         <TextView
-            android:id="@+id/message"
+            android:id="@+id/status_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:textSize="16sp"
             android:textColor="#616161"
-            tools:text="Your spot for 'Beginner Swimming Lessons' is confirmed." />
+            tools:text="Your spot is confirmed." />
     </LinearLayout>
 
     <Button
@@ -66,4 +68,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
