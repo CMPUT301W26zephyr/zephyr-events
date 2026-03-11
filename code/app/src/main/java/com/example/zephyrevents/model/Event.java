@@ -36,6 +36,14 @@ public class Event {
 
     ;
 
+    public Event(String id, String name, String description, long startTime,  long endTime ){
+        this.eventId = GenerateId.getUniqueId();
+        this.name = name;
+        this.time = new EventTime(startTime, endTime);
+        this.description = description;
+    }
+
+
 
     public Event(String name, String description, long startTime, long endTime, String location, long lng, long lat, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status) {
         this.eventId = GenerateId.getUniqueId();

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Image icon: paper with folded top-right corner  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Paper body -->
+    <path
+        android:fillColor="#E8E8E8"
+        android:pathData="M4,4h12v14H4V4z"/>
+    <!-- Folded corner -->
+    <path
+        android:fillColor="#BDBDBD"
+        android:pathData="M14,4h4l-4,4V4z"/>
+</vector>
