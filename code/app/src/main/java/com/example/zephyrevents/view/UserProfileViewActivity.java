@@ -40,15 +40,23 @@ public class UserProfileViewActivity extends AppCompatActivity {
         txtContact = findViewById(R.id.txtContact);
         avatarImg = findViewById(R.id.avatar_img);
 
-        String userId = getIntent().getStringExtra("USER");
+        setUpClickListener();
+    }
+
+    // Runs to update upon entry, and every time we return to this activity
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Use the controller to get the current user ID instead of relying on Intents
+        String userId = userController.getCurrentUserId();
 
         if (userId != null) {
             loadUser(userId);
         } else {
+            // Fallback if no user is logged in
             txtName.setText("John Doe");
             txtContact.setText("youremail@domain.com | +01 234 567 89");
         }
-        setUpClickListener();
     }
 
     private void loadUser(String userId){
@@ -84,7 +92,7 @@ public class UserProfileViewActivity extends AppCompatActivity {
 
         if (contact != null){
             String email = contact.getEmail();
-            String phone = contact.getPhone();
+            String phone = contact.getPhone() != null ? contact.getPhone() : "No Phone";
             txtContact.setText(email + " | " + phone);
         }
     }

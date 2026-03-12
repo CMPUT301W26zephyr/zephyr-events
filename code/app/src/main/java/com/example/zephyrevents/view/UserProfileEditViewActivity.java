@@ -67,7 +67,7 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     }
 
     private void setupCountrySpinner() {
-        String[] countries = {};
+        String[] countries = {"None Selected", "Canada", "United States", "France"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,countries);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCountry.setAdapter(adapter);
@@ -97,7 +97,9 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
 
         if (contact != null){
             etEmail.setText(contact.getEmail());
-            etPhone.setText(contact.getPhone());
+            if (contact.getPhone() != null) {
+                etPhone.setText(contact.getPhone());
+            }
         }
 
         if (user.getLocation() != null){
@@ -127,7 +129,16 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         }
 
         currentUser.setName(name);
-        currentUser.setLocation(country);
+        currentUser.setLocation(country.equals("None Selected") ? null : country);  //
+
+        // Update Email and Phone number
+        ContactInfo contact = currentUser.getContactInfo();
+        if (contact == null) {
+            contact = new ContactInfo(); // Prevent null pointer if user had no contact info initially
+        }
+        contact.setEmail(email);
+        contact.setPhone(phone);
+        currentUser.setContactInfo(contact);
 
         userRepository.saveUser(currentUser, new RepositoryCallback<Void>() {
             @Override
@@ -136,7 +147,7 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("USER", currentUser.getId());
                 setResult(RESULT_OK, resultIntent);
-                finish();
+                finish(); // Closes activity and goes back to View Activity
             }
 
             @Override
