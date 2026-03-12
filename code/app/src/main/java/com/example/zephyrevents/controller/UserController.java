@@ -127,4 +127,73 @@ public class UserController {
         prefs.edit().remove(KEY_USER_ID).apply();
     }
 
+
+    /**
+     * Updates the current user's profile in Firestore.
+     */
+    public void updateCurrentUserProfile(
+            String name,
+            String email,
+            String phone,
+            String country,
+            RepositoryCallback<Void> callback
+    ) {
+        fetchCurrentUser(new RepositoryCallback<User>() {
+            @Override
+            public void onSuccess(User user) {
+                if (user == null) {
+                    callback.onFailure(new Exception("User not loaded."));
+                    return;
+                }
+
+                user.setName(name);
+                user.setLocation(country);
+
+                ContactInfo ci = user.getContactInfo();
+                if (ci == null) ci = new ContactInfo();
+                ci.setEmail(email);
+                ci.setPhone(phone);
+                user.setContactInfo(ci);
+
+                userRepository.saveUser(user, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        callback.onSuccess(null);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    public void getCurrentUserProfileInfo(RepositoryCallback<String[]> callback) {
+        fetchCurrentUser(new RepositoryCallback<User>() {
+            @Override
+            public void onSuccess(User user) {
+                if (user == null) {
+                    callback.onFailure(new Exception("User not loaded."));
+                    return;
+                }
+                ContactInfo ci = user.getContactInfo();
+                String name = user.getName() == null ? "" : user.getName();
+                String email = (ci != null && ci.getEmail() != null) ? ci.getEmail() : "";
+                String phone = (ci != null && ci.getPhone() != null) ? ci.getPhone() : "";
+                String country = user.getLocation() == null ? "" : user.getLocation();
+                callback.onSuccess(new String[]{ name, email, phone, country });
+            }
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
 }
