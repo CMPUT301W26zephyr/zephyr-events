@@ -46,6 +46,7 @@
 
         <EditText
             style="@style/SignupFormInput"
+            android:id="@+id/et_name"
             android:inputType="textPersonName" />
 
         <!-- Form: Email -->
@@ -62,6 +63,7 @@
 
         <EditText
             style="@style/SignupFormInput"
+            android:id="@+id/et_email"
             android:inputType="textEmailAddress" />
 
         <!-- Form: Phone -->
@@ -76,6 +78,7 @@
 
         <EditText
             style="@style/SignupFormInput"
+            android:id="@+id/et_phone"
             android:inputType="phone" />
 
         <!-- Checkbox Row -->
