@@ -14,6 +14,12 @@ import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.view.HomeActivity;
 import com.example.zephyrevents.view.SignUpActivity;
 
+/**
+ * This activity is the entry point to the application
+ * Informed by userController via SharedPreferences whether tracking account locally
+ * If yes, continue to HomeActivity
+ * Otherwise, allow navigation to SignUpActivity
+ */
 public class WelcomeActivity extends AppCompatActivity {
 
     @Override
@@ -21,14 +27,6 @@ public class WelcomeActivity extends AppCompatActivity {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
-        // PLACEHOLDER (though probably usable): Check before setting the layout
-//        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-//        if (prefs.getBoolean("is_signed_up", false)) {
-//            // Go straight to Home and kill this activity
-//            startActivity(new Intent(this, HomeActivity.class));
-//            finish();
-//            return; // Important: stop executing onCreate
-//        }  // comment this block out for testing
         UserController userController = new UserController(this);
 
         if (userController.isUserLoggedIn()) {

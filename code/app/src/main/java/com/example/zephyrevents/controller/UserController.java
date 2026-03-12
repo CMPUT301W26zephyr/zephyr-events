@@ -108,7 +108,7 @@ public class UserController {
 
         // IMPORTANT: Clear the local preference so they are "logged out"
         // done in advance because firebase enqueues the request upon network failure
-        prefs.edit().remove(KEY_USER_ID).apply();
+        forceLogOut();
 
         userRepository.deleteUser(userId, new RepositoryCallback<Void>() {
             @Override

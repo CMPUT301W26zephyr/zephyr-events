@@ -17,6 +17,10 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.view.HomeActivity;
 import com.example.zephyrevents.view.TermsOfServiceFragment;
 
+/**
+ * SignUpActivity allows the user to create an account
+ * Checks for required fields and TOS acceptance
+ */
 public class SignUpActivity extends AppCompatActivity implements TermsOfServiceFragment.OnTosAgreedListener {
 
     private CheckBox cbTos;
