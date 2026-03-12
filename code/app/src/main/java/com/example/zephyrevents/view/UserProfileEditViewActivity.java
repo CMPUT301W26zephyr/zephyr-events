@@ -10,16 +10,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.repository.UserRepository;
+
 
 public class UserProfileEditViewActivity extends AppCompatActivity {
-    private UserRepository userRepository;
-    private User currentUser;
+    private UserController userController;
 
     private EditText etName;
     private EditText etEmail;
@@ -50,67 +49,64 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
             public void handleOnBackPressed() { finish(); }
         });
 
-        userRepository = new UserRepository();
+        userController = new UserController(this);
 
         etName = findViewById(R.id.etName);
         etEmail = findViewById(R.id.etEmail);
         spCountry = findViewById(R.id.spCountry);
         etPhone = findViewById(R.id.etPhone);
 
-        String userId = getIntent().getStringExtra("USER");
 
-        if (userId != null){
-            loadUser(userId);
-        }
         setupCountrySpinner();
         setupClickListeners();
+        loadProfileInfo();
     }
 
     private void setupCountrySpinner() {
-        String[] countries = {"None Selected", "Canada", "United States", "France"};
+        String[] countries = {};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,countries);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCountry.setAdapter(adapter);
     }
 
-    private void loadUser(String userId) {
-        userRepository.getUserById(userId, new RepositoryCallback<User>() {
+    private void loadProfileInfo(){
+        userController.getCurrentUserProfileInfo(new RepositoryCallback<String[]>() {
+
             @Override
-            public void onSuccess(User result) {
-                currentUser = result;
-                populateFields(result);
+            public void onSuccess(String[] data) {
+                String name = data[0];
+                String email = data[1];
+                String phone = data[2];
+                String country = data[3];
+
+                etName.setText(name);
+                etEmail.setText(email);
+                etPhone.setText(phone);
+
+
+                if (country != null && !country.isEmpty()) {
+                    for (int i = 0; i < spCountry.getCount(); i++) {
+                        if (country.equals(spCountry.getItemAtPosition(i).toString())) {
+                            spCountry.setSelection(i);
+                            break;
+                        }
+                    }
+                }
+
             }
 
             @Override
             public void onFailure(Exception e) {
                 Toast.makeText(UserProfileEditViewActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
                 finish();
+
+
             }
         });
     }
 
-    private void populateFields(User user){
-        if (user == null) return;
 
-        etName.setText(user.getName());
-        ContactInfo contact = user.getContactInfo();
 
-        if (contact != null){
-            etEmail.setText(contact.getEmail());
-            if (contact.getPhone() != null) {
-                etPhone.setText(contact.getPhone());
-            }
-        }
-
-        if (user.getLocation() != null){
-            for (int i = 0; i < spCountry.getCount(); i++){
-                if (spCountry.getItemAtPosition(i).toString().equals(user.getLocation())){
-                    spCountry.setSelection(i);
-                    break;
-                }
-            }
-        }
-    }
 
     private void setupClickListeners(){
         findViewById(R.id.btnCancel).setOnClickListener(v -> finish());
@@ -121,39 +117,27 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
-        String country = spCountry.getSelectedItem().toString();
+        String country = spCountry.getSelectedItem() != null ? spCountry.getSelectedItem().toString() : "";
 
-        if (currentUser == null){
-            Toast.makeText(this, "Cannot save: user not loaded", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        currentUser.setName(name);
-        currentUser.setLocation(country.equals("None Selected") ? null : country);  //
-
-        // Update Email and Phone number
-        ContactInfo contact = currentUser.getContactInfo();
-        if (contact == null) {
-            contact = new ContactInfo(); // Prevent null pointer if user had no contact info initially
-        }
-        contact.setEmail(email);
-        contact.setPhone(phone);
-        currentUser.setContactInfo(contact);
-
-        userRepository.saveUser(currentUser, new RepositoryCallback<Void>() {
+        userController.updateCurrentUserProfile(name, email, phone, country, new RepositoryCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(Void result){
                 Toast.makeText(UserProfileEditViewActivity.this, "Profile saved", Toast.LENGTH_SHORT).show();
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("USER", currentUser.getId());
-                setResult(RESULT_OK, resultIntent);
-                finish(); // Closes activity and goes back to View Activity
+                setResult(RESULT_OK);
+                finish();
+
+            }
+            @Override
+            public void onFailure(Exception e){
+                Toast.makeText(UserProfileEditViewActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
+
+
             }
 
-            @Override
-            public void onFailure(Exception e) {
-                Toast.makeText(UserProfileEditViewActivity.this, "Failed to save profile", Toast.LENGTH_SHORT).show();
-            }
+
         });
+
+
+
     }
 }
