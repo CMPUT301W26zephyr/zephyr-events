@@ -12,7 +12,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
+import com.example.zephyrevents.repository.RepositoryCallback;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
 
 public class EventConfirmationFragment extends Fragment {
 
@@ -76,7 +85,59 @@ public class EventConfirmationFragment extends Fragment {
 
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
                 "Review Event Details", "CONFIRM & CREATE", v -> {
-                    Toast.makeText(requireContext(), "Event Created Successfully!", Toast.LENGTH_SHORT).show();
+
+                    // 1. Build the Event Object
+                    Event newEvent = new Event();
+                    newEvent.setEventId(java.util.UUID.randomUUID().toString());
+                    newEvent.setName(viewModel.title);
+                    newEvent.setDescription(viewModel.description);
+                    newEvent.setOrganizerId("test_user_id"); // TODO: Replace with real logged-in user ID
+
+                    try { newEvent.setPrice(Double.parseDouble(viewModel.price)); } catch (Exception e) { newEvent.setPrice(0.0); }
+                    try { newEvent.setCapacity(Integer.parseInt(viewModel.attendeeCount)); } catch (Exception e) { newEvent.setCapacity(0); }
+
+                    // --- NEW: Combine Location & Address and attach it to the Event ---
+                    com.example.zephyrevents.model.Location eventLoc = new com.example.zephyrevents.model.Location();
+                    String displayLocation = viewModel.location;
+                    if (viewModel.address != null && !viewModel.address.trim().isEmpty()) {
+                        displayLocation += " (" + viewModel.address.trim() + ")";
+                    }
+                    // Assuming your Location model has a standard setter
+                    eventLoc.setLocationString(displayLocation);
+                    newEvent.setLocation(eventLoc);
+
+                    // Parse the dates into EventTime format
+                    SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault());
+                    try {
+                        if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
+                            Date eDate = sdf.parse(viewModel.eventDate);
+                            if (eDate != null) {
+                                com.example.zephyrevents.model.EventTime time = new com.example.zephyrevents.model.EventTime(eDate.getTime(), eDate.getTime() + 7200000);
+                                newEvent.setTime(time);
+                            }
+                        }
+                        if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
+                            String[] parts = viewModel.registrationPeriod.split(" - ");
+                            Date regEnd = sdf.parse(parts[1]);
+                            if (regEnd != null) newEvent.setRegistrationEndTime(regEnd.getTime());
+                        }
+                    } catch (Exception e) { e.printStackTrace(); }
+
+                    // 2. Save to Firebase
+                    EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            Toast.makeText(requireContext(), "Event Created Successfully!", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(requireContext(), "Failed to create event", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    // 3. CLOSE IMMEDIATELY (Optimistic UI)
+                    // We don't wait for the network. We close the form instantly so the user isn't stuck waiting.
                     requireActivity().finish();
                 }
         );

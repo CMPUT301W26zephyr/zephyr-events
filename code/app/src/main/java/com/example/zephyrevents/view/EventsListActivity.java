@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.util.BottomNavHelper;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class EventsListActivity extends AppCompatActivity {
     private List<Event> allEvents = new ArrayList<>();
     private List<Event> displayedEvents = new ArrayList<>();
     private EventController controller;
+    private EditText etSearchBar; // Added as a class variable to keep track of searches
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,31 +41,21 @@ public class EventsListActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
-            // 1. Apply top padding ONLY to the toolbar so it stretches behind the status bar
             View toolbar = findViewById(R.id.toolbar);
             if (toolbar != null) {
-                // Keep its existing horizontal/bottom padding, just add the system top inset
                 toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(), toolbar.getPaddingBottom());
             }
 
-            // 2. Apply bottom padding ONLY to the bottom nav so it stretches behind the gesture/nav bar
             View bottomNav = findViewById(R.id.bottom_nav);
             if (bottomNav != null) {
                 bottomNav.setPadding(bottomNav.getPaddingLeft(), bottomNav.getPaddingTop(), bottomNav.getPaddingRight(), systemBars.bottom);
             }
-
-            // Note: We completely removed `v.setPadding(...)` here so the root layout stops shrinking!
             return insets;
         });
 
-        // Initialize Data
         controller = EventController.getInstance();
-        allEvents = controller.getEventsForList();
 
-        // We use a separate list for the adapter so we can filter it without losing the original data
-        displayedEvents.addAll(allEvents);
-
-        // Setup ListView & Adapter
+        // Setup the ListView and Adapter completely EMPTY first
         adapter = new EventListAdapter(this, displayedEvents);
         ListView listView = findViewById(R.id.event_list);
         listView.setAdapter(adapter);
@@ -77,7 +69,7 @@ public class EventsListActivity extends AppCompatActivity {
         });
 
         // Setup Search Bar Filtering
-        EditText etSearchBar = findViewById(R.id.etSearchBar);
+        etSearchBar = findViewById(R.id.etSearchBar);
         etSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -95,12 +87,41 @@ public class EventsListActivity extends AppCompatActivity {
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
         findViewById(R.id.btnSearchFilter).setOnClickListener(v -> {
-            // Keep the filter activity functionality from the old search screen
             startActivity(new Intent(this, FilterEventsActivity.class));
         });
 
         // Setup Bottom Nav
         BottomNavHelper.setupBottomNav(this);
+
+        // Notice we REMOVED the getAllEvents() call from here!
+    }
+
+    // --- NEW: Refresh data every time the screen becomes visible ---
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        controller.getAllEvents(new RepositoryCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> result) {
+                allEvents.clear();
+                if (result != null) {
+                    allEvents.addAll(result);
+                }
+
+                // Re-apply the search filter if the user had text in the search bar
+                String currentQuery = "";
+                if (etSearchBar != null && etSearchBar.getText() != null) {
+                    currentQuery = etSearchBar.getText().toString().trim();
+                }
+                filterEvents(currentQuery);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Silently ignore or show a toast if network fails
+            }
+        });
     }
 
     /**
@@ -121,7 +142,6 @@ public class EventsListActivity extends AppCompatActivity {
             }
         }
 
-        // Tells the ListView to refresh itself with the newly filtered data
         adapter.notifyDataSetChanged();
     }
 
