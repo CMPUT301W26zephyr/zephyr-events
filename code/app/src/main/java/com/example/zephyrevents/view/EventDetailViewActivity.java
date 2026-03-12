@@ -40,7 +40,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private UserRepository userRepository;
 
     private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation;
-    private TextView organizerName, eventAbout, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
+    private TextView organizerName, eventAbout, totalCapacity, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
     private View eventImageContainer;
 
     private View attendeeButtonsContainer;
@@ -116,7 +116,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventLocation = findViewById(R.id.event_location);
         organizerName = findViewById(R.id.organizer_name);
         eventAbout = findViewById(R.id.event_about);
+        totalCapacity = findViewById(R.id.total_capacity);
         waitlistCapacity = findViewById(R.id.waitlist_capacity);
+
         waitlistApplicants = findViewById(R.id.waitlist_applicants);
         waitlistRegistrationEnds = findViewById(R.id.waitlist_registration_ends);
         eventImageContainer = findViewById(R.id.event_image_container);
@@ -153,52 +155,21 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         eventAbout.setText(event.getDescription() != null ? event.getDescription() : "No description provided.");
 
-        // Use waitlistCapacity for the full check, not attendee capacity
-        boolean isCapacityFull = event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0 && event.getCurrentApplicants() >= event.getWaitlistCapacity();
-
-        if (isCapacityFull) {
-            statusTag.setText(R.string.registration_closed_full);
-            statusTag.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_status_tag_orange));
-        } else {
-            statusTag.setText(R.string.registration_open);
-            statusTag.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_status_tag));
+        if (totalCapacity != null) {
+            totalCapacity.setText(String.valueOf(event.getCapacity()));
         }
 
-        String waitlistLimit = (event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0)
+        String limitStr = (event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0)
                 ? String.valueOf(event.getWaitlistCapacity())
                 : "Unlimited";
-
-        waitlistCapacity.setText(String.format(Locale.getDefault(), "%d (Waitlist: %s)", event.getCapacity(), waitlistLimit));
-
-        // Ask the database exactly how many people are on the waitlist right now
-        new WaitlistRepository().getWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
-            @Override
-            public void onSuccess(List<WaitlistEntry> entries) {
-                int trueCount = (entries != null) ? entries.size() : 0;
-                waitlistApplicants.setText(String.format(Locale.getDefault(), "%s: %d", getString(R.string.applicants), trueCount));
-
-                // NEW: Double check capacity with the true count so we don't accidentally let people join a full waitlist!
-                boolean trueCapacityFull = event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0 && trueCount >= event.getWaitlistCapacity();
-                if (trueCapacityFull) {
-                    statusTag.setText(R.string.registration_closed_full);
-                    statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag_orange));
-
-                    // If the join button is visible, change it to the grey "Capacity Full" button
-                    if (buttonPrimary.getVisibility() == View.VISIBLE && buttonPrimary.getText().toString().equals(getString(R.string.join_waitlist))) {
-                        showCapacityFullButton();
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Exception e) {
-                waitlistApplicants.setText(String.format(Locale.getDefault(), "%s: %d", getString(R.string.applicants), event.getCurrentApplicants()));
-            }
-        });
+        if (waitlistCapacity != null) {
+            waitlistCapacity.setText(limitStr);
+        }
 
         if (event.getRegistrationEndTime() > 0) {
-            waitlistRegistrationEnds.setText(String.format("%s: %s", getString(R.string.registration_ends), new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getRegistrationEndTime()))));
+            waitlistRegistrationEnds.setText(new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getRegistrationEndTime())));
         } else {
-            waitlistRegistrationEnds.setText("");
+            waitlistRegistrationEnds.setText("N/A");
         }
 
         eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_swimming));
@@ -225,24 +196,64 @@ public class EventDetailViewActivity extends AppCompatActivity {
             } else {
                 organizerName.setText("Unknown Organizer");
             }
+        }
 
-            WaitlistRepository waitlistRepo = new WaitlistRepository();
-            waitlistRepo.getUserWaitlistEntry(event.getEventId(), currentUserId, new RepositoryCallback<WaitlistEntry>() {
-                @Override
-                public void onSuccess(WaitlistEntry entry) {
-                    if (entry == null) {
-                        if (isCapacityFull) showCapacityFullButton();
-                        else showJoinWaitlistButton(waitlistRepo);
+        // ONE unified database call to fetch the waitlist, calculate counts, check lottery status, and check user status
+        new WaitlistRepository().getWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
+            @Override
+            public void onSuccess(List<WaitlistEntry> entries) {
+                int trueCount = (entries != null) ? entries.size() : 0;
+                waitlistApplicants.setText(String.valueOf(trueCount));
+
+                boolean lotteryRun = false;
+                WaitlistEntry myEntry = null;
+
+                // Scan the list for lottery status and our own entry
+                if (entries != null) {
+                    for (WaitlistEntry e : entries) {
+                        if (e.getStatus() != Status.WAITLISTED) {
+                            lotteryRun = true; // If anyone has a post-lottery status, the lottery has run
+                        }
+                        if (e.getUserId() != null && e.getUserId().equals(currentUserId)) {
+                            myEntry = e;
+                        }
+                    }
+                }
+
+                boolean trueCapacityFull = event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0 && trueCount >= event.getWaitlistCapacity();
+                boolean pastDeadline = event.getRegistrationEndTime() > 0 && System.currentTimeMillis() > event.getRegistrationEndTime();
+
+                // Waitlist is closed for NEW joins if ANY of these three things are true
+                boolean isClosedForNew = trueCapacityFull || lotteryRun || pastDeadline;
+
+                if (isClosedForNew) {
+                    statusTag.setText("CLOSED");
+                    statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag_orange));
+                } else {
+                    statusTag.setText(R.string.registration_open);
+                    statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag));
+                }
+
+                // If not organizer, configure the attendee buttons
+                if (!isOrganizer) {
+                    if (myEntry == null) {
+                        // User is NOT on the list. Can they join?
+                        if (isClosedForNew) {
+                            showWaitlistClosedButton(trueCapacityFull, lotteryRun, pastDeadline);
+                        } else {
+                            showJoinWaitlistButton(new WaitlistRepository());
+                        }
                     } else {
-                        switch (entry.getStatus()) {
+                        // User IS on the list. Handle buttons based on their status.
+                        switch (myEntry.getStatus()) {
                             case WAITLISTED:
-                                showLeaveWaitlistButton(waitlistRepo);
+                                showLeaveWaitlistButton(new WaitlistRepository());
                                 break;
                             case SELECTED:
-                                showAcceptDeclineButtons(waitlistRepo);
+                                showAcceptDeclineButtons(new WaitlistRepository());
                                 break;
                             case LOST:
-                                showRejoinWaitlistButton(waitlistRepo);
+                                showLostButton();
                                 break;
                             case ACCEPTED:
                                 buttonPrimary.setVisibility(View.VISIBLE);
@@ -261,10 +272,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
                         }
                     }
                 }
-                @Override
-                public void onFailure(Exception e) { showJoinWaitlistButton(waitlistRepo); }
-            });
-        }
+            }
+            @Override
+            public void onFailure(Exception e) {
+                waitlistApplicants.setText(String.valueOf(event.getCurrentApplicants()));
+            }
+        });
     }
 
     private void showJoinWaitlistButton(WaitlistRepository repo) {
@@ -349,24 +362,32 @@ public class EventDetailViewActivity extends AppCompatActivity {
         });
     }
 
-    private void showRejoinWaitlistButton(WaitlistRepository repo) {
+    private void showWaitlistClosedButton(boolean capacity, boolean lottery, boolean deadline) {
         buttonPrimary.setVisibility(View.VISIBLE);
-        buttonPrimary.setEnabled(true);
-        buttonPrimary.setText("RE-JOIN WAITLIST");
-        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
+        buttonPrimary.setEnabled(false);
+
+        // Tell the user exactly why the button is grayed out
+        if (lottery) {
+            buttonPrimary.setText("LOTTERY COMPLETE");
+        } else if (deadline) {
+            buttonPrimary.setText("REGISTRATION CLOSED");
+        } else {
+            buttonPrimary.setText(R.string.capacity_full);
+        }
+
+        // Gray it out
+        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
-        buttonPrimary.setOnClickListener(v -> {
-            Toast.makeText(this, "Re-join functionality coming soon!", Toast.LENGTH_SHORT).show();
-        });
+        buttonPrimary.setOnClickListener(null);
         buttonSecondary.setVisibility(View.GONE);
     }
 
-    private void showCapacityFullButton() {
+    private void showLostButton() {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(false);
-        buttonPrimary.setText(R.string.capacity_full);
-        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, R.color.capacity_full_button));
-        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.black));
+        buttonPrimary.setText("STATUS: NOT SELECTED");
+        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(null);
         buttonSecondary.setVisibility(View.GONE);
     }

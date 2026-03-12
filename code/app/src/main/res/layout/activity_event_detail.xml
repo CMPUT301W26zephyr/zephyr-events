@@ -229,12 +229,36 @@
                     android:layout_height="0dp"
                     android:layout_weight="1" />
                 <TextView
-                    android:id="@+id/waitlist_capacity"
+                    android:id="@+id/total_capacity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
                     android:textColor="#424242"
                     tools:text="67" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/waitlist_capacity"
+                    android:textSize="13sp"
+                    android:textColor="#424242" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+                <TextView
+                    android:id="@+id/waitlist_capacity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#424242"
+                    tools:text="Unlimited" />
             </LinearLayout>
 
             <LinearLayout
