@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.model.EventViewModel;
 
 public class OrganizerEventAddEditView extends AppCompatActivity {
 
@@ -28,11 +29,18 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
             return insets;
         });
 
-        findViewById(R.id.toolbar_back).setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
         findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
 
+        // NEW: Check if we are editing an existing event
+        String editEventId = getIntent().getStringExtra("EXTRA_EDIT_EVENT_ID");
+        if (editEventId != null) {
+            EventViewModel viewModel = new androidx.lifecycle.ViewModelProvider(this).get(EventViewModel.class);
+            viewModel.isEditMode = true;
+            viewModel.eventId = editEventId;
+        }
+
         if (savedInstanceState == null) {
-            // Load the new combined fragment instead!
             navigateToFragment(new EventCreateFragment(), false);
         }
     }

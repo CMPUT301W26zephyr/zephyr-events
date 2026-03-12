@@ -277,6 +277,18 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/btn_delete_event"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                android:text="DELETE EVENT"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:backgroundTint="#D32F2F" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

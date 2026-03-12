@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -19,7 +20,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventViewModel;
+import com.example.zephyrevents.repository.RepositoryCallback;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.text.ParseException;
@@ -48,7 +52,7 @@ public class EventCreateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
 
-        // --- 1. DETAILS SETUP ---
+        // 1. DEFINE ALL UI ELEMENTS FIRST so they can be used anywhere below
         EditText inputTitle = view.findViewById(R.id.input_event_title);
         AutoCompleteTextView dropdownType = view.findViewById(R.id.eventTypeDropdown);
         EditText inputPrice = view.findViewById(R.id.input_event_price);
@@ -56,28 +60,10 @@ public class EventCreateFragment extends Fragment {
         EditText inputWaitlist = view.findViewById(R.id.input_waitlist);
         EditText inputAttendeeCount = view.findViewById(R.id.input_attendee_count);
 
-        String[] eventTypes = new String[]{"Educational", "Workshop", "Corporate", "Social", "Recreation", "Entertainment", "Networking", "Other (Specify): "};
-        dropdownType.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes));
-
-        // Restore Details Data (If returning from confirmation)
-        inputTitle.setText(viewModel.title);
-        dropdownType.setText(viewModel.type, false);
-        inputPrice.setText(viewModel.price);
-        inputDesc.setText(viewModel.description);
-        inputWaitlist.setText(viewModel.waitlistCapacity);
-        inputAttendeeCount.setText(viewModel.attendeeCount);
-
-        // --- 2. LOCATION SETUP ---
         EditText inputLocation = view.findViewById(R.id.input_location);
         EditText inputAddress = view.findViewById(R.id.input_address);
         SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
 
-        // Restore Location Data
-        inputLocation.setText(viewModel.location);
-        inputAddress.setText(viewModel.address);
-        switchGeo.setChecked(viewModel.requireGeolocation);
-
-        // --- 3. DATES SETUP ---
         HorizontalScrollView scrollRegistration = view.findViewById(R.id.scroll_registration);
         View columnRegEnd = view.findViewById(R.id.column_reg_end);
         CalendarView calStart = view.findViewById(R.id.calendar_reg_start);
@@ -86,16 +72,96 @@ public class EventCreateFragment extends Fragment {
         TextView textRegPeriod = view.findViewById(R.id.text_reg_period);
         TextView textEvent = view.findViewById(R.id.text_event_date);
 
+        Button btnDelete = view.findViewById(R.id.btn_delete_event);
+
+        // Setup Dropdown
+        String[] eventTypes = new String[]{"Educational", "Workshop", "Corporate", "Social", "Recreation", "Entertainment", "Networking", "Other"};
+        dropdownType.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes));
+
+        // 2. CHECK EDIT MODE AND FETCH DATA
+        if (viewModel.isEditMode) {
+            btnDelete.setVisibility(View.VISIBLE);
+            btnDelete.setOnClickListener(v -> {
+                EventController.getInstance().deleteEvent(viewModel.eventId, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Toast.makeText(requireContext(), "Event Deleted", Toast.LENGTH_SHORT).show();
+                        requireActivity().finish();
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(requireContext(), "Failed to delete event", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+
+            // Fetch the existing event from Firebase if we haven't loaded it yet
+            if (!viewModel.isDataLoaded) {
+                EventController.getInstance().getEventById(viewModel.eventId, new RepositoryCallback<Event>() {
+                    @Override
+                    public void onSuccess(Event e) {
+                        if (e != null) {
+                            viewModel.title = e.getName() != null ? e.getName() : "";
+                            viewModel.price = String.valueOf(e.getPrice());
+                            viewModel.description = e.getDescription() != null ? e.getDescription() : "";
+                            viewModel.attendeeCount = String.valueOf(e.getCapacity());
+                            viewModel.organizerId = e.getOrganizerId();
+                            viewModel.originalApplicants = e.getCurrentApplicants();
+
+                            // Separate the address from the location string if parenthesis exist
+                            if (e.getLocation() != null && e.getLocation().getLocationString() != null) {
+                                String fullLoc = e.getLocation().getLocationString();
+                                if (fullLoc.contains("(") && fullLoc.contains(")")) {
+                                    int openP = fullLoc.indexOf("(");
+                                    int closeP = fullLoc.lastIndexOf(")");
+                                    viewModel.location = fullLoc.substring(0, openP).trim();
+                                    viewModel.address = fullLoc.substring(openP + 1, closeP).trim();
+                                } else {
+                                    viewModel.location = fullLoc;
+                                }
+                            }
+
+                            viewModel.isDataLoaded = true;
+
+                            // Push downloaded data directly to UI
+                            inputTitle.setText(viewModel.title);
+                            inputPrice.setText(viewModel.price);
+                            inputDesc.setText(viewModel.description);
+                            inputAttendeeCount.setText(viewModel.attendeeCount);
+                            inputLocation.setText(viewModel.location);
+                            inputAddress.setText(viewModel.address);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(requireContext(), "Failed to load event data for editing", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        } else {
+            btnDelete.setVisibility(View.GONE);
+        }
+
+        // 3. RESTORE EXISTING VIEWMODEL DATA (If returning from confirmation screen)
+        inputTitle.setText(viewModel.title);
+        dropdownType.setText(viewModel.type, false);
+        inputPrice.setText(viewModel.price);
+        inputDesc.setText(viewModel.description);
+        inputWaitlist.setText(viewModel.waitlistCapacity);
+        inputAttendeeCount.setText(viewModel.attendeeCount);
+        inputLocation.setText(viewModel.location);
+        inputAddress.setText(viewModel.address);
+        switchGeo.setChecked(viewModel.requireGeolocation);
+
+        // 4. SETUP CALENDARS
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
         long today = System.currentTimeMillis() - 1000;
         calStart.setMinDate(today);
         calEnd.setMinDate(today);
         calEvent.setMinDate(today);
 
-        // Restore Calendar Data
         restoreCalendarState(calStart, calEnd, calEvent, textRegPeriod, textEvent, sdf);
 
-        // Date Listeners
         calStart.setOnDateChangeListener((calView, year, month, dayOfMonth) -> {
             Calendar c = Calendar.getInstance(); c.set(year, month, dayOfMonth);
             long selectedMillis = c.getTimeInMillis();
@@ -143,19 +209,17 @@ public class EventCreateFragment extends Fragment {
             textEvent.setTextColor(Color.parseColor("#888888"));
         });
 
-        // --- 4. VALIDATION AND NAVIGATION ---
+        // 5. VALIDATION AND NAVIGATION
+        String topBarTitle = viewModel.isEditMode ? "Edit Event" : "Create Event";
+
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
-                "Create Event", "NEXT", v -> {
+                topBarTitle, "NEXT", v -> {
                     boolean isValid = true;
 
-                    // Details Validation
                     if (inputTitle.getText().toString().trim().isEmpty()) { inputTitle.setError("Required"); isValid = false; }
                     if (inputAttendeeCount.getText().toString().trim().isEmpty()) { inputAttendeeCount.setError("Required"); isValid = false; }
-
-                    // Location Validation
                     if (inputLocation.getText().toString().trim().isEmpty()) { inputLocation.setError("Required"); isValid = false; }
 
-                    // Date Validation
                     if (selectedStartDate.isEmpty() || selectedEndDate.isEmpty()) {
                         Toast.makeText(requireContext(), "Please select Registration Start and End dates.", Toast.LENGTH_SHORT).show();
                         isValid = false;
@@ -165,7 +229,6 @@ public class EventCreateFragment extends Fragment {
                     }
 
                     if (isValid) {
-                        // Save ALL data to ViewModel
                         viewModel.title = inputTitle.getText().toString().trim();
                         viewModel.type = dropdownType.getText().toString().trim();
                         viewModel.price = inputPrice.getText().toString().trim();
@@ -178,7 +241,6 @@ public class EventCreateFragment extends Fragment {
                         viewModel.registrationPeriod = selectedStartDate + " - " + selectedEndDate;
                         viewModel.eventDate = selectedEventDate;
 
-                        // Jump straight to Confirmation!
                         ((OrganizerEventAddEditView) requireActivity()).navigateToFragment(new EventConfirmationFragment(), true);
                     }
                 }

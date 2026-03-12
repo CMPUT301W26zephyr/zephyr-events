@@ -14,59 +14,63 @@ import androidx.core.content.ContextCompat;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
+import com.example.zephyrevents.repository.UserRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Event Detail View (CRC: EventDetailView).
- * Displays details; captures join/leave waitlist actions; displays QR code and participant map.
- * Collaborators: EventController.
- */
 public class EventDetailViewActivity extends AppCompatActivity {
     public static final String EXTRA_EVENT = "extra_event";
-    /** Intent extra key: true if the user has been invited (lottery selected them). */
     public static final String EXTRA_INVITED = "extra_invited";
 
     private Event event;
     private boolean isInvited;
     private boolean isOnWaitlist;
+    private String currentUserId; // Added to track who is clicking
 
-    private TextView statusTag;
-    private TextView eventTitle;
-    private TextView eventPrice;
-    private TextView eventDate;
-    private TextView eventLocation;
-    private TextView organizerName;
-    private TextView eventAbout;
-    private TextView waitlistCapacity;
-    private TextView waitlistApplicants;
-    private TextView waitlistRegistrationEnds;
+    private UserController userController;
+    private UserRepository userRepository;
+
+    private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation;
+    private TextView organizerName, eventAbout, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
     private View eventImageContainer;
-    private Button buttonPrimary;
-    private Button buttonSecondary;
+
+    private View attendeeButtonsContainer;
+    private View organizerDashboardContainer;
+
+    private Button buttonPrimary, buttonSecondary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
-        // 1. Bind UI Elements First
+        userController = new UserController(this);
+        userRepository = new UserRepository();
+
+        // Fetch the logged-in user
+        currentUserId = userController.getCurrentUserId();
+        if (currentUserId == null) currentUserId = "unknown_user"; // Fallback safeguard
+
         findViews();
         setupBackButton();
 
-        // Optional View Entrants Button
         LinearLayout btnViewEntrants = findViewById(R.id.btn_view_entrants);
-        if (btnViewEntrants != null) {
-            btnViewEntrants.setOnClickListener(v -> {
-                startActivity(new Intent(EventDetailViewActivity.this, OrganizerEntrantsListView.class));
-            });
-        }
+        if (btnViewEntrants != null) btnViewEntrants.setOnClickListener(v -> startActivity(new Intent(this, OrganizerEntrantsListView.class)));
 
-        // 2. Extract Intent Data
+        LinearLayout btnEditEvent = findViewById(R.id.btn_edit_event);
+        if (btnEditEvent != null) btnEditEvent.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OrganizerEventAddEditView.class);
+            intent.putExtra("EXTRA_EDIT_EVENT_ID", event.getEventId());
+            startActivity(intent);
+            finish();
+        });
+
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
 
@@ -76,23 +80,20 @@ public class EventDetailViewActivity extends AppCompatActivity {
             return;
         }
 
-        // 3. Fetch Event Asynchronously from Firebase
         EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
             @Override
             public void onSuccess(Event result) {
                 event = result;
                 if (event != null) {
-                    // Check waitlist status (Uses the stub in EventController for now)
-                    isOnWaitlist = EventController.getInstance().isOnWaitlist(event.getEventId());
-
-                    // Display the fetched data!
+                    // Pass the user ID to the check!
+                    isOnWaitlist = EventController.getInstance().isOnWaitlist(event.getEventId(), currentUserId);
                     populateUI();
                 }
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(EventDetailViewActivity.this, "Failed to load event details.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EventDetailViewActivity.this, "Failed to load event.", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -110,44 +111,39 @@ public class EventDetailViewActivity extends AppCompatActivity {
         waitlistApplicants = findViewById(R.id.waitlist_applicants);
         waitlistRegistrationEnds = findViewById(R.id.waitlist_registration_ends);
         eventImageContainer = findViewById(R.id.event_image_container);
+
+        attendeeButtonsContainer = findViewById(R.id.event_detail_buttons);
+        organizerDashboardContainer = findViewById(R.id.organizer_dashboard_container);
+
         buttonPrimary = findViewById(R.id.button_primary);
         buttonSecondary = findViewById(R.id.button_secondary);
     }
 
     private void setupBackButton() {
         ImageButton back = findViewById(R.id.button_back);
-        if (back != null) {
-            back.setOnClickListener(v -> finish());
-        }
+        if (back != null) back.setOnClickListener(v -> finish());
     }
 
-    /**
-     * Called automatically once Firebase successfully returns the Event data.
-     */
     private void populateUI() {
         if (event == null) return;
 
         eventTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
         eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
 
-        // Format Date safely
         if (event.getTime() != null && event.getTime().getStartTime() > 0) {
             eventDate.setText(formatDate(event.getTime().getStartTime()));
         } else {
             eventDate.setText(getString(R.string.date));
         }
 
-        // Location safely
         if (event.getLocation() != null && event.getLocation().getLocationString() != null) {
             eventLocation.setText(event.getLocation().getLocationString());
         } else {
             eventLocation.setText(R.string.location);
         }
 
-        organizerName.setText(event.getOrganizerName() != null ? event.getOrganizerName() : "Unknown Organizer");
         eventAbout.setText(event.getDescription() != null ? event.getDescription() : "No description provided.");
 
-        // Capacity Check Logic
         boolean isCapacityFull = event.getCapacity() > 0 && event.getCurrentApplicants() >= event.getCapacity();
 
         if (isCapacityFull) {
@@ -167,11 +163,39 @@ public class EventDetailViewActivity extends AppCompatActivity {
             waitlistRegistrationEnds.setText("");
         }
 
-        // Standardize the placeholder instead of using dummy KEY checks
         eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_swimming));
 
-        // Configure Bottom Buttons
-        updateButtonState(isCapacityFull);
+        boolean isOrganizer = currentUserId != null && currentUserId.equals(event.getOrganizerId());
+
+        if (isOrganizer) {
+            organizerName.setText("You");
+            attendeeButtonsContainer.setVisibility(View.GONE);
+            organizerDashboardContainer.setVisibility(View.VISIBLE);
+        } else {
+            organizerDashboardContainer.setVisibility(View.GONE);
+            attendeeButtonsContainer.setVisibility(View.VISIBLE);
+
+            if (event.getOrganizerId() != null) {
+                userRepository.getUserById(event.getOrganizerId(), new RepositoryCallback<User>() {
+                    @Override
+                    public void onSuccess(User user) {
+                        if (user != null && user.getName() != null) {
+                            organizerName.setText(user.getName());
+                        } else {
+                            organizerName.setText("Unknown Organizer");
+                        }
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        organizerName.setText("Unknown Organizer");
+                    }
+                });
+            } else {
+                organizerName.setText("Unknown Organizer");
+            }
+
+            updateButtonState(isCapacityFull);
+        }
     }
 
     private String formatDate(long timeMillis) {
@@ -203,9 +227,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setOnClickListener(v -> {
             isOnWaitlist = true;
             if (event.getEventId() != null) {
-                EventController.getInstance().addToWaitlist(event.getEventId());
+                // PASS THE USER ID HERE!
+                EventController.getInstance().addToWaitlist(event.getEventId(), currentUserId);
             }
-            // Temporarily increment to fake it until waitlist backend is done
             event.setCurrentApplicants(event.getCurrentApplicants() + 1);
             populateUI();
             Toast.makeText(this, R.string.join_waitlist, Toast.LENGTH_SHORT).show();
@@ -223,9 +247,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setOnClickListener(v -> {
             isOnWaitlist = false;
             if (event.getEventId() != null) {
-                EventController.getInstance().removeFromWaitlist(event.getEventId());
+                // PASS THE USER ID HERE!
+                EventController.getInstance().removeFromWaitlist(event.getEventId(), currentUserId);
             }
-            // Temporarily decrement
             event.setCurrentApplicants(Math.max(0, event.getCurrentApplicants() - 1));
             populateUI();
             Toast.makeText(this, R.string.leave_waitlist, Toast.LENGTH_SHORT).show();

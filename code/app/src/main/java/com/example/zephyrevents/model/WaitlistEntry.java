@@ -17,7 +17,7 @@ public class WaitlistEntry {
 
 
     // no arg constructor for firebase
-    public WaitlistEntry(String placeholderTitle) {}
+    public WaitlistEntry() {}
     public WaitlistEntry(
             String userId,
             String eventId,
