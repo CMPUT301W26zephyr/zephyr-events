@@ -149,7 +149,19 @@ public class EventRepository {
 
     public void deleteEvent(String eventId, RepositoryCallback<Void> callback) {
         db.collection(Collections.EVENTS).document(eventId).delete()
-                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnSuccessListener(aVoid -> {
+                    // Cascade delete associated waitlists
+                    db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                            .whereEqualTo("eventId", eventId)
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+                                for (DocumentSnapshot doc : querySnapshot) {
+                                    doc.getReference().delete();
+                                }
+                            });
+
+                    callback.onSuccess(null);
+                })
                 .addOnFailureListener(callback::onFailure);
     }
 

@@ -118,4 +118,37 @@ public class WaitlistRepository {
             }
         });
     }
+
+    // READ - get a specific user's entry for an event
+    public void getUserWaitlistEntry(String eventId, String userId, RepositoryCallback<WaitlistEntry> callback) {
+        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        callback.onSuccess(querySnapshot.getDocuments().get(0).toObject(WaitlistEntry.class));
+                    } else {
+                        callback.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    // READ - get all waitlists joined by a specific user
+    public void getWaitlistsForUser(String userId, RepositoryCallback<List<WaitlistEntry>> callback) {
+        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<WaitlistEntry> entries = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        entries.add(doc.toObject(WaitlistEntry.class));
+                    }
+                    callback.onSuccess(entries);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+
 }

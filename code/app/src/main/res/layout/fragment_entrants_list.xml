@@ -5,7 +5,7 @@
     android:background="#FAFAFA">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_winners"
+        android:id="@+id/recycler_entrants"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_buttons"
@@ -20,12 +20,36 @@
         android:layout_alignParentBottom="true"
         android:background="#FAFAFA"
         android:orientation="vertical"
+        android:paddingHorizontal="16dp"
         android:paddingBottom="16dp">
 
         <include
             android:id="@+id/btn_notify"
             layout="@layout/button_secondary"
-            android:layout_width="match_parent" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/btn_run_lottery"
+            layout="@layout/button_primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/btn_draw_replacements"
+            layout="@layout/button_primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/btn_export_csv"
+            layout="@layout/button_primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
     </LinearLayout>
 </RelativeLayout>

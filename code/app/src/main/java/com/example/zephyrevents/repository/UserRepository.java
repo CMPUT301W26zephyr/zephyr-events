@@ -113,6 +113,17 @@ public class UserRepository {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "user deleted successfully id: " + id);
+
+                        // Cascade delete associated waitlists
+                        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                                .whereEqualTo("userId", id)
+                                .get()
+                                .addOnSuccessListener(querySnapshot -> {
+                                    for (DocumentSnapshot doc : querySnapshot) {
+                                        doc.getReference().delete();
+                                    }
+                                });
+
                         callback.onSuccess(null);
                     }
                 })
@@ -122,7 +133,8 @@ public class UserRepository {
                         Log.w(TAG, "error deleting user with id: "+id+"\n exception returned: ", e);
                         callback.onFailure(e);
                     }
-                });    }
+                });
+    }
 
     // Potential race condition, but... realistically how many people are updating user?
     public void updateNotificationOptOut(User user, String userId,

@@ -16,12 +16,16 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.model.Status;
 import com.example.zephyrevents.model.User;
+import com.example.zephyrevents.model.WaitlistEntry;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
+import com.example.zephyrevents.repository.WaitlistRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class EventDetailViewActivity extends AppCompatActivity {
@@ -30,14 +34,13 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private Event event;
     private boolean isInvited;
-    private boolean isOnWaitlist;
-    private String currentUserId; // Added to track who is clicking
 
+    private String currentUserId;
     private UserController userController;
     private UserRepository userRepository;
 
     private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation;
-    private TextView organizerName, eventAbout, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
+    private TextView organizerName, eventAbout, totalCapacity, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
     private View eventImageContainer;
 
     private View attendeeButtonsContainer;
@@ -53,23 +56,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
         userController = new UserController(this);
         userRepository = new UserRepository();
 
-        // Fetch the logged-in user
         currentUserId = userController.getCurrentUserId();
-        if (currentUserId == null) currentUserId = "unknown_user"; // Fallback safeguard
+        if (currentUserId == null) currentUserId = "unknown_user";
 
         findViews();
         setupBackButton();
-
-        LinearLayout btnViewEntrants = findViewById(R.id.btn_view_entrants);
-        if (btnViewEntrants != null) btnViewEntrants.setOnClickListener(v -> startActivity(new Intent(this, OrganizerEntrantsListView.class)));
-
-        LinearLayout btnEditEvent = findViewById(R.id.btn_edit_event);
-        if (btnEditEvent != null) btnEditEvent.setOnClickListener(v -> {
-            Intent intent = new Intent(this, OrganizerEventAddEditView.class);
-            intent.putExtra("EXTRA_EDIT_EVENT_ID", event.getEventId());
-            startActivity(intent);
-            finish();
-        });
 
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
@@ -80,13 +71,31 @@ public class EventDetailViewActivity extends AppCompatActivity {
             return;
         }
 
+        // Setup Organizer Dashboard buttons
+        LinearLayout btnViewEntrants = findViewById(R.id.btn_view_entrants);
+        if (btnViewEntrants != null) {
+            btnViewEntrants.setOnClickListener(v -> {
+                Intent intent = new Intent(this, OrganizerEntrantsListView.class);
+                intent.putExtra(EXTRA_EVENT, event.getEventId());
+                startActivity(intent);
+            });
+        }
+
+        LinearLayout btnEditEvent = findViewById(R.id.btn_edit_event);
+        if (btnEditEvent != null) {
+            btnEditEvent.setOnClickListener(v -> {
+                Intent intent = new Intent(this, OrganizerEventAddEditView.class);
+                intent.putExtra("EXTRA_EDIT_EVENT_ID", event.getEventId());
+                startActivity(intent);
+                finish();
+            });
+        }
+
         EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
             @Override
             public void onSuccess(Event result) {
                 event = result;
                 if (event != null) {
-                    // Pass the user ID to the check!
-                    isOnWaitlist = EventController.getInstance().isOnWaitlist(event.getEventId(), currentUserId);
                     populateUI();
                 }
             }
@@ -107,7 +116,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventLocation = findViewById(R.id.event_location);
         organizerName = findViewById(R.id.organizer_name);
         eventAbout = findViewById(R.id.event_about);
+        totalCapacity = findViewById(R.id.total_capacity);
         waitlistCapacity = findViewById(R.id.waitlist_capacity);
+
         waitlistApplicants = findViewById(R.id.waitlist_applicants);
         waitlistRegistrationEnds = findViewById(R.id.waitlist_registration_ends);
         eventImageContainer = findViewById(R.id.event_image_container);
@@ -131,7 +142,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
 
         if (event.getTime() != null && event.getTime().getStartTime() > 0) {
-            eventDate.setText(formatDate(event.getTime().getStartTime()));
+            eventDate.setText(new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getTime().getStartTime())));
         } else {
             eventDate.setText(getString(R.string.date));
         }
@@ -144,23 +155,21 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         eventAbout.setText(event.getDescription() != null ? event.getDescription() : "No description provided.");
 
-        boolean isCapacityFull = event.getCapacity() > 0 && event.getCurrentApplicants() >= event.getCapacity();
-
-        if (isCapacityFull) {
-            statusTag.setText(R.string.registration_closed_full);
-            statusTag.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_status_tag_orange));
-        } else {
-            statusTag.setText(R.string.registration_open);
-            statusTag.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_status_tag));
+        if (totalCapacity != null) {
+            totalCapacity.setText(String.valueOf(event.getCapacity()));
         }
 
-        waitlistCapacity.setText(String.format(Locale.getDefault(), "%s: %d", getString(R.string.total_capacity), event.getCapacity()));
-        waitlistApplicants.setText(String.format(Locale.getDefault(), "%s: %d", getString(R.string.applicants), event.getCurrentApplicants()));
+        String limitStr = (event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0)
+                ? String.valueOf(event.getWaitlistCapacity())
+                : "Unlimited";
+        if (waitlistCapacity != null) {
+            waitlistCapacity.setText(limitStr);
+        }
 
         if (event.getRegistrationEndTime() > 0) {
-            waitlistRegistrationEnds.setText(String.format("%s: %s", getString(R.string.registration_ends), formatDate(event.getRegistrationEndTime())));
+            waitlistRegistrationEnds.setText(new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getRegistrationEndTime())));
         } else {
-            waitlistRegistrationEnds.setText("");
+            waitlistRegistrationEnds.setText("N/A");
         }
 
         eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_swimming));
@@ -179,65 +188,120 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 userRepository.getUserById(event.getOrganizerId(), new RepositoryCallback<User>() {
                     @Override
                     public void onSuccess(User user) {
-                        if (user != null && user.getName() != null) {
-                            organizerName.setText(user.getName());
-                        } else {
-                            organizerName.setText("Unknown Organizer");
-                        }
+                        organizerName.setText(user != null && user.getName() != null ? user.getName() : "Unknown Organizer");
                     }
                     @Override
-                    public void onFailure(Exception e) {
-                        organizerName.setText("Unknown Organizer");
-                    }
+                    public void onFailure(Exception e) { organizerName.setText("Unknown Organizer"); }
                 });
             } else {
                 organizerName.setText("Unknown Organizer");
             }
-
-            updateButtonState(isCapacityFull);
         }
+
+        // ONE unified database call to fetch the waitlist, calculate counts, check lottery status, and check user status
+        new WaitlistRepository().getWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
+            @Override
+            public void onSuccess(List<WaitlistEntry> entries) {
+                int trueCount = (entries != null) ? entries.size() : 0;
+                waitlistApplicants.setText(String.valueOf(trueCount));
+
+                boolean lotteryRun = false;
+                WaitlistEntry myEntry = null;
+
+                // Scan the list for lottery status and our own entry
+                if (entries != null) {
+                    for (WaitlistEntry e : entries) {
+                        if (e.getStatus() != Status.WAITLISTED) {
+                            lotteryRun = true; // If anyone has a post-lottery status, the lottery has run
+                        }
+                        if (e.getUserId() != null && e.getUserId().equals(currentUserId)) {
+                            myEntry = e;
+                        }
+                    }
+                }
+
+                boolean trueCapacityFull = event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0 && trueCount >= event.getWaitlistCapacity();
+                boolean pastDeadline = event.getRegistrationEndTime() > 0 && System.currentTimeMillis() > event.getRegistrationEndTime();
+
+                // Waitlist is closed for NEW joins if ANY of these three things are true
+                boolean isClosedForNew = trueCapacityFull || lotteryRun || pastDeadline;
+
+                if (isClosedForNew) {
+                    statusTag.setText("CLOSED");
+                    statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag_orange));
+                } else {
+                    statusTag.setText(R.string.registration_open);
+                    statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag));
+                }
+
+                // If not organizer, configure the attendee buttons
+                if (!isOrganizer) {
+                    if (myEntry == null) {
+                        // User is NOT on the list. Can they join?
+                        if (isClosedForNew) {
+                            showWaitlistClosedButton(trueCapacityFull, lotteryRun, pastDeadline);
+                        } else {
+                            showJoinWaitlistButton(new WaitlistRepository());
+                        }
+                    } else {
+                        // User IS on the list. Handle buttons based on their status.
+                        switch (myEntry.getStatus()) {
+                            case WAITLISTED:
+                                showLeaveWaitlistButton(new WaitlistRepository());
+                                break;
+                            case SELECTED:
+                                showAcceptDeclineButtons(new WaitlistRepository());
+                                break;
+                            case LOST:
+                                showLostButton();
+                                break;
+                            case ACCEPTED:
+                                buttonPrimary.setVisibility(View.VISIBLE);
+                                buttonPrimary.setEnabled(false);
+                                buttonPrimary.setText("STATUS: CONFIRMED");
+                                buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.youre_in_green));
+                                buttonSecondary.setVisibility(View.GONE);
+                                break;
+                            case DECLINED:
+                                buttonPrimary.setVisibility(View.VISIBLE);
+                                buttonPrimary.setEnabled(false);
+                                buttonPrimary.setText("STATUS: DECLINED");
+                                buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.invite_declined_red));
+                                buttonSecondary.setVisibility(View.GONE);
+                                break;
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
+                waitlistApplicants.setText(String.valueOf(event.getCurrentApplicants()));
+            }
+        });
     }
 
-    private String formatDate(long timeMillis) {
-        return new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(timeMillis));
-    }
-
-    private void updateButtonState(boolean isCapacityFull) {
-        if (isInvited) {
-            showAcceptDeclineButtons();
-            return;
-        }
-        if (isCapacityFull && !isOnWaitlist) {
-            showCapacityFullButton();
-            return;
-        }
-        if (isOnWaitlist) {
-            showLeaveWaitlistButton();
-        } else {
-            showJoinWaitlistButton();
-        }
-    }
-
-    private void showJoinWaitlistButton() {
+    private void showJoinWaitlistButton(WaitlistRepository repo) {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(true);
         buttonPrimary.setText(R.string.join_waitlist);
         buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> {
-            isOnWaitlist = true;
-            if (event.getEventId() != null) {
-                // PASS THE USER ID HERE!
-                EventController.getInstance().addToWaitlist(event.getEventId(), currentUserId);
-            }
-            event.setCurrentApplicants(event.getCurrentApplicants() + 1);
-            populateUI();
-            Toast.makeText(this, R.string.join_waitlist, Toast.LENGTH_SHORT).show();
+            WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
+            repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(EventDetailViewActivity.this, "Joined Waitlist!", Toast.LENGTH_SHORT).show();
+                    populateUI();
+                }
+                @Override
+                public void onFailure(Exception e) {}
+            });
         });
         buttonSecondary.setVisibility(View.GONE);
     }
 
-    private void showLeaveWaitlistButton() {
+    private void showLeaveWaitlistButton(WaitlistRepository repo) {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(true);
         buttonPrimary.setText(R.string.leave_waitlist);
@@ -245,54 +309,86 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setBackgroundTintList(null);
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.primary_red));
         buttonPrimary.setOnClickListener(v -> {
-            isOnWaitlist = false;
-            if (event.getEventId() != null) {
-                // PASS THE USER ID HERE!
-                EventController.getInstance().removeFromWaitlist(event.getEventId(), currentUserId);
-            }
-            event.setCurrentApplicants(Math.max(0, event.getCurrentApplicants() - 1));
-            populateUI();
-            Toast.makeText(this, R.string.leave_waitlist, Toast.LENGTH_SHORT).show();
+            repo.removeUserFromWaitlist(event.getEventId(), currentUserId, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(EventDetailViewActivity.this, "Left Waitlist", Toast.LENGTH_SHORT).show();
+                    populateUI();
+                }
+                @Override
+                public void onFailure(Exception e) {}
+            });
         });
         buttonSecondary.setVisibility(View.GONE);
     }
 
-    private void showCapacityFullButton() {
+    private void showAcceptDeclineButtons(WaitlistRepository repo) {
+        buttonPrimary.setVisibility(View.VISIBLE);
+        buttonPrimary.setEnabled(true);
+        buttonPrimary.setText(R.string.accept_invite);
+        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
+        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
+        buttonPrimary.setOnClickListener(v -> {
+            repo.updateStatus(event.getEventId(), currentUserId, Status.ACCEPTED, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Intent intent = new Intent(EventDetailViewActivity.this, EventStatusActivity.class);
+                    intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
+                    intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_ACCEPTED);
+                    startActivity(intent);
+                    finish();
+                }
+                @Override
+                public void onFailure(Exception e) {}
+            });
+        });
+
+        buttonSecondary.setVisibility(View.VISIBLE);
+        buttonSecondary.setText(R.string.decline_invite);
+        buttonSecondary.setOnClickListener(v -> {
+            repo.updateStatus(event.getEventId(), currentUserId, Status.DECLINED, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Intent intent = new Intent(EventDetailViewActivity.this, EventStatusActivity.class);
+                    intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
+                    intent.putExtra(EventStatusActivity.EXTRA_EVENT_KEY, event.getEventId());
+                    intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_DECLINED);
+                    startActivity(intent);
+                    finish();
+                }
+                @Override
+                public void onFailure(Exception e) {}
+            });
+        });
+    }
+
+    private void showWaitlistClosedButton(boolean capacity, boolean lottery, boolean deadline) {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(false);
-        buttonPrimary.setText(R.string.capacity_full);
-        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, R.color.capacity_full_button));
-        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.black));
+
+        // Tell the user exactly why the button is grayed out
+        if (lottery) {
+            buttonPrimary.setText("LOTTERY COMPLETE");
+        } else if (deadline) {
+            buttonPrimary.setText("REGISTRATION CLOSED");
+        } else {
+            buttonPrimary.setText(R.string.capacity_full);
+        }
+
+        // Gray it out
+        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(null);
         buttonSecondary.setVisibility(View.GONE);
     }
 
-    private void showAcceptDeclineButtons() {
+    private void showLostButton() {
         buttonPrimary.setVisibility(View.VISIBLE);
-        buttonPrimary.setText(R.string.accept_invite);
-        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
+        buttonPrimary.setEnabled(false);
+        buttonPrimary.setText("STATUS: NOT SELECTED");
+        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
-        buttonPrimary.setOnClickListener(v -> openYoureInScreen());
-
-        buttonSecondary.setVisibility(View.VISIBLE);
-        buttonSecondary.setText(R.string.decline_invite);
-        buttonSecondary.setOnClickListener(v -> openInviteDeclinedScreen());
-    }
-
-    private void openYoureInScreen() {
-        Intent intent = new Intent(this, EventStatusActivity.class);
-        intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
-        intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_ACCEPTED);
-        startActivity(intent);
-        finish();
-    }
-
-    private void openInviteDeclinedScreen() {
-        Intent intent = new Intent(this, EventStatusActivity.class);
-        intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
-        intent.putExtra(EventStatusActivity.EXTRA_EVENT_KEY, event.getEventId());
-        intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_DECLINED);
-        startActivity(intent);
-        finish();
+        buttonPrimary.setOnClickListener(null);
+        buttonSecondary.setVisibility(View.GONE);
     }
 }
