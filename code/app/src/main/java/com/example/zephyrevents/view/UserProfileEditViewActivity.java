@@ -2,11 +2,11 @@ package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,19 +26,25 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     private Spinner spCountry;
     private EditText etPhone;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_user);
-        View backBtn = findViewById(R.id.btnBack);
-        backBtn.setOnClickListener(v -> finish());
-        backBtn.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                finish();
-            }
-            return true;
-        });
+
+        // Customize layout_top_bar
+        TextView toolbarTitle = findViewById(R.id.toolbar_title);
+        if (toolbarTitle != null) {
+            toolbarTitle.setText("Edit Profile");
+        }
+        View cancelBtnTop = findViewById(R.id.btn_cancel);
+        if (cancelBtnTop != null) {
+            cancelBtnTop.setVisibility(View.GONE);
+        }
+        View backBtn = findViewById(R.id.toolbar_back);
+        if (backBtn != null) {
+            backBtn.setOnClickListener(v -> finish());
+        }
+
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() { finish(); }
@@ -58,8 +64,6 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         }
         setupCountrySpinner();
         setupClickListeners();
-
-
     }
 
     private void setupCountrySpinner() {
@@ -67,8 +71,6 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,countries);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCountry.setAdapter(adapter);
-
-
     }
 
     private void loadUser(String userId) {
@@ -83,10 +85,7 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
             public void onFailure(Exception e) {
                 Toast.makeText(UserProfileEditViewActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
                 finish();
-
             }
-
-
         });
     }
 
@@ -108,18 +107,12 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
                     break;
                 }
             }
-
         }
     }
 
     private void setupClickListeners(){
         findViewById(R.id.btnCancel).setOnClickListener(v -> finish());
         findViewById(R.id.btnSave).setOnClickListener(v -> saveProfile());
-
-
-
-
-
     }
 
     private void saveProfile(){
@@ -149,13 +142,7 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
             @Override
             public void onFailure(Exception e) {
                 Toast.makeText(UserProfileEditViewActivity.this, "Failed to save profile", Toast.LENGTH_SHORT).show();
-
-
-
             }
         });
-
-
     }
-
 }

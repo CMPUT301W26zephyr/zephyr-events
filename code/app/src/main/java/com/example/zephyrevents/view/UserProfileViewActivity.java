@@ -21,7 +21,6 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.util.BottomNavHelper;
 
-
 public class UserProfileViewActivity extends AppCompatActivity {
     private UserController userController;
     private User currentUser;
@@ -29,7 +28,6 @@ public class UserProfileViewActivity extends AppCompatActivity {
     private TextView txtName;
     private TextView txtContact;
     private ImageView avatarImg;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,15 +85,23 @@ public class UserProfileViewActivity extends AppCompatActivity {
         if (contact != null){
             String email = contact.getEmail();
             String phone = contact.getPhone();
-            txtContact.setText(email + "|" + phone);
+            txtContact.setText(email + " | " + phone);
         }
-
     }
 
     private void setUpClickListener(){
         findViewById(R.id.btnEditAvatar).setOnClickListener(v -> openEditProfile());
-        findViewById(R.id.rowNotifications).setOnClickListener(v -> openNotifications());
         findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
+
+        // Split the Notification Actions
+        findViewById(R.id.rowNotifications).setOnClickListener(v -> {
+            startActivity(new Intent(this, UserNotificationListView.class));
+        });
+        findViewById(R.id.rowNotificationSettings).setOnClickListener(v -> {
+            startActivity(new Intent(this, UserProfileSettingsViewActivity.class));
+        });
+
+        findViewById(R.id.rowTC).setOnClickListener(v -> { /* TODO: Open Terms */ });
         findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
         BottomNavHelper.setupBottomNav(this);
@@ -106,11 +112,6 @@ public class UserProfileViewActivity extends AppCompatActivity {
         if (currentUser != null){
             intent.putExtra("USER", currentUser.getId());
         }
-        startActivity(intent);
-    }
-
-    private void openNotifications(){
-        Intent intent = new Intent(this, UserProfileSettingsViewActivity.class);
         startActivity(intent);
     }
 
@@ -147,11 +148,5 @@ public class UserProfileViewActivity extends AppCompatActivity {
             });
         });
         dialog.show();
-
-
     }
-
-
-
-
 }

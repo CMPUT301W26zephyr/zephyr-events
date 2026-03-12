@@ -2,10 +2,11 @@ package com.example.zephyrevents.view;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,17 +33,24 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
     private Switch swwaitlistalert;
     private Switch swlotteryresults;
 
-
-
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications_setting);
+
+        // Customize layout_top_bar
+        TextView toolbarTitle = findViewById(R.id.toolbar_title);
+        if (toolbarTitle != null) {
+            toolbarTitle.setText("Notification Settings");
+        }
+        View cancelBtn = findViewById(R.id.btn_cancel);
+        if (cancelBtn != null) {
+            cancelBtn.setVisibility(View.GONE);
+        }
+        View backBtn = findViewById(R.id.toolbar_back);
+        if (backBtn != null) {
+            backBtn.setOnClickListener(v -> finish());
+        }
 
         user_prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
@@ -53,18 +61,9 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
         swwaitlistalert = findViewById(R.id.swWaitlistAlerts);
         swlotteryresults = findViewById(R.id.swLotteryResultsNotif);
 
-
         loadSetting();
         setUpClickListener();
 
-        View backBtn = findViewById(R.id.btnBack);
-        backBtn.setOnClickListener(v -> finish());
-        backBtn.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                finish();
-            }
-            return true;
-        });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() { finish(); }
@@ -78,8 +77,6 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
         sweventchanges.setChecked(user_prefs.getBoolean(KEY_EVENT_CHANGES,false));
         swwaitlistalert.setChecked(user_prefs.getBoolean(KEY_WAITLIST_ALERTS,false));
         swlotteryresults.setChecked(user_prefs.getBoolean(KEY_LOTTERY_RESULTS,true));
-
-
     }
 
     private void setUpClickListener(){
@@ -90,8 +87,6 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
         sweventchanges.setOnCheckedChangeListener(listener);
         swwaitlistalert.setOnCheckedChangeListener(listener);
         swlotteryresults.setOnCheckedChangeListener(listener);
-
-
     }
 
     private void saveSetting() {
@@ -103,9 +98,7 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
                 .putBoolean(KEY_WAITLIST_ALERTS, swwaitlistalert.isChecked())
                 .putBoolean(KEY_LOTTERY_RESULTS, swlotteryresults.isChecked())
                 .apply();
-        }
-
-
+    }
 }
 
 

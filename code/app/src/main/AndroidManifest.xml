@@ -26,34 +26,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".view.HomeActivity"
             android:exported="false" />
+
         <activity
             android:name=".view.EventsListActivity"
-            android:exported="false">
+            android:exported="false"/>
 
-        </activity>
         <activity
             android:name=".view.EventDetailViewActivity"
             android:exported="false" />
-        <activity
-            android:name=".view.YoureInActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.InviteDeclinedActivity"
-            android:exported="false" />
+
         <activity
             android:name=".view.MyEventsActivity"
             android:exported="false" />
+
         <activity
             android:name=".view.OrganizerEventAddEditView"
-            android:exported="true" />
-        <activity
-            android:name=".view.OrganizerEntrantsListView"
-            android:exported="true" />
-        <activity
-            android:name=".view.UserNotificationListView"
             android:exported="true" />
 
         <activity
@@ -69,10 +60,6 @@
             android:exported="true" />
 
         <activity
-            android:name=".view.SearchViewActivity"
-            android:exported="true" />
-
-        <activity
             android:name=".view.UserProfileSettingsViewActivity"
             android:exported="true" />
 
@@ -82,6 +69,10 @@
 
         <activity
             android:name=".view.UserProfileViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.EventStatusActivity"
             android:exported="true" />
 
     </application>
