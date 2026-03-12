@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.repository.RepositoryCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,30 +54,48 @@ public class EventDetailViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
-        event = getEventFromIntent();
-        if (event == null) {
+        // 1. Bind UI Elements First
+        findViews();
+        setupBackButton();
+
+        // Optional View Entrants Button
+        LinearLayout btnViewEntrants = findViewById(R.id.btn_view_entrants);
+        if (btnViewEntrants != null) {
+            btnViewEntrants.setOnClickListener(v -> {
+                startActivity(new Intent(EventDetailViewActivity.this, OrganizerEntrantsListView.class));
+            });
+        }
+
+        // 2. Extract Intent Data
+        String eventId = getIntent().getStringExtra(EXTRA_EVENT);
+        isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
+
+        if (eventId == null) {
+            Toast.makeText(this, "Error: No Event ID provided.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-        isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
-        EventController controller = EventController.getInstance();
-        isOnWaitlist = event.getEventId() != null && controller.isOnWaitlist(event.getEventId());
 
-        findViews();
-        setupBackButton();
-        bindEventToViews();
-        updateButtonState();
+        // 3. Fetch Event Asynchronously from Firebase
+        EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
+            @Override
+            public void onSuccess(Event result) {
+                event = result;
+                if (event != null) {
+                    // Check waitlist status (Uses the stub in EventController for now)
+                    isOnWaitlist = EventController.getInstance().isOnWaitlist(event.getEventId());
 
-        LinearLayout btnViewEntrants = findViewById(R.id.btn_view_entrants);
-        btnViewEntrants.setOnClickListener(v -> {
-            startActivity(new Intent(EventDetailViewActivity.this, OrganizerEntrantsListView.class));
+                    // Display the fetched data!
+                    populateUI();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EventDetailViewActivity.this, "Failed to load event details.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         });
-    }
-
-    private Event getEventFromIntent() {
-        String key = getIntent().getStringExtra(EXTRA_EVENT);
-        if (key == null) return null;
-        return EventController.getInstance().getEvent(key);
     }
 
     private void findViews() {
@@ -97,18 +116,41 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private void setupBackButton() {
         ImageButton back = findViewById(R.id.button_back);
-        back.setOnClickListener(v -> finish());
+        if (back != null) {
+            back.setOnClickListener(v -> finish());
+        }
     }
 
-    private void bindEventToViews() {
-        eventTitle.setText(event.getName());
-        eventPrice.setText(String.valueOf(event.getPrice()));
-        eventDate.setText(getString(R.string.date));
-        eventLocation.setText(event.getLocation().getLocationString() != null ? event.getLocation().getLocationString() : getString(R.string.location));
-        organizerName.setText(event.getOrganizerName() != null ? event.getOrganizerName() : "");
-        eventAbout.setText(event.getDescription() != null ? event.getDescription() : "");
+    /**
+     * Called automatically once Firebase successfully returns the Event data.
+     */
+    private void populateUI() {
+        if (event == null) return;
 
-        if (event.isCapacityFull()) {
+        eventTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
+        eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
+
+        // Format Date safely
+        if (event.getTime() != null && event.getTime().getStartTime() > 0) {
+            eventDate.setText(formatDate(event.getTime().getStartTime()));
+        } else {
+            eventDate.setText(getString(R.string.date));
+        }
+
+        // Location safely
+        if (event.getLocation() != null && event.getLocation().getLocationString() != null) {
+            eventLocation.setText(event.getLocation().getLocationString());
+        } else {
+            eventLocation.setText(R.string.location);
+        }
+
+        organizerName.setText(event.getOrganizerName() != null ? event.getOrganizerName() : "Unknown Organizer");
+        eventAbout.setText(event.getDescription() != null ? event.getDescription() : "No description provided.");
+
+        // Capacity Check Logic
+        boolean isCapacityFull = event.getCapacity() > 0 && event.getCurrentApplicants() >= event.getCapacity();
+
+        if (isCapacityFull) {
             statusTag.setText(R.string.registration_closed_full);
             statusTag.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_status_tag_orange));
         } else {
@@ -116,41 +158,40 @@ public class EventDetailViewActivity extends AppCompatActivity {
             statusTag.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_status_tag));
         }
 
-        // Could be a source of ui bugs due to locale, but I doubt it, just in case, commenting.
-        waitlistCapacity.setText(String.format("%s: %d", getString(R.string.total_capacity), event.getCapacity()));
-        waitlistApplicants.setText(String.format("%s: %d", getString(R.string.applicants), event.getCurrentApplicants()));
+        waitlistCapacity.setText(String.format(Locale.getDefault(), "%s: %d", getString(R.string.total_capacity), event.getCapacity()));
+        waitlistApplicants.setText(String.format(Locale.getDefault(), "%s: %d", getString(R.string.applicants), event.getCurrentApplicants()));
+
         if (event.getRegistrationEndTime() > 0) {
-            waitlistRegistrationEnds.setText(String.format("%s: %s", getString(R.string.registration_ends), formatRegistrationEnd(event.getRegistrationEndTime())));
+            waitlistRegistrationEnds.setText(String.format("%s: %s", getString(R.string.registration_ends), formatDate(event.getRegistrationEndTime())));
         } else {
             waitlistRegistrationEnds.setText("");
         }
-        setPlaceholderBackgroundByEvent();
+
+        // Standardize the placeholder instead of using dummy KEY checks
+        eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_swimming));
+
+        // Configure Bottom Buttons
+        updateButtonState(isCapacityFull);
     }
 
-    private void setPlaceholderBackgroundByEvent() {
-        String id = event.getEventId();
-        if (id != null && id.equals(EventController.KEY_PIANO)) {
-            eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_piano));
-        } else {
-            eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_swimming));
-        }
-    }
-
-    private String formatRegistrationEnd(long timeMillis) {
+    private String formatDate(long timeMillis) {
         return new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(timeMillis));
     }
 
-    private void updateButtonState() {
+    private void updateButtonState(boolean isCapacityFull) {
         if (isInvited) {
             showAcceptDeclineButtons();
             return;
         }
-        if (event.isCapacityFull() && !isOnWaitlist) {
+        if (isCapacityFull && !isOnWaitlist) {
             showCapacityFullButton();
             return;
         }
-        if (isOnWaitlist) showLeaveWaitlistButton();
-        else showJoinWaitlistButton();
+        if (isOnWaitlist) {
+            showLeaveWaitlistButton();
+        } else {
+            showJoinWaitlistButton();
+        }
     }
 
     private void showJoinWaitlistButton() {
@@ -161,8 +202,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> {
             isOnWaitlist = true;
-            if (event.getEventId() != null) EventController.getInstance().addToWaitlist(event.getEventId());
-            updateButtonState();
+            if (event.getEventId() != null) {
+                EventController.getInstance().addToWaitlist(event.getEventId());
+            }
+            // Temporarily increment to fake it until waitlist backend is done
+            event.setCurrentApplicants(event.getCurrentApplicants() + 1);
+            populateUI();
             Toast.makeText(this, R.string.join_waitlist, Toast.LENGTH_SHORT).show();
         });
         buttonSecondary.setVisibility(View.GONE);
@@ -177,8 +222,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.primary_red));
         buttonPrimary.setOnClickListener(v -> {
             isOnWaitlist = false;
-            if (event.getEventId() != null) EventController.getInstance().removeFromWaitlist(event.getEventId());
-            updateButtonState();
+            if (event.getEventId() != null) {
+                EventController.getInstance().removeFromWaitlist(event.getEventId());
+            }
+            // Temporarily decrement
+            event.setCurrentApplicants(Math.max(0, event.getCurrentApplicants() - 1));
+            populateUI();
             Toast.makeText(this, R.string.leave_waitlist, Toast.LENGTH_SHORT).show();
         });
         buttonSecondary.setVisibility(View.GONE);
@@ -200,6 +249,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> openYoureInScreen());
+
         buttonSecondary.setVisibility(View.VISIBLE);
         buttonSecondary.setText(R.string.decline_invite);
         buttonSecondary.setOnClickListener(v -> openInviteDeclinedScreen());

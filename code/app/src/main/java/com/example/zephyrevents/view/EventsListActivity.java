@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.util.BottomNavHelper;
 
 import java.util.ArrayList;
@@ -56,14 +57,7 @@ public class EventsListActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize Data
-        controller = EventController.getInstance();
-        allEvents = controller.getEventsForList();
-
-        // We use a separate list for the adapter so we can filter it without losing the original data
-        displayedEvents.addAll(allEvents);
-
-        // Setup ListView & Adapter
+        // Setup the ListView and Adapter completely EMPTY first
         adapter = new EventListAdapter(this, displayedEvents);
         ListView listView = findViewById(R.id.event_list);
         listView.setAdapter(adapter);
@@ -73,6 +67,25 @@ public class EventsListActivity extends AppCompatActivity {
             if (event != null && event.getEventId() != null) {
                 boolean invited = controller.isInvitedEvent(event.getEventId());
                 openEventDetail(event.getEventId(), invited);
+            }
+        });
+
+        // Fetch data from Firebase asynchronously
+        controller = EventController.getInstance();
+        controller.getAllEvents(new RepositoryCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> result) {
+                allEvents.clear();
+                if (result != null) {
+                    allEvents.addAll(result);
+                }
+                // Refresh the displayed list with the newly downloaded events
+                filterEvents("");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle error
             }
         });
 

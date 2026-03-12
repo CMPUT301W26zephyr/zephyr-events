@@ -8,7 +8,7 @@ public class Location {
     private static final String TAG = "Location";
 
 
-    Location(){}
+    public Location(){}
 
     public Location(Coordinate coordinate,String locationString){
         this.coordinate = coordinate;
