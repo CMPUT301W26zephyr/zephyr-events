@@ -3,7 +3,6 @@ package com.example.zephyrevents.view;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -23,6 +22,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class OrganizerEntrantsListView extends AppCompatActivity {
 
     private final String[] tabTitles = new String[]{"Waitlist", "Winners", "Unregistered", "Final List"};
+    private String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +36,12 @@ public class OrganizerEntrantsListView extends AppCompatActivity {
             return insets;
         });
 
+        // Retrieve the Event ID passed from EventDetailViewActivity
+        eventId = getIntent().getStringExtra(EventDetailViewActivity.EXTRA_EVENT);
+
         TextView title = findViewById(R.id.toolbar_title);
-        title.setText("Event Waitlists");
+        title.setText("Entrants List");
+
         findViewById(R.id.btn_cancel).setVisibility(View.GONE);
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
@@ -66,13 +70,8 @@ public class OrganizerEntrantsListView extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            switch (position) {
-                case 0: return new WaitlistFragment();
-                case 1: return new WinnersFragment();
-                case 2: return new UnregisteredFragment();
-                case 3: return new FinalListFragment();
-                default: return new WaitlistFragment();
-            }
+            // Uses the dynamic fragment we just created
+            return EntrantsListFragment.newInstance(position, eventId);
         }
 
         @Override

@@ -16,6 +16,7 @@ public class Event {
     private double price;
     private int capacity;
     private int applicantCount;
+    private Integer waitlistCapacity;
     private long registrationEndTime;
     private String organizerId;
     private String imageUrl;
@@ -90,7 +91,7 @@ public class Event {
      * Returns true if the event waitlist has reached capacity (no more join allowed).
      */
     public boolean isCapacityFull() {
-        return capacity > 0 && currentApplicants >= capacity;
+        return waitlistCapacity != null && waitlistCapacity > 0 && currentApplicants >= waitlistCapacity;
     }
 
     public String getEventId() {
@@ -203,5 +204,13 @@ public class Event {
 
     public void setCurrentApplicants(int currentApplicants) {
         this.currentApplicants = currentApplicants;
+    }
+
+    public Integer getWaitlistCapacity() {
+        return waitlistCapacity;
+    }
+
+    public void setWaitlistCapacity(Integer waitlistCapacity) {
+        this.waitlistCapacity = waitlistCapacity;
     }
 }

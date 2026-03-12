@@ -105,6 +105,17 @@ public class EventConfirmationFragment extends Fragment {
                     try { newEvent.setPrice(Double.parseDouble(viewModel.price)); } catch (Exception e) { newEvent.setPrice(0.0); }
                     try { newEvent.setCapacity(Integer.parseInt(viewModel.attendeeCount)); } catch (Exception e) { newEvent.setCapacity(0); }
 
+                    // --- NEW: Map Waitlist Capacity ---
+                    try {
+                        if (viewModel.waitlistCapacity != null && !viewModel.waitlistCapacity.trim().isEmpty()) {
+                            newEvent.setWaitlistCapacity(Integer.parseInt(viewModel.waitlistCapacity.trim()));
+                        } else {
+                            newEvent.setWaitlistCapacity(null);
+                        }
+                    } catch (Exception e) {
+                        newEvent.setWaitlistCapacity(null);
+                    }
+
                     // --- NEW: Combine Location & Address and attach it to the Event ---
                     com.example.zephyrevents.model.Location eventLoc = new com.example.zephyrevents.model.Location();
                     String displayLocation = viewModel.location;
