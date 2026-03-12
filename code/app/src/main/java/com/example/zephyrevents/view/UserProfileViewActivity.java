@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
@@ -21,7 +22,7 @@ import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.util.BottomNavHelper;
 
 public class UserProfileViewActivity extends AppCompatActivity {
-    private UserRepository userRepository;
+    private UserController userController;
     private User currentUser;
 
     private TextView txtName;
@@ -33,7 +34,7 @@ public class UserProfileViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile_user);
-        userRepository = new UserRepository();
+        userController = new UserController(this);
 
         txtName = findViewById(R.id.txtName);
         txtContact = findViewById(R.id.txtContact);
@@ -51,7 +52,7 @@ public class UserProfileViewActivity extends AppCompatActivity {
     }
 
     private void loadUser(String userId){
-        userRepository.getUserById(userId, new RepositoryCallback<User>() {
+        userController.fetchCurrentUser(new RepositoryCallback<User>() {
             @Override
             public void onSuccess(User result){
                 currentUser = result;
@@ -60,7 +61,17 @@ public class UserProfileViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e){
-                Toast.makeText(UserProfileViewActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
+                // If the user was out of sync and forced logged out
+                if (!userController.isUserLoggedIn()) {
+                    Toast.makeText(UserProfileViewActivity.this, "Session expired or account removed.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(UserProfileViewActivity.this, WelcomeActivity.class);
+                    intent.putExtra("TOAST_MESSAGE", "Session expired or account removed.");  // pass to notify the user of what happened
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(UserProfileViewActivity.this, "Failed to load profile: Network error", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -111,23 +122,28 @@ public class UserProfileViewActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .create();
         dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> dialog.dismiss());
+
         dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
-            if (currentUser == null){
-                Toast.makeText(this, "No user to delete", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            String userId = currentUser.getId();
             dialog.dismiss();
-            userRepository.deleteUser(userId, new RepositoryCallback<Void>() {
+
+            // Use the controller to handle the logic
+            userController.deleteAccount(new RepositoryCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-                    setResult(RESULT_OK);
+//                    Toast.makeText(UserProfileViewActivity.this, "Account Deleted", Toast.LENGTH_SHORT).show();
+
+                    // Navigate back to WelcomeActivity and clear the stack
+                    Intent intent = new Intent(UserProfileViewActivity.this, WelcomeActivity.class);
+                    intent.putExtra("TOAST_MESSAGE", "Account Deleted!");  // pass to notify the user of what happened
+
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                     finish();
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    Toast.makeText(UserProfileViewActivity.this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserProfileViewActivity.this, "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });
