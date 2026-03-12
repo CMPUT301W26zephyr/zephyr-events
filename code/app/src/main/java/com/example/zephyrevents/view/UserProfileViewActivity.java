@@ -15,15 +15,11 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.UserController;
-import com.example.zephyrevents.model.ContactInfo;
-import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.util.BottomNavHelper;
 
 public class UserProfileViewActivity extends AppCompatActivity {
     private UserController userController;
-    private User currentUser;
 
     private TextView txtName;
     private TextView txtContact;
@@ -40,53 +36,56 @@ public class UserProfileViewActivity extends AppCompatActivity {
         txtContact = findViewById(R.id.txtContact);
         avatarImg = findViewById(R.id.avatar_img);
 
-        String userId = getIntent().getStringExtra("USER");
 
-        if (userId != null) {
-            loadUser(userId);
-        } else {
-            txtName.setText("John Doe");
-            txtContact.setText("youremail@domain.com | +01 234 567 89");
-        }
+
         setUpClickListener();
+        refreshProfile();
+
+
+
     }
 
-    private void loadUser(String userId){
-        userController.fetchCurrentUser(new RepositoryCallback<User>() {
+    @Override
+    protected void onResume(){
+        super.onResume();
+        refreshProfile();
+    }
+
+    private void refreshProfile(){
+        userController.getCurrentUserProfileInfo(new RepositoryCallback<String[]>() {
             @Override
-            public void onSuccess(User result){
-                currentUser = result;
-                updateUI(result);
+            public void onSuccess(String[] data) {
+                String name = (data != null && data.length > 0 && data[0] != null) ? data[0] : "";
+                String email = (data != null && data.length > 1 && data[1] != null) ? data[1] : "";
+                String phone = (data != null && data.length > 2 && data[2] != null) ? data[2] : "";
+
+                String contactinfo;
+                if (!email.isEmpty() && !phone.isEmpty()) contactinfo = email + " | " + phone;
+                else if (!email.isEmpty()) contactinfo = email;
+                else if (!phone.isEmpty()) contactinfo = phone;
+                else contactinfo = "";
+
+                txtName.setText(name.isEmpty() ? "John Doe" : name);
+                txtContact.setText(contactinfo);
+
             }
 
             @Override
-            public void onFailure(Exception e){
-                // If the user was out of sync and forced logged out
-                if (!userController.isUserLoggedIn()) {
+            public void onFailure(Exception e) {
+                if (!userController.isUserLoggedIn()){
                     Toast.makeText(UserProfileViewActivity.this, "Session expired or account removed.", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(UserProfileViewActivity.this, WelcomeActivity.class);
-                    intent.putExtra("TOAST_MESSAGE", "Session expired or account removed.");  // pass to notify the user of what happened
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
-                } else {
-                    Toast.makeText(UserProfileViewActivity.this, "Failed to load profile: Network error", Toast.LENGTH_SHORT).show();
+
+                } else{
+                    Toast.makeText(UserProfileViewActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
+
                 }
+
             }
         });
-    }
-
-    private void updateUI(User user){
-        if (user == null) return;
-        txtName.setText(user.getName());
-
-        ContactInfo contact = user.getContactInfo();
-
-        if (contact != null){
-            String email = contact.getEmail();
-            String phone = contact.getPhone();
-            txtContact.setText(email + " | " + phone);
-        }
     }
 
     private void setUpClickListener(){
@@ -108,11 +107,7 @@ public class UserProfileViewActivity extends AppCompatActivity {
     }
 
     private void openEditProfile(){
-        Intent intent = new Intent(this, UserProfileEditViewActivity.class);
-        if (currentUser != null){
-            intent.putExtra("USER", currentUser.getId());
-        }
-        startActivity(intent);
+        startActivity(new Intent(this, UserProfileEditViewActivity.class));
     }
 
     private void showDeleteConfirmDialog(){
