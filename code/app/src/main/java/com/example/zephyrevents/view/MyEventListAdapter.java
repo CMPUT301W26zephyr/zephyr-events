@@ -17,7 +17,10 @@ import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.WaitlistEntry;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
 
@@ -39,23 +42,36 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
         WaitlistEntry entry = getItem(position);
         if (entry == null) return row;
 
-        TextView titleView = row.findViewById(R.id.my_event_title);
-        TextView durationView = row.findViewById(R.id.my_event_duration);
-        TextView statusView = row.findViewById(R.id.my_event_status);
+        TextView titleView = row.findViewById(R.id.item_event_title);
+        TextView dateLocationView = row.findViewById(R.id.item_event_date_location);
+        TextView priceView = row.findViewById(R.id.item_event_price);
+        TextView statusView = row.findViewById(R.id.item_event_status);
 
-        // Fetch Event Title Asynchronously from Firebase
         titleView.setText("Loading...");
+        dateLocationView.setText("");
+        priceView.setText("");
+
         if (entry.getEventId() != null) {
             EventController.getInstance().getEventById(entry.getEventId(), new RepositoryCallback<Event>() {
                 @Override
                 public void onSuccess(Event result) {
-                    if (result != null && result.getName() != null) {
-                        titleView.setText(result.getName());
-                    } else {
-                        titleView.setText("Unknown Event");
+                    if (result != null) {
+                        titleView.setText(result.getName() != null ? result.getName() : "Unknown Event");
+                        priceView.setText(String.format(Locale.getDefault(), "$%.2f", result.getPrice()));
+
+                        String dateStr = "";
+                        if (result.getTime() != null && result.getTime().getStartTime() > 0) {
+                            dateStr = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(result.getTime().getStartTime()));
+                        }
+                        String locStr = result.getLocation() != null && result.getLocation().getLocationString() != null ? result.getLocation().getLocationString() : "";
+
+                        if (!dateStr.isEmpty() && !locStr.isEmpty()) {
+                            dateLocationView.setText(dateStr + ", " + locStr);
+                        } else {
+                            dateLocationView.setText(dateStr + locStr);
+                        }
                     }
                 }
-
                 @Override
                 public void onFailure(Exception e) {
                     titleView.setText("Unknown Event");
@@ -63,15 +79,11 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
             });
         }
 
-        // Placeholder for duration until Waitlist timestamps are implemented
-        durationView.setText("");
-
-        // Set Status Badge
         if (entry.getStatus() != null) {
             switch (entry.getStatus()) {
                 case DECLINED:
-                    statusView.setText("NOT SELECTED"); // Using hardcoded text to prevent string resource errors
-                    statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_selected));
+                    statusView.setText("NOT SELECTED");
+                    statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_selected)); // Assuming grey background
                     statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
                     break;
                 case ACCEPTED:

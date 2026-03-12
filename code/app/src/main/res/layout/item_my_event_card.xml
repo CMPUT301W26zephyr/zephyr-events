@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
@@ -12,7 +11,6 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="#FAFAFA"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true">
@@ -30,7 +28,7 @@
                 android:background="@drawable/bg_event_card_image">
 
                 <ImageView
-                    android:id="@+id/my_event_image"
+                    android:id="@+id/item_event_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -45,37 +43,50 @@
                 android:layout_marginStart="12dp">
 
                 <TextView
-                    android:id="@+id/my_event_title"
+                    android:id="@+id/item_event_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    tools:text="Swimming Lessons" />
+                    android:maxLines="2"
+                    android:ellipsize="end" />
 
                 <TextView
-                    android:id="@+id/my_event_duration"
+                    android:id="@+id/item_event_date_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textSize="13sp"
-                    android:textColor="#616161"
-                    tools:text="1 day ago" />
+                    android:textColor="#616161" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/my_event_status"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="6dp"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                tools:text="SELECTED" />
+                android:orientation="vertical"
+                android:gravity="end"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:id="@+id/item_event_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_red" />
+
+                <TextView
+                    android:id="@+id/item_event_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

@@ -1,16 +1,19 @@
 package com.example.zephyrevents.view;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.model.WaitlistEntry;
 import com.example.zephyrevents.util.BottomNavHelper;
-
-import java.util.ArrayList;
 
 public class MyEventsActivity extends AppCompatActivity {
 
@@ -34,28 +37,40 @@ public class MyEventsActivity extends AppCompatActivity {
         tabLotteries.setOnClickListener(v -> showLotteries());
         tabHistory.setOnClickListener(v -> showHistory());
 
+        // --- NEW: Fix Toolbar Buttons ---
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+
+        // Find notification bell (Assuming standard naming, adjust ID if your XML differs)
+        View notifBell = findViewById(R.id.toolbar_notifications);
+        if (notifBell != null) {
+            notifBell.setOnClickListener(v -> startActivity(new Intent(this, UserNotificationListView.class)));
+        }
+
+        // --- NEW: Make list items clickable ---
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            WaitlistEntry entry = (WaitlistEntry) parent.getItemAtPosition(position);
+            if (entry != null && entry.getEventId() != null) {
+                Intent intent = new Intent(this, EventDetailViewActivity.class);
+                intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, entry.getEventId());
+                startActivity(intent);
+            }
+        });
+
         BottomNavHelper.setupBottomNav(this);
 
-        // Load temporary empty lists until Waitlist Backend is implemented
         refreshLotteryList();
         refreshHistoryList();
         showLotteries();
     }
 
     private void refreshLotteryList() {
-        // TODO: Replace new ArrayList<>() with WaitlistRepository fetch
-        lotteryAdapter = new MyEventListAdapter(this, new ArrayList<>());
-        if (showingLotteries) {
-            listView.setAdapter(lotteryAdapter);
-        }
+        lotteryAdapter = new MyEventListAdapter(this, EventController.getInstance().getLotteryEntries());
+        if (showingLotteries) listView.setAdapter(lotteryAdapter);
     }
 
     private void refreshHistoryList() {
-        // TODO: Replace new ArrayList<>() with WaitlistRepository fetch
-        historyAdapter = new MyEventListAdapter(this, new ArrayList<>());
-        if (!showingLotteries) {
-            listView.setAdapter(historyAdapter);
-        }
+        historyAdapter = new MyEventListAdapter(this, EventController.getInstance().getHistoryEntries());
+        if (!showingLotteries) listView.setAdapter(historyAdapter);
     }
 
     private void showLotteries() {

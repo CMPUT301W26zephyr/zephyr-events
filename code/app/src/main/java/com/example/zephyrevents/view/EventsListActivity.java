@@ -38,20 +38,7 @@ public class EventsListActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_events_list);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-            View toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(), toolbar.getPaddingBottom());
-            }
-
-            View bottomNav = findViewById(R.id.bottom_nav);
-            if (bottomNav != null) {
-                bottomNav.setPadding(bottomNav.getPaddingLeft(), bottomNav.getPaddingTop(), bottomNav.getPaddingRight(), systemBars.bottom);
-            }
-            return insets;
-        });
+        BottomNavHelper.setupBottomNav(this);
 
         controller = EventController.getInstance();
 

@@ -88,11 +88,20 @@ public class EventConfirmationFragment extends Fragment {
 
                     // 1. Build the Event Object
                     Event newEvent = new Event();
-                    newEvent.setEventId(java.util.UUID.randomUUID().toString());
+
+                    // --- NEW: Check if Edit Mode! ---
+                    if (viewModel.isEditMode) {
+                        newEvent.setEventId(viewModel.eventId);
+                        newEvent.setOrganizerId(viewModel.organizerId); // Preserve owner
+                        newEvent.setCurrentApplicants(viewModel.originalApplicants); // Preserve users
+                    } else {
+                        newEvent.setEventId(java.util.UUID.randomUUID().toString());
+                        newEvent.setOrganizerId(new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId());
+                    }
+
                     newEvent.setName(viewModel.title);
                     newEvent.setDescription(viewModel.description);
-                    newEvent.setOrganizerId("test_user_id"); // TODO: Replace with real logged-in user ID
-
+                    // ... (Keep your existing Location and Date parsing code exactly the same here) ...
                     try { newEvent.setPrice(Double.parseDouble(viewModel.price)); } catch (Exception e) { newEvent.setPrice(0.0); }
                     try { newEvent.setCapacity(Integer.parseInt(viewModel.attendeeCount)); } catch (Exception e) { newEvent.setCapacity(0); }
 

@@ -293,14 +293,18 @@
                 android:background="#E0E0E0" />
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/organizer_dashboard_container"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginVertical="16dp"
+                android:visibility="gone"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeColor="#E0E0E0"
-                app:strokeWidth="1dp">
+                app:strokeWidth="1dp"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -326,20 +330,8 @@
                         app:layout_constraintEnd_toStartOf="@id/guideline_v"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_list"
-                            app:tint="#000000" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="View Entrants"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_person" app:tint="#000000" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Entrants List" android:textColor="#000000" android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -355,31 +347,11 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/guideline_v"
                         app:layout_constraintTop_toTopOf="@id/btn_view_entrants">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_location"
-                            app:tint="#000000" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:gravity="center"
-                            android:text="View Map\nof Entrants"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_location" app:tint="#000000" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:gravity="center" android:text="View Map" android:textColor="#000000" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <View
-                        android:id="@+id/divider_h"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:background="#E0E0E0"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/btn_view_entrants" />
+                    <View android:id="@+id/divider_h" android:layout_width="0dp" android:layout_height="1dp" android:background="#E0E0E0" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@id/btn_view_entrants" />
 
                     <LinearLayout
                         android:id="@+id/btn_edit_event"
@@ -395,20 +367,8 @@
                         app:layout_constraintEnd_toStartOf="@id/guideline_v"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/divider_h">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_edit"
-                            app:tint="#000000" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="Edit Event"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_edit" app:tint="#000000" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Edit Event" android:textColor="#000000" android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -424,31 +384,11 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/guideline_v"
                         app:layout_constraintTop_toTopOf="@id/btn_edit_event">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_qr_code_scanner"
-                            app:tint="#000000" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="Generate\nQR Code"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_qr_code_scanner" app:tint="#000000" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Generate QR" android:textColor="#000000" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <View
-                        android:id="@+id/divider_v"
-                        android:layout_width="1dp"
-                        android:layout_height="0dp"
-                        android:background="#E0E0E0"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@id/guideline_v"
-                        app:layout_constraintStart_toStartOf="@id/guideline_v"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    <View android:id="@+id/divider_v" android:layout_width="1dp" android:layout_height="0dp" android:background="#E0E0E0" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="@id/guideline_v" app:layout_constraintStart_toStartOf="@id/guideline_v" app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
