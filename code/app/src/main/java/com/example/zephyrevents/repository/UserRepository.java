@@ -42,22 +42,22 @@ public class UserRepository {
             return; // exit before network call.
         }
         db.collection(Collections.USERS)
-                .document(user.getId())
-                .set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "firestore event added object id: " + user.getId());
-                        callback.onSuccess(null);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                        callback.onFailure(e);
-                    }
-                });
+            .document(user.getId())
+            .set(user)
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "firestore event added object id: " + user.getId());
+                    callback.onSuccess(null);
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "Error writing document", e);
+                    callback.onFailure(e);
+                }
+            });
 
     }
 
