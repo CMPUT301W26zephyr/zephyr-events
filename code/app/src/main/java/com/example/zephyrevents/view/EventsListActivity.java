@@ -42,7 +42,7 @@ public class EventsListActivity extends AppCompatActivity {
 
         controller = EventController.getInstance();
 
-        // Setup the ListView and Adapter completely EMPTY first
+        // Setup the ListView and Adapter completely empty first
         adapter = new EventListAdapter(this, displayedEvents);
         ListView listView = findViewById(R.id.event_list);
         listView.setAdapter(adapter);
@@ -80,10 +80,9 @@ public class EventsListActivity extends AppCompatActivity {
         // Setup Bottom Nav
         BottomNavHelper.setupBottomNav(this);
 
-        // Notice we REMOVED the getAllEvents() call from here!
     }
 
-    // --- NEW: Refresh data every time the screen becomes visible ---
+    // Refresh data every time the screen becomes visible
     @Override
     protected void onResume() {
         super.onResume();

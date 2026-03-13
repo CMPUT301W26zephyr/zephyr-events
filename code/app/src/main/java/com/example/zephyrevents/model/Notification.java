@@ -3,24 +3,33 @@ package com.example.zephyrevents.model;
 import com.example.zephyrevents.util.GenerateId;
 
 /**
- * This is a class that defines an notification.
+ * This is a class that defines a notification.
  */
 public class Notification {
 
-    private String notificationId;
-    private String userId;
-    private String eventId;
-    private long time;
-    private NotificationType type;
+    String notificationId;
+    String userId;
+    String eventId;
+    long time;
+    NotificationType type;
 
-    private String text; // Should text be generated later based on the type?
-    private boolean sent;
-    private boolean read;
+    String text; // Should text be generated later based on the type?
+    boolean sent;
+    boolean read;
 
     // no arg constructor for firebase
     public Notification() {}
 
-    // Default constructor
+    /**
+     * Default constructor (NOTE: NEED TO RESOLVE CONSISTENCY WITH ID GENERATION)
+     * @param userId
+     * @param eventId
+     * @param type
+     * @param text
+     * @param sent
+     * @param read
+     * @param notificationId
+     */
     public Notification(
             String userId,
             String eventId,
@@ -31,7 +40,6 @@ public class Notification {
             String notificationId
 
     ){
-
         this.notificationId = notificationId;
         this.userId = userId;
         this.eventId = eventId;
@@ -41,14 +49,16 @@ public class Notification {
         this.read = read;
         this.time = System.currentTimeMillis();
     }
+
     // constructor but auto generate id.
-    public Notification(            String userId,
-                                    String eventId,
-                                    NotificationType type,
-                                    String text,
-                                    boolean sent,
-                                    boolean read
-                                    ){
+    public Notification(
+            String userId,
+            String eventId,
+            NotificationType type,
+            String text,
+            boolean sent,
+            boolean read
+            ){
         this(userId, eventId, type, text, sent, read, GenerateId.getUniqueId());
     }
 

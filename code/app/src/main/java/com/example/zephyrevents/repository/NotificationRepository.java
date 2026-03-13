@@ -20,31 +20,36 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
 
-//public Notification(
-//        String userId,
-//        String eventId,
-//        NotificationType type,
-//        String text,
-//        boolean sent,
-//        boolean read,
-//        String notificationId
-//
-//)
-
+/**
+ * Repository class for managing Notification data in Firebase Firestore.
+ * Provides CRUD functionality for notification objects, allows users to retrieve notification history.
+ */
 public class NotificationRepository {
 
     private final FirebaseFirestore db;
     private static final String TAG = "NotificationRepository";
 
+    /**
+     * Default constructor. Uses the production Firestore instance.
+     */
     public NotificationRepository() {
         db = FirebaseFirestore.getInstance();
     }
+
+    /**
+     * Constructor with dependency injection for testing.
+     * @param db  The injected firestore instance.
+     */
     public NotificationRepository(FirebaseFirestore db) {
         this.db = db;
     }
 
-    // Below is 'Create' part in CRUD using set()
-    // Create -
+
+    /**
+     * Saves a new notification to the database.
+     * @param notification  THe notification object to be saved
+     * @param callback      Handles completion (fail -> exception).
+     */
     public void saveNotification(Notification notification, RepositoryCallback<Void> callback) {
         if (notification == null) {
             var e = new IllegalArgumentException("Notification cannot be null");
@@ -79,8 +84,12 @@ public class NotificationRepository {
                 });
     }
 
-    // Below is 'Read' part in CRUD using get()
-    // in controller, we call notificationRepository.getNotificationId(notificationId, callback);
+    /**
+     * Retrieves a specific notification by its ID.
+     * in controller, we call notificationRepository.getNotificationId(notificationId, callback);
+     * @param notificationId The notification ID.
+     * @param callback       Callback returning the Notification object
+     */
     public void getNotificationId(String notificationId, RepositoryCallback<Notification> callback) {
         if (notificationId == null) {
             var e = new IllegalArgumentException("Notification id cannot be null");
@@ -106,8 +115,12 @@ public class NotificationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    // Below is 'Update' part in CRUD using update()
-    // in controller, we call notificationRepository.updateNotification(notification, callback);
+    /**
+     * Updates fields of an existing notification (e.g., marking as read or sent).
+     * in controller, we call notificationRepository.updateNotification(notification, callback);
+     * @param notification  The notification object with updated data.
+     * @param callback      Callback upon completion
+     */
     public void updateNotification(Notification notification, RepositoryCallback<Void> callback) {
         if (notification == null) {
             var e = new IllegalArgumentException("Notification cannot be null");
@@ -142,8 +155,14 @@ public class NotificationRepository {
                     callback.onFailure(e);
                 });
     }
-    // Below is 'Delete' part in CRUD using delete()
-    // in controller, we call notificationRepository.deleteNotification(notificationId, callback);
+
+
+    /**
+     * Deletes a notification from the database.
+     * in controller, we call notificationRepository.deleteNotification(notificationId, callback);
+     * @param notificationId The notification ID.
+     * @param callback      Callback upon completion
+     */
     public void deleteNotification(String notificationId, RepositoryCallback<Void> callback) {
         if (notificationId == null) {
             var e = new IllegalArgumentException("Notification id cannot be null");
@@ -173,6 +192,12 @@ public class NotificationRepository {
     }
 
     // when a user want to see all the notifications that received from system (when clicked icon)
+
+    /**
+     * Retrieves all notifications sent to a specific user, ordered by time descending.
+     * @param userId   The user ID.
+     * @param callback Callback returns List of Notification objects.
+     */
     public void getUserNotifications(String userId, RepositoryCallback<List<Notification>> callback) {
 
         if (userId == null || userId.trim().isEmpty()) {

@@ -3,13 +3,20 @@ package com.example.zephyrevents.model;
 import com.example.zephyrevents.util.DistanceHelper;
 import com.example.zephyrevents.util.TimeHelper;
 
+/**
+ * This is a class that encapsulates an Events's start and end time.
+ */
 public class EventTime {
     private  long startTime;
     private  long endTime;
     public EventTime(){}
 
 
-
+    /**
+     * Constructor, creates EventTime with start and end time.
+     * @param startTime
+     * @param endTime
+     */
     public EventTime(long startTime, long endTime){
         this.startTime= startTime;
         this.endTime = endTime;
