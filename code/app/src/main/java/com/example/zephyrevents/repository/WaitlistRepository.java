@@ -23,6 +23,9 @@ public class WaitlistRepository {
     public WaitlistRepository() {
         db = FirebaseFirestore.getInstance();
     }
+    public WaitlistRepository(FirebaseFirestore db) {
+        this.db = db;
+    }
 
     // CREATE - add user to Waitlist
     public void addUserToWaitlist(WaitlistEntry entry, RepositoryCallback<Void> callback) {
