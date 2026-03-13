@@ -3,8 +3,8 @@ package com.example.zephyrevents.model;
 import android.util.Log;
 
 public class Location {
-    public Coordinate coordinate;
-    public String locationString;
+    private Coordinate coordinate;
+    private String locationString;
     private static final String TAG = "Location";
 
 
