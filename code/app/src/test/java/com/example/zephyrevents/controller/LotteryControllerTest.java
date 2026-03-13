@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,29 +8,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import com.example.zephyrevents.model.ContactInfo;
 import org.mockito.ArgumentCaptor;
 
-import android.content.SharedPreferences;
-
-import com.example.zephyrevents.controller.LotteryController;
-import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.Status;
-import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.model.WaitlistEntry;
 import com.example.zephyrevents.repository.EventRepository;
 import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.repository.WaitlistRepository;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
