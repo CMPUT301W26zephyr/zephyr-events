@@ -3,7 +3,7 @@ package com.example.zephyrevents.model;
 import com.example.zephyrevents.util.SampleEvents;
 
 /**
- * Represents one event in "My Events" (either in Lotteries or History).
+ * Represents one event in "My Events" (either in Lotteries or History)...
  * Used to show event title, duration text ("1 day ago"), and status badge.
  */
 public class MyEventEntry {
@@ -12,10 +12,10 @@ public class MyEventEntry {
     private final String eventKey;
     /** SELECTED or PENDING (shown as WAITING) for lotteries; null for history placeholders. */
     private final EventStatus status;
-    /** When the user joined the waitlist (millis); used for "1 day ago" / "3 days ago". */
+    /** When the user joined the waitlist */
     private final long joinedAtMillis;
-    /** For history placeholder cards: title to show (e.g. "Placeholder"). Null for real events. */
     private final String placeholderTitle;
+    /** For history placeholder cards
 
     /**
      * Creates an entry for a real event (Lotteries).
@@ -28,7 +28,7 @@ public class MyEventEntry {
     }
 
     /**
-     * Creates a placeholder entry for History (e.g. "Placeholder", NOT SELECTED).
+     * Creates a placeholder entry for History
      */
     public MyEventEntry(String placeholderTitle) {
         this.eventKey = null;

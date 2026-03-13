@@ -22,4 +22,4 @@ chmod +x ./scripts/gen-javadoc.sh
 
 Docs are generated at:
 
-    javadoc/index.html
+    code/app/build/reports/javadoc/index.html

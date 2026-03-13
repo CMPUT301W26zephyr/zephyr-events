@@ -3,7 +3,8 @@ package com.example.zephyrevents.model;
 import com.example.zephyrevents.util.TimeHelper;
 
 /**
- * This is a class that defines a waitlist.
+ * This is a class that defines an entry to an event's waitlist.
+ * Maps a userId to an eventId, alongside timestamp, coordinates, status, etc.
  */
 public class WaitlistEntry {
     private String userId;
@@ -16,8 +17,19 @@ public class WaitlistEntry {
     private String placeholderTitle;
 
 
-    // no arg constructor for firebase
+    /**
+     * no arg constructor for firebase
+     */
     public WaitlistEntry() {}
+
+    /**
+     * Default Constructor; creates a waitlist entry with provided parameters.
+     * @param userId
+     * @param eventId
+     * @param lat
+     * @param lng
+     * @param status
+     */
     public WaitlistEntry(
             String userId,
             String eventId,

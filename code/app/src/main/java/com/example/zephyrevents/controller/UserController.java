@@ -8,6 +8,10 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
 import java.util.UUID;
 
+/**
+ * Controller that manages logic related to users, user profiles, and session state.
+ * Handles firebase updates through UserRepository, and local session with SharedPreferences
+ */
 public class UserController {
 
     private final UserRepository userRepository;
@@ -17,14 +21,21 @@ public class UserController {
     private static final String KEY_USER_ID = "current_user_id";
 
     /**
-     * Public constructor
+     * Public constructor for use within Android Activities or Fragments.
+     *
+     * @param context Used to initialize SharedPreferences.
      */
     public UserController(Context context) {
         this.userRepository = new UserRepository();
         this.prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    // Constructor for unit testing
+    /**
+     * Constructor used for Unit Testing.
+     *
+     * @param userRepository A mocked or custom {@link UserRepository}.
+     * @param prefs A mocked or custom {@link SharedPreferences}.
+     */
     @androidx.annotation.VisibleForTesting
     public UserController(UserRepository userRepository, SharedPreferences prefs) {
         this.userRepository = userRepository;
@@ -33,6 +44,8 @@ public class UserController {
 
     /**
      * Checks if a user is currently logged in (tracked locally).
+     *
+     * @return true if user ID exists in SharedPreferences, otherwise false.
      */
     public boolean isUserLoggedIn() {
         return prefs.contains(KEY_USER_ID);
@@ -40,13 +53,20 @@ public class UserController {
 
     /**
      * Retrieves the local User ID.
+     *
+     * @return The user ID string if user signed in, otherwise null.
      */
     public String getCurrentUserId() {
         return prefs.getString(KEY_USER_ID, null);
     }
 
     /**
-     * Handles the Sign-Up logic.
+     * Handles the Sign-Up logic for a new ueser.
+     *
+     * @param name      The user's name
+     * @param email     The user's email
+     * @param phone     The user's phone number
+     * @param callback  A RepositoryCallback to handle success or failure
      */
     public void signUp(String name, String email, String phone, RepositoryCallback<Void> callback) {
         String newUserId = UUID.randomUUID().toString();
@@ -76,8 +96,10 @@ public class UserController {
     }
 
     /**
-     * Fetches the full User object from Firebase.
-     * Logs
+     * Fetches the full User object from Firebase, for the current user logged in.
+     * If the remote document is missing (e.g. deleted by admin), triggers forceLogOut() immediately.
+     *
+     * @param callback  A RepositoryCallback to handle success or failure
      */
     public void fetchCurrentUser(RepositoryCallback<User> callback) {
         String userId = getCurrentUserId();
@@ -103,7 +125,10 @@ public class UserController {
     }
 
     /**
-     * Deletes the current user's account from Firebase AND clears local session.
+     * Deletes the current user's account from Firebase and clears local session.
+     * Note: local session cleared immediately even if network call fails.
+     *
+     * @param callback  A RepositoryCallback to handle success or failure
      */
     public void deleteAccount(RepositoryCallback<Void> callback) {
         String userId = getCurrentUserId();
@@ -113,8 +138,7 @@ public class UserController {
             return;
         }
 
-        // IMPORTANT: Clear the local preference so they are "logged out"
-        // done in advance because firebase enqueues the request upon network failure
+        // Clear local preference to log out: done in advance because firebase enqueues the request upon network failure
         forceLogOut();
 
         userRepository.deleteUser(userId, new RepositoryCallback<Void>() {
@@ -130,6 +154,9 @@ public class UserController {
         });
     }
 
+    /**
+     * Clears the current user's session from local storage. Does not affect Firestore data.
+     */
     public void forceLogOut() {
         prefs.edit().remove(KEY_USER_ID).apply();
     }
@@ -137,6 +164,13 @@ public class UserController {
 
     /**
      * Updates the current user's profile in Firestore.
+     * Fetches the existing User object, modifies requested fields, and then saves back to repository.
+
+     * @param name      The user's name
+     * @param email     The user's email
+     * @param phone     The user's phone number
+     * @param country   The user's location/country
+     * @param callback  A RepositoryCallback to handle success or failure
      */
     public void updateCurrentUserProfile(
             String name,
@@ -182,6 +216,12 @@ public class UserController {
         });
     }
 
+    /**
+     * Convenience: Retrieves profile info of current session's user as a String array
+     * Order: 0: Name, 1: Email, 2: Phone; 3: Country
+     *
+     * @param callback  A RepositoryCallback to handle success or failure
+     */
     public void getCurrentUserProfileInfo(RepositoryCallback<String[]> callback) {
         fetchCurrentUser(new RepositoryCallback<User>() {
             @Override

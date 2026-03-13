@@ -198,7 +198,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
             }
         }
 
-        // ONE unified database call to fetch the waitlist, calculate counts, check lottery status, and check user status
+        // one database call to fetch the waitlist, calculate counts, check lottery status, and check user status
         new WaitlistRepository().getWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
             @Override
             public void onSuccess(List<WaitlistEntry> entries) {

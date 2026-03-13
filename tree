@@ -1,0 +1,1839 @@
+.
+├── code
+│   ├── app
+│   │   ├── build
+│   │   │   ├── generated
+│   │   │   │   ├── ap_generated_sources
+│   │   │   │   │   ├── debug
+│   │   │   │   │   │   └── out
+│   │   │   │   │   └── debugUnitTest
+│   │   │   │   │       └── out
+│   │   │   │   ├── res
+│   │   │   │   │   ├── pngs
+│   │   │   │   │   │   └── debug
+│   │   │   │   │   ├── processDebugGoogleServices
+│   │   │   │   │   │   └── values
+│   │   │   │   │   │       └── values.xml
+│   │   │   │   │   └── resValues
+│   │   │   │   │       └── debug
+│   │   │   │   └── updated_navigation_xml
+│   │   │   │       └── debug
+│   │   │   ├── gmpAppId
+│   │   │   │   └── debug.txt
+│   │   │   ├── intermediates
+│   │   │   │   ├── aar_metadata_check
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── checkDebugAarMetadata
+│   │   │   │   ├── android_res_source_set_path_map
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mapDebugSourceSetPaths
+│   │   │   │   │           └── file-map.txt
+│   │   │   │   ├── annotation_processor_list
+│   │   │   │   │   ├── debug
+│   │   │   │   │   │   └── javaPreCompileDebug
+│   │   │   │   │   │       └── annotationProcessors.json
+│   │   │   │   │   └── debugUnitTest
+│   │   │   │   │       └── javaPreCompileDebugUnitTest
+│   │   │   │   │           └── annotationProcessors.json
+│   │   │   │   ├── apk
+│   │   │   │   │   └── debug
+│   │   │   │   │       ├── app-debug.apk
+│   │   │   │   │       └── output-metadata.json
+│   │   │   │   ├── apk_ide_redirect_file
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── createDebugApkListingFileRedirect
+│   │   │   │   │           └── redirect.txt
+│   │   │   │   ├── app_metadata
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── writeDebugAppMetadata
+│   │   │   │   │           └── app-metadata.properties
+│   │   │   │   ├── assets
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugAssets
+│   │   │   │   ├── compatible_screen_manifest
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── createDebugCompatibleScreenManifests
+│   │   │   │   │           └── output-metadata.json
+│   │   │   │   ├── compile_and_runtime_not_namespaced_r_class_jar
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugResources
+│   │   │   │   │           └── R.jar
+│   │   │   │   ├── compile_and_runtime_r_class_jar
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugResources
+│   │   │   │   │           └── R.jar
+│   │   │   │   ├── compile_app_classes_jar
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── bundleDebugClassesToCompileJar
+│   │   │   │   │           └── classes.jar
+│   │   │   │   ├── compile_r_class_jar
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── generateDebugRFile
+│   │   │   │   │           └── R.jar
+│   │   │   │   ├── compile_symbol_list
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── generateDebugRFile
+│   │   │   │   │           └── R.txt
+│   │   │   │   ├── compiled_navigation_res
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── compileDebugNavigationResources
+│   │   │   │   ├── compressed_assets
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── compressDebugAssets
+│   │   │   │   │           └── out
+│   │   │   │   ├── data_binding_layout_info_type_merge
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugResources
+│   │   │   │   │           └── out
+│   │   │   │   ├── data_binding_layout_info_type_package
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── packageDebugResources
+│   │   │   │   │           └── out
+│   │   │   │   ├── desugar_graph
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   │               ├── currentProject
+│   │   │   │   │               │   ├── dirs_bucket_0
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── dirs_bucket_1
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── dirs_bucket_2
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── dirs_bucket_3
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── dirs_bucket_4
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── jar_1eea5e2a7be111838e331399b4c470fec349b0f630bdc8593a915e87795c1e01_bucket_0
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── jar_1eea5e2a7be111838e331399b4c470fec349b0f630bdc8593a915e87795c1e01_bucket_1
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── jar_1eea5e2a7be111838e331399b4c470fec349b0f630bdc8593a915e87795c1e01_bucket_2
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   ├── jar_1eea5e2a7be111838e331399b4c470fec349b0f630bdc8593a915e87795c1e01_bucket_3
+│   │   │   │   │               │   │   └── graph.bin
+│   │   │   │   │               │   └── jar_1eea5e2a7be111838e331399b4c470fec349b0f630bdc8593a915e87795c1e01_bucket_4
+│   │   │   │   │               │       └── graph.bin
+│   │   │   │   │               ├── externalLibs
+│   │   │   │   │               ├── mixedScopes
+│   │   │   │   │               └── otherProjects
+│   │   │   │   ├── dex
+│   │   │   │   │   └── debug
+│   │   │   │   │       ├── mergeExtDexDebug
+│   │   │   │   │       │   ├── classes.dex
+│   │   │   │   │       │   ├── classes2.dex
+│   │   │   │   │       │   └── classes3.dex
+│   │   │   │   │       ├── mergeLibDexDebug
+│   │   │   │   │       │   ├── 0
+│   │   │   │   │       │   ├── 1
+│   │   │   │   │       │   ├── 10
+│   │   │   │   │       │   ├── 11
+│   │   │   │   │       │   ├── 12
+│   │   │   │   │       │   ├── 13
+│   │   │   │   │       │   ├── 14
+│   │   │   │   │       │   ├── 15
+│   │   │   │   │       │   ├── 2
+│   │   │   │   │       │   ├── 3
+│   │   │   │   │       │   ├── 4
+│   │   │   │   │       │   ├── 5
+│   │   │   │   │       │   ├── 6
+│   │   │   │   │       │   ├── 7
+│   │   │   │   │       │   ├── 8
+│   │   │   │   │       │   └── 9
+│   │   │   │   │       └── mergeProjectDexDebug
+│   │   │   │   │           ├── 0
+│   │   │   │   │           │   └── classes.dex
+│   │   │   │   │           ├── 1
+│   │   │   │   │           ├── 10
+│   │   │   │   │           ├── 11
+│   │   │   │   │           ├── 12
+│   │   │   │   │           ├── 13
+│   │   │   │   │           ├── 14
+│   │   │   │   │           ├── 15
+│   │   │   │   │           ├── 2
+│   │   │   │   │           ├── 3
+│   │   │   │   │           │   └── classes.dex
+│   │   │   │   │           ├── 4
+│   │   │   │   │           │   └── classes.dex
+│   │   │   │   │           ├── 5
+│   │   │   │   │           ├── 6
+│   │   │   │   │           ├── 7
+│   │   │   │   │           │   └── classes.dex
+│   │   │   │   │           ├── 8
+│   │   │   │   │           └── 9
+│   │   │   │   ├── dex_archive_input_jar_hashes
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   ├── dex_number_of_buckets_file
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   ├── duplicate_classes_check
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── checkDebugDuplicateClasses
+│   │   │   │   ├── external_file_lib_dex_archives
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── desugarDebugFileDependencies
+│   │   │   │   ├── external_libs_dex_archive
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   ├── external_libs_dex_archive_with_artifact_transforms
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   ├── incremental
+│   │   │   │   │   ├── debug
+│   │   │   │   │   │   ├── mergeDebugResources
+│   │   │   │   │   │   │   ├── compile-file-map.properties
+│   │   │   │   │   │   │   ├── merged.dir
+│   │   │   │   │   │   │   │   ├── values
+│   │   │   │   │   │   │   │   │   └── values.xml
+│   │   │   │   │   │   │   │   ├── values-af
+│   │   │   │   │   │   │   │   │   └── values-af.xml
+│   │   │   │   │   │   │   │   ├── values-am
+│   │   │   │   │   │   │   │   │   └── values-am.xml
+│   │   │   │   │   │   │   │   ├── values-ar
+│   │   │   │   │   │   │   │   │   └── values-ar.xml
+│   │   │   │   │   │   │   │   ├── values-as
+│   │   │   │   │   │   │   │   │   └── values-as.xml
+│   │   │   │   │   │   │   │   ├── values-az
+│   │   │   │   │   │   │   │   │   └── values-az.xml
+│   │   │   │   │   │   │   │   ├── values-b+es+419
+│   │   │   │   │   │   │   │   │   └── values-b+es+419.xml
+│   │   │   │   │   │   │   │   ├── values-b+sr+Latn
+│   │   │   │   │   │   │   │   │   └── values-b+sr+Latn.xml
+│   │   │   │   │   │   │   │   ├── values-be
+│   │   │   │   │   │   │   │   │   └── values-be.xml
+│   │   │   │   │   │   │   │   ├── values-bg
+│   │   │   │   │   │   │   │   │   └── values-bg.xml
+│   │   │   │   │   │   │   │   ├── values-bn
+│   │   │   │   │   │   │   │   │   └── values-bn.xml
+│   │   │   │   │   │   │   │   ├── values-bs
+│   │   │   │   │   │   │   │   │   └── values-bs.xml
+│   │   │   │   │   │   │   │   ├── values-ca
+│   │   │   │   │   │   │   │   │   └── values-ca.xml
+│   │   │   │   │   │   │   │   ├── values-cs
+│   │   │   │   │   │   │   │   │   └── values-cs.xml
+│   │   │   │   │   │   │   │   ├── values-da
+│   │   │   │   │   │   │   │   │   └── values-da.xml
+│   │   │   │   │   │   │   │   ├── values-de
+│   │   │   │   │   │   │   │   │   └── values-de.xml
+│   │   │   │   │   │   │   │   ├── values-el
+│   │   │   │   │   │   │   │   │   └── values-el.xml
+│   │   │   │   │   │   │   │   ├── values-en-rAU
+│   │   │   │   │   │   │   │   │   └── values-en-rAU.xml
+│   │   │   │   │   │   │   │   ├── values-en-rCA
+│   │   │   │   │   │   │   │   │   └── values-en-rCA.xml
+│   │   │   │   │   │   │   │   ├── values-en-rGB
+│   │   │   │   │   │   │   │   │   └── values-en-rGB.xml
+│   │   │   │   │   │   │   │   ├── values-en-rIN
+│   │   │   │   │   │   │   │   │   └── values-en-rIN.xml
+│   │   │   │   │   │   │   │   ├── values-en-rXC
+│   │   │   │   │   │   │   │   │   └── values-en-rXC.xml
+│   │   │   │   │   │   │   │   ├── values-es
+│   │   │   │   │   │   │   │   │   └── values-es.xml
+│   │   │   │   │   │   │   │   ├── values-es-rUS
+│   │   │   │   │   │   │   │   │   └── values-es-rUS.xml
+│   │   │   │   │   │   │   │   ├── values-et
+│   │   │   │   │   │   │   │   │   └── values-et.xml
+│   │   │   │   │   │   │   │   ├── values-eu
+│   │   │   │   │   │   │   │   │   └── values-eu.xml
+│   │   │   │   │   │   │   │   ├── values-fa
+│   │   │   │   │   │   │   │   │   └── values-fa.xml
+│   │   │   │   │   │   │   │   ├── values-fi
+│   │   │   │   │   │   │   │   │   └── values-fi.xml
+│   │   │   │   │   │   │   │   ├── values-fr
+│   │   │   │   │   │   │   │   │   └── values-fr.xml
+│   │   │   │   │   │   │   │   ├── values-fr-rCA
+│   │   │   │   │   │   │   │   │   └── values-fr-rCA.xml
+│   │   │   │   │   │   │   │   ├── values-gl
+│   │   │   │   │   │   │   │   │   └── values-gl.xml
+│   │   │   │   │   │   │   │   ├── values-gu
+│   │   │   │   │   │   │   │   │   └── values-gu.xml
+│   │   │   │   │   │   │   │   ├── values-h320dp-port-v13
+│   │   │   │   │   │   │   │   │   └── values-h320dp-port-v13.xml
+│   │   │   │   │   │   │   │   ├── values-h360dp-land-v13
+│   │   │   │   │   │   │   │   │   └── values-h360dp-land-v13.xml
+│   │   │   │   │   │   │   │   ├── values-h480dp-land-v13
+│   │   │   │   │   │   │   │   │   └── values-h480dp-land-v13.xml
+│   │   │   │   │   │   │   │   ├── values-h480dp-v13
+│   │   │   │   │   │   │   │   │   └── values-h480dp-v13.xml
+│   │   │   │   │   │   │   │   ├── values-h550dp-port-v13
+│   │   │   │   │   │   │   │   │   └── values-h550dp-port-v13.xml
+│   │   │   │   │   │   │   │   ├── values-h720dp-v13
+│   │   │   │   │   │   │   │   │   └── values-h720dp-v13.xml
+│   │   │   │   │   │   │   │   ├── values-hdpi-v4
+│   │   │   │   │   │   │   │   │   └── values-hdpi-v4.xml
+│   │   │   │   │   │   │   │   ├── values-hi
+│   │   │   │   │   │   │   │   │   └── values-hi.xml
+│   │   │   │   │   │   │   │   ├── values-hr
+│   │   │   │   │   │   │   │   │   └── values-hr.xml
+│   │   │   │   │   │   │   │   ├── values-hu
+│   │   │   │   │   │   │   │   │   └── values-hu.xml
+│   │   │   │   │   │   │   │   ├── values-hy
+│   │   │   │   │   │   │   │   │   └── values-hy.xml
+│   │   │   │   │   │   │   │   ├── values-in
+│   │   │   │   │   │   │   │   │   └── values-in.xml
+│   │   │   │   │   │   │   │   ├── values-is
+│   │   │   │   │   │   │   │   │   └── values-is.xml
+│   │   │   │   │   │   │   │   ├── values-it
+│   │   │   │   │   │   │   │   │   └── values-it.xml
+│   │   │   │   │   │   │   │   ├── values-iw
+│   │   │   │   │   │   │   │   │   └── values-iw.xml
+│   │   │   │   │   │   │   │   ├── values-ja
+│   │   │   │   │   │   │   │   │   └── values-ja.xml
+│   │   │   │   │   │   │   │   ├── values-ka
+│   │   │   │   │   │   │   │   │   └── values-ka.xml
+│   │   │   │   │   │   │   │   ├── values-kk
+│   │   │   │   │   │   │   │   │   └── values-kk.xml
+│   │   │   │   │   │   │   │   ├── values-km
+│   │   │   │   │   │   │   │   │   └── values-km.xml
+│   │   │   │   │   │   │   │   ├── values-kn
+│   │   │   │   │   │   │   │   │   └── values-kn.xml
+│   │   │   │   │   │   │   │   ├── values-ko
+│   │   │   │   │   │   │   │   │   └── values-ko.xml
+│   │   │   │   │   │   │   │   ├── values-ky
+│   │   │   │   │   │   │   │   │   └── values-ky.xml
+│   │   │   │   │   │   │   │   ├── values-land
+│   │   │   │   │   │   │   │   │   └── values-land.xml
+│   │   │   │   │   │   │   │   ├── values-large-v4
+│   │   │   │   │   │   │   │   │   └── values-large-v4.xml
+│   │   │   │   │   │   │   │   ├── values-ldltr-v21
+│   │   │   │   │   │   │   │   │   └── values-ldltr-v21.xml
+│   │   │   │   │   │   │   │   ├── values-ldrtl-v17
+│   │   │   │   │   │   │   │   │   └── values-ldrtl-v17.xml
+│   │   │   │   │   │   │   │   ├── values-lo
+│   │   │   │   │   │   │   │   │   └── values-lo.xml
+│   │   │   │   │   │   │   │   ├── values-lt
+│   │   │   │   │   │   │   │   │   └── values-lt.xml
+│   │   │   │   │   │   │   │   ├── values-lv
+│   │   │   │   │   │   │   │   │   └── values-lv.xml
+│   │   │   │   │   │   │   │   ├── values-mk
+│   │   │   │   │   │   │   │   │   └── values-mk.xml
+│   │   │   │   │   │   │   │   ├── values-ml
+│   │   │   │   │   │   │   │   │   └── values-ml.xml
+│   │   │   │   │   │   │   │   ├── values-mn
+│   │   │   │   │   │   │   │   │   └── values-mn.xml
+│   │   │   │   │   │   │   │   ├── values-mr
+│   │   │   │   │   │   │   │   │   └── values-mr.xml
+│   │   │   │   │   │   │   │   ├── values-ms
+│   │   │   │   │   │   │   │   │   └── values-ms.xml
+│   │   │   │   │   │   │   │   ├── values-my
+│   │   │   │   │   │   │   │   │   └── values-my.xml
+│   │   │   │   │   │   │   │   ├── values-nb
+│   │   │   │   │   │   │   │   │   └── values-nb.xml
+│   │   │   │   │   │   │   │   ├── values-ne
+│   │   │   │   │   │   │   │   │   └── values-ne.xml
+│   │   │   │   │   │   │   │   ├── values-night-v33
+│   │   │   │   │   │   │   │   │   └── values-night-v33.xml
+│   │   │   │   │   │   │   │   ├── values-night-v8
+│   │   │   │   │   │   │   │   │   └── values-night-v8.xml
+│   │   │   │   │   │   │   │   ├── values-nl
+│   │   │   │   │   │   │   │   │   └── values-nl.xml
+│   │   │   │   │   │   │   │   ├── values-or
+│   │   │   │   │   │   │   │   │   └── values-or.xml
+│   │   │   │   │   │   │   │   ├── values-pa
+│   │   │   │   │   │   │   │   │   └── values-pa.xml
+│   │   │   │   │   │   │   │   ├── values-pl
+│   │   │   │   │   │   │   │   │   └── values-pl.xml
+│   │   │   │   │   │   │   │   ├── values-port
+│   │   │   │   │   │   │   │   │   └── values-port.xml
+│   │   │   │   │   │   │   │   ├── values-pt
+│   │   │   │   │   │   │   │   │   └── values-pt.xml
+│   │   │   │   │   │   │   │   ├── values-pt-rBR
+│   │   │   │   │   │   │   │   │   └── values-pt-rBR.xml
+│   │   │   │   │   │   │   │   ├── values-pt-rPT
+│   │   │   │   │   │   │   │   │   └── values-pt-rPT.xml
+│   │   │   │   │   │   │   │   ├── values-ro
+│   │   │   │   │   │   │   │   │   └── values-ro.xml
+│   │   │   │   │   │   │   │   ├── values-ru
+│   │   │   │   │   │   │   │   │   └── values-ru.xml
+│   │   │   │   │   │   │   │   ├── values-si
+│   │   │   │   │   │   │   │   │   └── values-si.xml
+│   │   │   │   │   │   │   │   ├── values-sk
+│   │   │   │   │   │   │   │   │   └── values-sk.xml
+│   │   │   │   │   │   │   │   ├── values-sl
+│   │   │   │   │   │   │   │   │   └── values-sl.xml
+│   │   │   │   │   │   │   │   ├── values-sq
+│   │   │   │   │   │   │   │   │   └── values-sq.xml
+│   │   │   │   │   │   │   │   ├── values-sr
+│   │   │   │   │   │   │   │   │   └── values-sr.xml
+│   │   │   │   │   │   │   │   ├── values-sv
+│   │   │   │   │   │   │   │   │   └── values-sv.xml
+│   │   │   │   │   │   │   │   ├── values-sw
+│   │   │   │   │   │   │   │   │   └── values-sw.xml
+│   │   │   │   │   │   │   │   ├── values-sw600dp-v13
+│   │   │   │   │   │   │   │   │   └── values-sw600dp-v13.xml
+│   │   │   │   │   │   │   │   ├── values-ta
+│   │   │   │   │   │   │   │   │   └── values-ta.xml
+│   │   │   │   │   │   │   │   ├── values-te
+│   │   │   │   │   │   │   │   │   └── values-te.xml
+│   │   │   │   │   │   │   │   ├── values-th
+│   │   │   │   │   │   │   │   │   └── values-th.xml
+│   │   │   │   │   │   │   │   ├── values-tl
+│   │   │   │   │   │   │   │   │   └── values-tl.xml
+│   │   │   │   │   │   │   │   ├── values-tr
+│   │   │   │   │   │   │   │   │   └── values-tr.xml
+│   │   │   │   │   │   │   │   ├── values-uk
+│   │   │   │   │   │   │   │   │   └── values-uk.xml
+│   │   │   │   │   │   │   │   ├── values-ur
+│   │   │   │   │   │   │   │   │   └── values-ur.xml
+│   │   │   │   │   │   │   │   ├── values-uz
+│   │   │   │   │   │   │   │   │   └── values-uz.xml
+│   │   │   │   │   │   │   │   ├── values-v16
+│   │   │   │   │   │   │   │   │   └── values-v16.xml
+│   │   │   │   │   │   │   │   ├── values-v17
+│   │   │   │   │   │   │   │   │   └── values-v17.xml
+│   │   │   │   │   │   │   │   ├── values-v18
+│   │   │   │   │   │   │   │   │   └── values-v18.xml
+│   │   │   │   │   │   │   │   ├── values-v21
+│   │   │   │   │   │   │   │   │   └── values-v21.xml
+│   │   │   │   │   │   │   │   ├── values-v22
+│   │   │   │   │   │   │   │   │   └── values-v22.xml
+│   │   │   │   │   │   │   │   ├── values-v23
+│   │   │   │   │   │   │   │   │   └── values-v23.xml
+│   │   │   │   │   │   │   │   ├── values-v24
+│   │   │   │   │   │   │   │   │   └── values-v24.xml
+│   │   │   │   │   │   │   │   ├── values-v25
+│   │   │   │   │   │   │   │   │   └── values-v25.xml
+│   │   │   │   │   │   │   │   ├── values-v26
+│   │   │   │   │   │   │   │   │   └── values-v26.xml
+│   │   │   │   │   │   │   │   ├── values-v27
+│   │   │   │   │   │   │   │   │   └── values-v27.xml
+│   │   │   │   │   │   │   │   ├── values-v28
+│   │   │   │   │   │   │   │   │   └── values-v28.xml
+│   │   │   │   │   │   │   │   ├── values-v29
+│   │   │   │   │   │   │   │   │   └── values-v29.xml
+│   │   │   │   │   │   │   │   ├── values-v30
+│   │   │   │   │   │   │   │   │   └── values-v30.xml
+│   │   │   │   │   │   │   │   ├── values-v31
+│   │   │   │   │   │   │   │   │   └── values-v31.xml
+│   │   │   │   │   │   │   │   ├── values-v33
+│   │   │   │   │   │   │   │   │   └── values-v33.xml
+│   │   │   │   │   │   │   │   ├── values-v34
+│   │   │   │   │   │   │   │   │   └── values-v34.xml
+│   │   │   │   │   │   │   │   ├── values-v35
+│   │   │   │   │   │   │   │   │   └── values-v35.xml
+│   │   │   │   │   │   │   │   ├── values-vi
+│   │   │   │   │   │   │   │   │   └── values-vi.xml
+│   │   │   │   │   │   │   │   ├── values-w320dp-land-v13
+│   │   │   │   │   │   │   │   │   └── values-w320dp-land-v13.xml
+│   │   │   │   │   │   │   │   ├── values-w360dp-port-v13
+│   │   │   │   │   │   │   │   │   └── values-w360dp-port-v13.xml
+│   │   │   │   │   │   │   │   ├── values-w400dp-port-v13
+│   │   │   │   │   │   │   │   │   └── values-w400dp-port-v13.xml
+│   │   │   │   │   │   │   │   ├── values-w600dp-land-v13
+│   │   │   │   │   │   │   │   │   └── values-w600dp-land-v13.xml
+│   │   │   │   │   │   │   │   ├── values-watch-v20
+│   │   │   │   │   │   │   │   │   └── values-watch-v20.xml
+│   │   │   │   │   │   │   │   ├── values-watch-v21
+│   │   │   │   │   │   │   │   │   └── values-watch-v21.xml
+│   │   │   │   │   │   │   │   ├── values-xlarge-v4
+│   │   │   │   │   │   │   │   │   └── values-xlarge-v4.xml
+│   │   │   │   │   │   │   │   ├── values-zh-rCN
+│   │   │   │   │   │   │   │   │   └── values-zh-rCN.xml
+│   │   │   │   │   │   │   │   ├── values-zh-rHK
+│   │   │   │   │   │   │   │   │   └── values-zh-rHK.xml
+│   │   │   │   │   │   │   │   ├── values-zh-rTW
+│   │   │   │   │   │   │   │   │   └── values-zh-rTW.xml
+│   │   │   │   │   │   │   │   └── values-zu
+│   │   │   │   │   │   │   │       └── values-zu.xml
+│   │   │   │   │   │   │   ├── merger.xml
+│   │   │   │   │   │   │   └── stripped.dir
+│   │   │   │   │   │   └── packageDebugResources
+│   │   │   │   │   │       ├── compile-file-map.properties
+│   │   │   │   │   │       ├── merged.dir
+│   │   │   │   │   │       │   ├── values
+│   │   │   │   │   │       │   │   └── values.xml
+│   │   │   │   │   │       │   └── values-night-v8
+│   │   │   │   │   │       │       └── values-night-v8.xml
+│   │   │   │   │   │       ├── merger.xml
+│   │   │   │   │   │       └── stripped.dir
+│   │   │   │   │   ├── debug-mergeJavaRes
+│   │   │   │   │   │   ├── merge-state
+│   │   │   │   │   │   └── zip-cache
+│   │   │   │   │   │       ├── _oEtanSKkJjhRGqbF7KkrQ==
+│   │   │   │   │   │       ├── +sCGywmzywIbKKNnqIU1eQ==
+│   │   │   │   │   │       ├── 0foq6qc5Ijmna5BVfbNQ4g==
+│   │   │   │   │   │       ├── 0nwWjJvN3PXd2PfCGOvg7g==
+│   │   │   │   │   │       ├── 1ehw6k00fxiWnl_FD2ftNw==
+│   │   │   │   │   │       ├── 1of5xF6uwaCvu7mEKTjfTg==
+│   │   │   │   │   │       ├── 26zGkZLoihd2WqJJlyDouA==
+│   │   │   │   │   │       ├── 3GC3ASiQAJCV1Rbb82ZuTA==
+│   │   │   │   │   │       ├── 3Y9+T7FtMLe20gbWFMW0SA==
+│   │   │   │   │   │       ├── 42H90EPBz_KfUMVMAxrp3g==
+│   │   │   │   │   │       ├── 4I25q7bteZJ9fKMYUgiAKw==
+│   │   │   │   │   │       ├── 4iLW7ULeOBWsk+rrcxY9uw==
+│   │   │   │   │   │       ├── 4MTCrOkXQWalbh9H5u4dAQ==
+│   │   │   │   │   │       ├── 4X+oDkZ0ORo4VVYjKNzOvA==
+│   │   │   │   │   │       ├── 5mwzP3LSvnzrO+fnpLEIrw==
+│   │   │   │   │   │       ├── 6jSsZBKHHk98kzVTyx064Q==
+│   │   │   │   │   │       ├── 8dZifaPHBRCKQNKNcZaofw==
+│   │   │   │   │   │       ├── 8KCnbqaVMPJGBhxiavu8NQ==
+│   │   │   │   │   │       ├── 90rVMlrnVvPPUPcxpS81vA==
+│   │   │   │   │   │       ├── 9922Ojh9MkC0r3V+NO6DNg==
+│   │   │   │   │   │       ├── 9zJCynHWiPNIQGY9IyHsNA==
+│   │   │   │   │   │       ├── a0_1DqEyuF67pYSutuXI_A==
+│   │   │   │   │   │       ├── A2ZyhMhYWdhMQa7F0AOhXg==
+│   │   │   │   │   │       ├── aHhUq3Yw5PrCAbeYEJvFzQ==
+│   │   │   │   │   │       ├── AjDdZ7dAGo_5AtiKFEU3wQ==
+│   │   │   │   │   │       ├── bGi3rLu7iiqABkTPhKuGDQ==
+│   │   │   │   │   │       ├── bImDrXCV3z7Uxx2cHjdxLA==
+│   │   │   │   │   │       ├── bispn9TEr_Rg8Fx5RE7qTw==
+│   │   │   │   │   │       ├── BMU6iO9hfSNtxfjd2Nt3Tg==
+│   │   │   │   │   │       ├── bUeNT_kW+XPn9CeZbhBCDA==
+│   │   │   │   │   │       ├── bzvhL6ADXI_I0Qrrt2wBxA==
+│   │   │   │   │   │       ├── CbfB04qKKRzjzMTFUFy4Hw==
+│   │   │   │   │   │       ├── cjD8G02IgLqrwbNrvNLAcA==
+│   │   │   │   │   │       ├── cn0Y+IfcUgUCsVHhz7DWtQ==
+│   │   │   │   │   │       ├── Cu3BjhHcXo9X+lpmG5HFtQ==
+│   │   │   │   │   │       ├── cXp8Zroc3hf_c0MsPCPbIg==
+│   │   │   │   │   │       ├── d7t4d+GW26WjTHIFZySURg==
+│   │   │   │   │   │       ├── DoWoaQ8+UTou6TwumpjKDg==
+│   │   │   │   │   │       ├── DrsqdNO9SdAQYBv5TILwzQ==
+│   │   │   │   │   │       ├── dsWe_Vo90XqEc08nT3PA1A==
+│   │   │   │   │   │       ├── EU4dbNcN0NXyd8pWTC5GMA==
+│   │   │   │   │   │       ├── Fqig+KZQE2VjhsAPdWtRlQ==
+│   │   │   │   │   │       ├── FyyL7cyuxhK5VoZVagn4gQ==
+│   │   │   │   │   │       ├── ga1rl76ovWO7RqISekb91g==
+│   │   │   │   │   │       ├── GUTkv2RxZ8hNN7APJfyXtg==
+│   │   │   │   │   │       ├── H1NLuCLU4m_MF2IH5I_5AA==
+│   │   │   │   │   │       ├── h3yQ2O0og9BCGrOEwCbMhA==
+│   │   │   │   │   │       ├── HDhSciUoA+dMdRounuljUQ==
+│   │   │   │   │   │       ├── hTRTsPa325lV7dUHDNoXaw==
+│   │   │   │   │   │       ├── hVPVSrUZo4xuqexzL2TN1w==
+│   │   │   │   │   │       ├── iJQb2T2ELIuoPvRMiA9lLQ==
+│   │   │   │   │   │       ├── ISjJhPMgFpiP0CHBCO+KQw==
+│   │   │   │   │   │       ├── iT9dBxGAzXlU8GxY06+8JQ==
+│   │   │   │   │   │       ├── J2GYUrN_AqXtcygm3Qi6TQ==
+│   │   │   │   │   │       ├── jF62ZzQ7ib8qbvTz5ozJHQ==
+│   │   │   │   │   │       ├── kaRdiV1GI4of8jeeRd2Kkw==
+│   │   │   │   │   │       ├── KF3xhjkJ9m0BI15ecrzD1A==
+│   │   │   │   │   │       ├── Kq6azFVOswN45od7CtfetA==
+│   │   │   │   │   │       ├── kqbdjvdj4wLDvMbTWSv1GQ==
+│   │   │   │   │   │       ├── KSjtEcwqkKUTq5X_42DhRg==
+│   │   │   │   │   │       ├── LerfiBeyxUHQpEhkNxtDWA==
+│   │   │   │   │   │       ├── LMcgE5RP3+jlD+MBa4ze+w==
+│   │   │   │   │   │       ├── LO5ewtGZ02EmS0mrKbfdxw==
+│   │   │   │   │   │       ├── lUik_ZsX7YzUvxjEqW798w==
+│   │   │   │   │   │       ├── LvePKU9HQwo_zBQzzrUQQg==
+│   │   │   │   │   │       ├── m004hIxs4GqzPlXWSuhYpQ==
+│   │   │   │   │   │       ├── m0epAcgrrj_q5OCIvqvHYA==
+│   │   │   │   │   │       ├── mhrRgVCUloQbuafZsv4TGw==
+│   │   │   │   │   │       ├── ML0BaVws9FywZJCTGSfZiA==
+│   │   │   │   │   │       ├── muwScZbQaIs68Ky_SFyhag==
+│   │   │   │   │   │       ├── mye9xd3DHM9H+LbTY0aK5w==
+│   │   │   │   │   │       ├── n007fH9cAvo_zux5uFG16A==
+│   │   │   │   │   │       ├── nHEKa8xtoflxmvYk2BzzoQ==
+│   │   │   │   │   │       ├── NkuN+17nGnM7ZX6UgJqFYw==
+│   │   │   │   │   │       ├── nOYt+J264wU2sfKl7C19KQ==
+│   │   │   │   │   │       ├── nRWIk0VSKTH0Tu9QqsRoLw==
+│   │   │   │   │   │       ├── nuZd2bO0VpAHdYMSy5ek0Q==
+│   │   │   │   │   │       ├── OLatLzTM4x7Iursl6HMlaw==
+│   │   │   │   │   │       ├── opIJAbdmGcPcZjui451lrw==
+│   │   │   │   │   │       ├── OugKFAfeN2MI5QP2zoRTwg==
+│   │   │   │   │   │       ├── PpvxT8IGF7MyYB3ktxTEzw==
+│   │   │   │   │   │       ├── Q4RdbPdsY8zxALnX3Cpcug==
+│   │   │   │   │   │       ├── QAXQVSj8v55gFr0SBSBB3g==
+│   │   │   │   │   │       ├── qUd0Bf9Hg0_Q0FnejWcbCg==
+│   │   │   │   │   │       ├── r+avm+kQXNz4axmWxQ55PA==
+│   │   │   │   │   │       ├── R0uSPDxITS9BiHYELYW_qg==
+│   │   │   │   │   │       ├── r2HKcqJWhN0etcqn1xVhGQ==
+│   │   │   │   │   │       ├── Raqj145XOW54Z2gQRiQv7w==
+│   │   │   │   │   │       ├── rlNHJ_dOb6NkTd1x4mhirQ==
+│   │   │   │   │   │       ├── RRWc3po2iSO7KwI2jo7rPA==
+│   │   │   │   │   │       ├── sEhOdhk4BVmkuQt4YZSKzg==
+│   │   │   │   │   │       ├── Si6Jvq1Xz62nqE8D6CstOg==
+│   │   │   │   │   │       ├── sMqEtvRWUHukPDMjF+Ud5w==
+│   │   │   │   │   │       ├── sQ55SGUf0_wP9rBKArbf1g==
+│   │   │   │   │   │       ├── SsORiKfirVyTUTypbXCGDQ==
+│   │   │   │   │   │       ├── SvqxjOVJDiRymM6VLlB7jA==
+│   │   │   │   │   │       ├── sZiZx7D4yEo1ZPuvwaWoaw==
+│   │   │   │   │   │       ├── TJim59VWTwNdPSzixKIetw==
+│   │   │   │   │   │       ├── TxHHAcxWGTg4cIz_EYwqdQ==
+│   │   │   │   │   │       ├── tyLfrvF2bV68pxtlse_D_Q==
+│   │   │   │   │   │       ├── u_opbrTGWUaYerCaMMSPAw==
+│   │   │   │   │   │       ├── U2nk6SHyUMiIzUXqMxYb1Q==
+│   │   │   │   │   │       ├── uBh1vCSsne9DV3rihyiJsg==
+│   │   │   │   │   │       ├── unMdLKh2mpekeHHn6Tw3yg==
+│   │   │   │   │   │       ├── unZPFGe+f7WfYAO_uSJsbw==
+│   │   │   │   │   │       ├── UOCjde8RNqtokaL5KNqpLQ==
+│   │   │   │   │   │       ├── UOiHKQHaA7ktmzc3JTcn5w==
+│   │   │   │   │   │       ├── V1BXnTa2vQMhvtGYgfVE2g==
+│   │   │   │   │   │       ├── V1JKqQlQ3p3gZOpnU_Q3sg==
+│   │   │   │   │   │       ├── vN_zVr38iKKkMZF8IYy7QA==
+│   │   │   │   │   │       ├── WOjwqMCNvsC3_0FBm9W3OA==
+│   │   │   │   │   │       ├── WRo23l5dyoCtUTu6F6YY9g==
+│   │   │   │   │   │       ├── XoH9Z7ymZGZ6bnXvwm_ZOg==
+│   │   │   │   │   │       ├── yaVWSvi_ozaZP1OyI9Q3Fw==
+│   │   │   │   │   │       ├── yqPMDeKfDhofk319A8Dl7A==
+│   │   │   │   │   │       ├── zAkmONZjYsM3p5_Segq1xA==
+│   │   │   │   │   │       ├── ZG9HrCDfy4EPv4knW_kyeg==
+│   │   │   │   │   │       └── ZTGzIhY3VXqJv0YMgE+7Tg==
+│   │   │   │   │   ├── mergeDebugAssets
+│   │   │   │   │   │   └── merger.xml
+│   │   │   │   │   ├── mergeDebugJniLibFolders
+│   │   │   │   │   │   └── merger.xml
+│   │   │   │   │   ├── mergeDebugShaders
+│   │   │   │   │   │   └── merger.xml
+│   │   │   │   │   └── packageDebug
+│   │   │   │   │       └── tmp
+│   │   │   │   │           └── debug
+│   │   │   │   │               ├── dex-renamer-state.txt
+│   │   │   │   │               └── zip-cache
+│   │   │   │   │                   ├── androidResources
+│   │   │   │   │                   └── javaResources0
+│   │   │   │   ├── javac
+│   │   │   │   │   ├── debug
+│   │   │   │   │   │   └── compileDebugJavaWithJavac
+│   │   │   │   │   │       └── classes
+│   │   │   │   │   │           └── com
+│   │   │   │   │   │               └── example
+│   │   │   │   │   │                   └── zephyrevents
+│   │   │   │   │   │                       ├── controller
+│   │   │   │   │   │                       │   ├── EventController.class
+│   │   │   │   │   │                       │   ├── LotteryController.class
+│   │   │   │   │   │                       │   ├── LotteryController$1.class
+│   │   │   │   │   │                       │   ├── LotteryController$1$1.class
+│   │   │   │   │   │                       │   ├── LotteryController$1$1$1.class
+│   │   │   │   │   │                       │   ├── NotificationController.class
+│   │   │   │   │   │                       │   ├── NotificationController$1.class
+│   │   │   │   │   │                       │   ├── NotificationController$2.class
+│   │   │   │   │   │                       │   ├── NotificationController$3.class
+│   │   │   │   │   │                       │   ├── NotificationController$4.class
+│   │   │   │   │   │                       │   ├── UserController.class
+│   │   │   │   │   │                       │   ├── UserController$1.class
+│   │   │   │   │   │                       │   ├── UserController$2.class
+│   │   │   │   │   │                       │   ├── UserController$3.class
+│   │   │   │   │   │                       │   ├── UserController$4.class
+│   │   │   │   │   │                       │   ├── UserController$4$1.class
+│   │   │   │   │   │                       │   └── UserController$5.class
+│   │   │   │   │   │                       ├── model
+│   │   │   │   │   │                       │   ├── ContactInfo.class
+│   │   │   │   │   │                       │   ├── Coordinate.class
+│   │   │   │   │   │                       │   ├── Entrant.class
+│   │   │   │   │   │                       │   ├── Event.class
+│   │   │   │   │   │                       │   ├── EventStatus.class
+│   │   │   │   │   │                       │   ├── EventTime.class
+│   │   │   │   │   │                       │   ├── EventViewModel.class
+│   │   │   │   │   │                       │   ├── Location.class
+│   │   │   │   │   │                       │   ├── MyEventEntry.class
+│   │   │   │   │   │                       │   ├── Notification.class
+│   │   │   │   │   │                       │   ├── NotificationType.class
+│   │   │   │   │   │                       │   ├── NotifyingGroup.class
+│   │   │   │   │   │                       │   ├── Status.class
+│   │   │   │   │   │                       │   ├── User.class
+│   │   │   │   │   │                       │   └── WaitlistEntry.class
+│   │   │   │   │   │                       ├── repository
+│   │   │   │   │   │                       │   ├── Collections.class
+│   │   │   │   │   │                       │   ├── EventRepository.class
+│   │   │   │   │   │                       │   ├── EventRepository$1.class
+│   │   │   │   │   │                       │   ├── EventRepository$10.class
+│   │   │   │   │   │                       │   ├── EventRepository$11.class
+│   │   │   │   │   │                       │   ├── EventRepository$12.class
+│   │   │   │   │   │                       │   ├── EventRepository$2.class
+│   │   │   │   │   │                       │   ├── EventRepository$3.class
+│   │   │   │   │   │                       │   ├── EventRepository$4.class
+│   │   │   │   │   │                       │   ├── EventRepository$5.class
+│   │   │   │   │   │                       │   ├── EventRepository$6.class
+│   │   │   │   │   │                       │   ├── EventRepository$7.class
+│   │   │   │   │   │                       │   ├── EventRepository$8.class
+│   │   │   │   │   │                       │   ├── EventRepository$9.class
+│   │   │   │   │   │                       │   ├── NotificationRepository.class
+│   │   │   │   │   │                       │   ├── NotificationRepository$1.class
+│   │   │   │   │   │                       │   ├── NotificationRepository$2.class
+│   │   │   │   │   │                       │   ├── RepositoryCallback.class
+│   │   │   │   │   │                       │   ├── UserRepository.class
+│   │   │   │   │   │                       │   ├── UserRepository$1.class
+│   │   │   │   │   │                       │   ├── UserRepository$2.class
+│   │   │   │   │   │                       │   ├── UserRepository$3.class
+│   │   │   │   │   │                       │   ├── UserRepository$4.class
+│   │   │   │   │   │                       │   ├── UserRepository$5.class
+│   │   │   │   │   │                       │   ├── UserRepository$6.class
+│   │   │   │   │   │                       │   ├── WaitlistRepository.class
+│   │   │   │   │   │                       │   └── WaitlistRepository$1.class
+│   │   │   │   │   │                       ├── util
+│   │   │   │   │   │                       │   ├── BottomNavHelper.class
+│   │   │   │   │   │                       │   ├── DateTimeFormat.class
+│   │   │   │   │   │                       │   ├── DistanceHelper.class
+│   │   │   │   │   │                       │   ├── GenerateId.class
+│   │   │   │   │   │                       │   ├── MyEventsStore.class
+│   │   │   │   │   │                       │   ├── SampleEvents.class
+│   │   │   │   │   │                       │   └── TimeHelper.class
+│   │   │   │   │   │                       └── view
+│   │   │   │   │   │                           ├── DrawReplacementsDialog.class
+│   │   │   │   │   │                           ├── EntrantAdapter.class
+│   │   │   │   │   │                           ├── EntrantAdapter$EntrantCancelListener.class
+│   │   │   │   │   │                           ├── EntrantAdapter$EntrantViewHolder.class
+│   │   │   │   │   │                           ├── EntrantsListFragment.class
+│   │   │   │   │   │                           ├── EntrantsListFragment$1.class
+│   │   │   │   │   │                           ├── EntrantsListFragment$2.class
+│   │   │   │   │   │                           ├── EntrantsListFragment$2$1.class
+│   │   │   │   │   │                           ├── EventConfirmationFragment.class
+│   │   │   │   │   │                           ├── EventConfirmationFragment$1.class
+│   │   │   │   │   │                           ├── EventCreateFragment.class
+│   │   │   │   │   │                           ├── EventCreateFragment$1.class
+│   │   │   │   │   │                           ├── EventCreateFragment$2.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$1.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$2.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$3.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$4.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$5.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$6.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$7.class
+│   │   │   │   │   │                           ├── EventDetailViewActivity$8.class
+│   │   │   │   │   │                           ├── EventListAdapter.class
+│   │   │   │   │   │                           ├── EventsListActivity.class
+│   │   │   │   │   │                           ├── EventsListActivity$1.class
+│   │   │   │   │   │                           ├── EventsListActivity$2.class
+│   │   │   │   │   │                           ├── EventStatusActivity.class
+│   │   │   │   │   │                           ├── FeaturedEventListAdapter.class
+│   │   │   │   │   │                           ├── FilterCategoryAdapter.class
+│   │   │   │   │   │                           ├── FilterCategoryAdapter$ViewHolder.class
+│   │   │   │   │   │                           ├── FilterEventsActivity.class
+│   │   │   │   │   │                           ├── FilterEventsActivity$1.class
+│   │   │   │   │   │                           ├── HomeActivity.class
+│   │   │   │   │   │                           ├── HomeActivity$1.class
+│   │   │   │   │   │                           ├── HomeActivity$2.class
+│   │   │   │   │   │                           ├── MyEventListAdapter.class
+│   │   │   │   │   │                           ├── MyEventListAdapter$1.class
+│   │   │   │   │   │                           ├── MyEventListAdapter$2.class
+│   │   │   │   │   │                           ├── MyEventsActivity.class
+│   │   │   │   │   │                           ├── MyEventsActivity$1.class
+│   │   │   │   │   │                           ├── MyEventsActivity$1$1.class
+│   │   │   │   │   │                           ├── NotificationAdapter.class
+│   │   │   │   │   │                           ├── NotificationAdapter$ViewHolder.class
+│   │   │   │   │   │                           ├── OrganizerEntrantsListView.class
+│   │   │   │   │   │                           ├── OrganizerEntrantsListView$EntrantsPagerAdapter.class
+│   │   │   │   │   │                           ├── OrganizerEventAddEditView.class
+│   │   │   │   │   │                           ├── SignUpActivity.class
+│   │   │   │   │   │                           ├── SignUpActivity$1.class
+│   │   │   │   │   │                           ├── SignUpActivity$2.class
+│   │   │   │   │   │                           ├── TermsOfServiceFragment.class
+│   │   │   │   │   │                           ├── TermsOfServiceFragment$1.class
+│   │   │   │   │   │                           ├── TermsOfServiceFragment$OnTosAgreedListener.class
+│   │   │   │   │   │                           ├── UserNotificationListView.class
+│   │   │   │   │   │                           ├── UserProfileEditViewActivity.class
+│   │   │   │   │   │                           ├── UserProfileEditViewActivity$1.class
+│   │   │   │   │   │                           ├── UserProfileEditViewActivity$2.class
+│   │   │   │   │   │                           ├── UserProfileEditViewActivity$3.class
+│   │   │   │   │   │                           ├── UserProfileSettingsViewActivity.class
+│   │   │   │   │   │                           ├── UserProfileSettingsViewActivity$1.class
+│   │   │   │   │   │                           ├── UserProfileViewActivity.class
+│   │   │   │   │   │                           ├── UserProfileViewActivity$1.class
+│   │   │   │   │   │                           ├── UserProfileViewActivity$2.class
+│   │   │   │   │   │                           └── WelcomeActivity.class
+│   │   │   │   │   └── debugUnitTest
+│   │   │   │   │       └── compileDebugUnitTestJavaWithJavac
+│   │   │   │   │           └── classes
+│   │   │   │   │               └── com
+│   │   │   │   │                   └── example
+│   │   │   │   │                       └── zephyrevents
+│   │   │   │   │                           ├── controller
+│   │   │   │   │                           │   ├── EventControllerTest.class
+│   │   │   │   │                           │   ├── LotteryControllerTest.class
+│   │   │   │   │                           │   └── UserControllerTest.class
+│   │   │   │   │                           ├── ExampleUnitTest.class
+│   │   │   │   │                           ├── repository
+│   │   │   │   │                           │   ├── EventRepositoryTest.class
+│   │   │   │   │                           │   ├── NotificationRepositoryTest.class
+│   │   │   │   │                           │   ├── UserRepositoryTest.class
+│   │   │   │   │                           │   ├── WaitlistRepositoryTest.class
+│   │   │   │   │                           │   └── WaitlistRepositoryTest$1.class
+│   │   │   │   │                           └── util
+│   │   │   │   │                               ├── DistenceHelperTest.class
+│   │   │   │   │                               └── TimeHelperTest.class
+│   │   │   │   ├── linked_resources_binary_format
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugResources
+│   │   │   │   │           ├── linked-resources-binary-format-debug.ap_
+│   │   │   │   │           └── output-metadata.json
+│   │   │   │   ├── local_only_symbol_list
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── parseDebugLocalResources
+│   │   │   │   │           └── R-def.txt
+│   │   │   │   ├── manifest_merge_blame_file
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugMainManifest
+│   │   │   │   │           └── manifest-merger-blame-debug-report.txt
+│   │   │   │   ├── merged_java_res
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugJavaResource
+│   │   │   │   │           └── base.jar
+│   │   │   │   ├── merged_jni_libs
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugJniLibFolders
+│   │   │   │   │           └── out
+│   │   │   │   ├── merged_manifest
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugMainManifest
+│   │   │   │   │           └── AndroidManifest.xml
+│   │   │   │   ├── merged_manifests
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugManifest
+│   │   │   │   │           ├── AndroidManifest.xml
+│   │   │   │   │           └── output-metadata.json
+│   │   │   │   ├── merged_native_libs
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugNativeLibs
+│   │   │   │   │           └── out
+│   │   │   │   │               └── lib
+│   │   │   │   │                   ├── arm64-v8a
+│   │   │   │   │                   │   └── libdatastore_shared_counter.so
+│   │   │   │   │                   ├── armeabi-v7a
+│   │   │   │   │                   │   └── libdatastore_shared_counter.so
+│   │   │   │   │                   ├── x86
+│   │   │   │   │                   │   └── libdatastore_shared_counter.so
+│   │   │   │   │                   └── x86_64
+│   │   │   │   │                       └── libdatastore_shared_counter.so
+│   │   │   │   ├── merged_res
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugResources
+│   │   │   │   │           ├── color_filter_date_radio_text.xml.flat
+│   │   │   │   │           ├── color_switch_toggle_color.xml.flat
+│   │   │   │   │           ├── drawable_bg_badge_not_selected.xml.flat
+│   │   │   │   │           ├── drawable_bg_badge_selected.xml.flat
+│   │   │   │   │           ├── drawable_bg_badge_waiting.xml.flat
+│   │   │   │   │           ├── drawable_bg_button_filled.xml.flat
+│   │   │   │   │           ├── drawable_bg_button_outline.xml.flat
+│   │   │   │   │           ├── drawable_bg_card_white.xml.flat
+│   │   │   │   │           ├── drawable_bg_edit_avatar_badge.xml.flat
+│   │   │   │   │           ├── drawable_bg_event_card_image.xml.flat
+│   │   │   │   │           ├── drawable_bg_filter_chip.xml.flat
+│   │   │   │   │           ├── drawable_bg_filter_date_field.xml.flat
+│   │   │   │   │           ├── drawable_bg_filter_date_radio.xml.flat
+│   │   │   │   │           ├── drawable_bg_filter_date_unselected.xml.flat
+│   │   │   │   │           ├── drawable_bg_history_tag.xml.flat
+│   │   │   │   │           ├── drawable_bg_image_placeholder.xml.flat
+│   │   │   │   │           ├── drawable_bg_input_active_dropdown.xml.flat
+│   │   │   │   │           ├── drawable_bg_input_default.xml.flat
+│   │   │   │   │           ├── drawable_bg_input_signup.xml.flat
+│   │   │   │   │           ├── drawable_bg_notification_dot.xml.flat
+│   │   │   │   │           ├── drawable_bg_organizer_card.xml.flat
+│   │   │   │   │           ├── drawable_bg_profile_header.xml.flat
+│   │   │   │   │           ├── drawable_bg_status_tag_orange.xml.flat
+│   │   │   │   │           ├── drawable_bg_status_tag.xml.flat
+│   │   │   │   │           ├── drawable_bg_tab_pill.xml.flat
+│   │   │   │   │           ├── drawable_bg_tab_selected.xml.flat
+│   │   │   │   │           ├── drawable_bg_tab_unselected.xml.flat
+│   │   │   │   │           ├── drawable_event_card_placeholder.xml.flat
+│   │   │   │   │           ├── drawable_ic_add_box.xml.flat
+│   │   │   │   │           ├── drawable_ic_app_logo.png.flat
+│   │   │   │   │           ├── drawable_ic_arrow_back.xml.flat
+│   │   │   │   │           ├── drawable_ic_calendar_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_calendar.xml.flat
+│   │   │   │   │           ├── drawable_ic_cancel_circle.xml.flat
+│   │   │   │   │           ├── drawable_ic_check_circle.xml.flat
+│   │   │   │   │           ├── drawable_ic_close.xml.flat
+│   │   │   │   │           ├── drawable_ic_confirmation_number.xml.flat
+│   │   │   │   │           ├── drawable_ic_delete_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_description_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_edit_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_edit.xml.flat
+│   │   │   │   │           ├── drawable_ic_favorite_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_fullscreen_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_home_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_home.xml.flat
+│   │   │   │   │           ├── drawable_ic_image_placeholder.xml.flat
+│   │   │   │   │           ├── drawable_ic_image_placeholder2.xml.flat
+│   │   │   │   │           ├── drawable_ic_launcher_background.xml.flat
+│   │   │   │   │           ├── drawable_ic_launcher_foreground.xml.flat
+│   │   │   │   │           ├── drawable_ic_list.xml.flat
+│   │   │   │   │           ├── drawable_ic_location.xml.flat
+│   │   │   │   │           ├── drawable_ic_more_horiz.xml.flat
+│   │   │   │   │           ├── drawable_ic_more_vert.xml.flat
+│   │   │   │   │           ├── drawable_ic_notifications_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_notifications.xml.flat
+│   │   │   │   │           ├── drawable_ic_person_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_person.xml.flat
+│   │   │   │   │           ├── drawable_ic_qr_code_scanner.xml.flat
+│   │   │   │   │           ├── drawable_ic_search.xml.flat
+│   │   │   │   │           ├── drawable_ic_tags_24.xml.flat
+│   │   │   │   │           ├── drawable_ic_warning_24.xml.flat
+│   │   │   │   │           ├── drawable_outline_arrow_back_ios_24.xml.flat
+│   │   │   │   │           ├── drawable_outline_arrow_drop_down_24.xml.flat
+│   │   │   │   │           ├── drawable_outline_arrow_forward_ios_24.xml.flat
+│   │   │   │   │           ├── drawable_outline_article_person_24.xml.flat
+│   │   │   │   │           ├── drawable_outline_close_24.xml.flat
+│   │   │   │   │           ├── drawable_outline_feature_search_24.xml.flat
+│   │   │   │   │           ├── drawable_outline_filter_alt_24.xml.flat
+│   │   │   │   │           ├── drawable_sharp_add_24.xml.flat
+│   │   │   │   │           ├── layout_activity_edit_profile_user.xml.flat
+│   │   │   │   │           ├── layout_activity_event_detail.xml.flat
+│   │   │   │   │           ├── layout_activity_event_status.xml.flat
+│   │   │   │   │           ├── layout_activity_events_list.xml.flat
+│   │   │   │   │           ├── layout_activity_filter_events.xml.flat
+│   │   │   │   │           ├── layout_activity_home.xml.flat
+│   │   │   │   │           ├── layout_activity_my_events.xml.flat
+│   │   │   │   │           ├── layout_activity_notifications_setting.xml.flat
+│   │   │   │   │           ├── layout_activity_notifications.xml.flat
+│   │   │   │   │           ├── layout_activity_organizer_entrants_list.xml.flat
+│   │   │   │   │           ├── layout_activity_organizer_event.xml.flat
+│   │   │   │   │           ├── layout_activity_profile_user.xml.flat
+│   │   │   │   │           ├── layout_activity_sign_up.xml.flat
+│   │   │   │   │           ├── layout_activity_welcome.xml.flat
+│   │   │   │   │           ├── layout_bottom_nav.xml.flat
+│   │   │   │   │           ├── layout_button_primary.xml.flat
+│   │   │   │   │           ├── layout_button_secondary.xml.flat
+│   │   │   │   │           ├── layout_confirm_popup.xml.flat
+│   │   │   │   │           ├── layout_dialog_delete_profile_confirm.xml.flat
+│   │   │   │   │           ├── layout_dialog_draw_replacements.xml.flat
+│   │   │   │   │           ├── layout_fragment_entrants_list.xml.flat
+│   │   │   │   │           ├── layout_fragment_event_confirmation.xml.flat
+│   │   │   │   │           ├── layout_fragment_event_create.xml.flat
+│   │   │   │   │           ├── layout_fragment_terms_of_service.xml.flat
+│   │   │   │   │           ├── layout_item_event_card_featured.xml.flat
+│   │   │   │   │           ├── layout_item_event_card.xml.flat
+│   │   │   │   │           ├── layout_item_filter_category.xml.flat
+│   │   │   │   │           ├── layout_item_history_tag.xml.flat
+│   │   │   │   │           ├── layout_item_my_event_card.xml.flat
+│   │   │   │   │           ├── layout_item_notification.xml.flat
+│   │   │   │   │           ├── layout_layout_entrant_card.xml.flat
+│   │   │   │   │           ├── layout_layout_top_bar.xml.flat
+│   │   │   │   │           ├── mipmap-anydpi-v26_ic_launcher_round.xml.flat
+│   │   │   │   │           ├── mipmap-anydpi-v26_ic_launcher.xml.flat
+│   │   │   │   │           ├── mipmap-hdpi_ic_launcher_round.webp.flat
+│   │   │   │   │           ├── mipmap-hdpi_ic_launcher.webp.flat
+│   │   │   │   │           ├── mipmap-mdpi_ic_launcher_round.webp.flat
+│   │   │   │   │           ├── mipmap-mdpi_ic_launcher.webp.flat
+│   │   │   │   │           ├── mipmap-xhdpi_ic_launcher_round.webp.flat
+│   │   │   │   │           ├── mipmap-xhdpi_ic_launcher.webp.flat
+│   │   │   │   │           ├── mipmap-xxhdpi_ic_launcher_round.webp.flat
+│   │   │   │   │           ├── mipmap-xxhdpi_ic_launcher.webp.flat
+│   │   │   │   │           ├── mipmap-xxxhdpi_ic_launcher_round.webp.flat
+│   │   │   │   │           ├── mipmap-xxxhdpi_ic_launcher.webp.flat
+│   │   │   │   │           ├── values_values.arsc.flat
+│   │   │   │   │           ├── values-af_values-af.arsc.flat
+│   │   │   │   │           ├── values-am_values-am.arsc.flat
+│   │   │   │   │           ├── values-ar_values-ar.arsc.flat
+│   │   │   │   │           ├── values-as_values-as.arsc.flat
+│   │   │   │   │           ├── values-az_values-az.arsc.flat
+│   │   │   │   │           ├── values-b+es+419_values-b+es+419.arsc.flat
+│   │   │   │   │           ├── values-b+sr+Latn_values-b+sr+Latn.arsc.flat
+│   │   │   │   │           ├── values-be_values-be.arsc.flat
+│   │   │   │   │           ├── values-bg_values-bg.arsc.flat
+│   │   │   │   │           ├── values-bn_values-bn.arsc.flat
+│   │   │   │   │           ├── values-bs_values-bs.arsc.flat
+│   │   │   │   │           ├── values-ca_values-ca.arsc.flat
+│   │   │   │   │           ├── values-cs_values-cs.arsc.flat
+│   │   │   │   │           ├── values-da_values-da.arsc.flat
+│   │   │   │   │           ├── values-de_values-de.arsc.flat
+│   │   │   │   │           ├── values-el_values-el.arsc.flat
+│   │   │   │   │           ├── values-en-rAU_values-en-rAU.arsc.flat
+│   │   │   │   │           ├── values-en-rCA_values-en-rCA.arsc.flat
+│   │   │   │   │           ├── values-en-rGB_values-en-rGB.arsc.flat
+│   │   │   │   │           ├── values-en-rIN_values-en-rIN.arsc.flat
+│   │   │   │   │           ├── values-en-rXC_values-en-rXC.arsc.flat
+│   │   │   │   │           ├── values-es_values-es.arsc.flat
+│   │   │   │   │           ├── values-es-rUS_values-es-rUS.arsc.flat
+│   │   │   │   │           ├── values-et_values-et.arsc.flat
+│   │   │   │   │           ├── values-eu_values-eu.arsc.flat
+│   │   │   │   │           ├── values-fa_values-fa.arsc.flat
+│   │   │   │   │           ├── values-fi_values-fi.arsc.flat
+│   │   │   │   │           ├── values-fr_values-fr.arsc.flat
+│   │   │   │   │           ├── values-fr-rCA_values-fr-rCA.arsc.flat
+│   │   │   │   │           ├── values-gl_values-gl.arsc.flat
+│   │   │   │   │           ├── values-gu_values-gu.arsc.flat
+│   │   │   │   │           ├── values-h320dp-port-v13_values-h320dp-port-v13.arsc.flat
+│   │   │   │   │           ├── values-h360dp-land-v13_values-h360dp-land-v13.arsc.flat
+│   │   │   │   │           ├── values-h480dp-land-v13_values-h480dp-land-v13.arsc.flat
+│   │   │   │   │           ├── values-h480dp-v13_values-h480dp-v13.arsc.flat
+│   │   │   │   │           ├── values-h550dp-port-v13_values-h550dp-port-v13.arsc.flat
+│   │   │   │   │           ├── values-h720dp-v13_values-h720dp-v13.arsc.flat
+│   │   │   │   │           ├── values-hdpi-v4_values-hdpi-v4.arsc.flat
+│   │   │   │   │           ├── values-hi_values-hi.arsc.flat
+│   │   │   │   │           ├── values-hr_values-hr.arsc.flat
+│   │   │   │   │           ├── values-hu_values-hu.arsc.flat
+│   │   │   │   │           ├── values-hy_values-hy.arsc.flat
+│   │   │   │   │           ├── values-in_values-in.arsc.flat
+│   │   │   │   │           ├── values-is_values-is.arsc.flat
+│   │   │   │   │           ├── values-it_values-it.arsc.flat
+│   │   │   │   │           ├── values-iw_values-iw.arsc.flat
+│   │   │   │   │           ├── values-ja_values-ja.arsc.flat
+│   │   │   │   │           ├── values-ka_values-ka.arsc.flat
+│   │   │   │   │           ├── values-kk_values-kk.arsc.flat
+│   │   │   │   │           ├── values-km_values-km.arsc.flat
+│   │   │   │   │           ├── values-kn_values-kn.arsc.flat
+│   │   │   │   │           ├── values-ko_values-ko.arsc.flat
+│   │   │   │   │           ├── values-ky_values-ky.arsc.flat
+│   │   │   │   │           ├── values-land_values-land.arsc.flat
+│   │   │   │   │           ├── values-large-v4_values-large-v4.arsc.flat
+│   │   │   │   │           ├── values-ldltr-v21_values-ldltr-v21.arsc.flat
+│   │   │   │   │           ├── values-ldrtl-v17_values-ldrtl-v17.arsc.flat
+│   │   │   │   │           ├── values-lo_values-lo.arsc.flat
+│   │   │   │   │           ├── values-lt_values-lt.arsc.flat
+│   │   │   │   │           ├── values-lv_values-lv.arsc.flat
+│   │   │   │   │           ├── values-mk_values-mk.arsc.flat
+│   │   │   │   │           ├── values-ml_values-ml.arsc.flat
+│   │   │   │   │           ├── values-mn_values-mn.arsc.flat
+│   │   │   │   │           ├── values-mr_values-mr.arsc.flat
+│   │   │   │   │           ├── values-ms_values-ms.arsc.flat
+│   │   │   │   │           ├── values-my_values-my.arsc.flat
+│   │   │   │   │           ├── values-nb_values-nb.arsc.flat
+│   │   │   │   │           ├── values-ne_values-ne.arsc.flat
+│   │   │   │   │           ├── values-night-v33_values-night-v33.arsc.flat
+│   │   │   │   │           ├── values-night-v8_values-night-v8.arsc.flat
+│   │   │   │   │           ├── values-nl_values-nl.arsc.flat
+│   │   │   │   │           ├── values-or_values-or.arsc.flat
+│   │   │   │   │           ├── values-pa_values-pa.arsc.flat
+│   │   │   │   │           ├── values-pl_values-pl.arsc.flat
+│   │   │   │   │           ├── values-port_values-port.arsc.flat
+│   │   │   │   │           ├── values-pt_values-pt.arsc.flat
+│   │   │   │   │           ├── values-pt-rBR_values-pt-rBR.arsc.flat
+│   │   │   │   │           ├── values-pt-rPT_values-pt-rPT.arsc.flat
+│   │   │   │   │           ├── values-ro_values-ro.arsc.flat
+│   │   │   │   │           ├── values-ru_values-ru.arsc.flat
+│   │   │   │   │           ├── values-si_values-si.arsc.flat
+│   │   │   │   │           ├── values-sk_values-sk.arsc.flat
+│   │   │   │   │           ├── values-sl_values-sl.arsc.flat
+│   │   │   │   │           ├── values-sq_values-sq.arsc.flat
+│   │   │   │   │           ├── values-sr_values-sr.arsc.flat
+│   │   │   │   │           ├── values-sv_values-sv.arsc.flat
+│   │   │   │   │           ├── values-sw_values-sw.arsc.flat
+│   │   │   │   │           ├── values-sw600dp-v13_values-sw600dp-v13.arsc.flat
+│   │   │   │   │           ├── values-ta_values-ta.arsc.flat
+│   │   │   │   │           ├── values-te_values-te.arsc.flat
+│   │   │   │   │           ├── values-th_values-th.arsc.flat
+│   │   │   │   │           ├── values-tl_values-tl.arsc.flat
+│   │   │   │   │           ├── values-tr_values-tr.arsc.flat
+│   │   │   │   │           ├── values-uk_values-uk.arsc.flat
+│   │   │   │   │           ├── values-ur_values-ur.arsc.flat
+│   │   │   │   │           ├── values-uz_values-uz.arsc.flat
+│   │   │   │   │           ├── values-v16_values-v16.arsc.flat
+│   │   │   │   │           ├── values-v17_values-v17.arsc.flat
+│   │   │   │   │           ├── values-v18_values-v18.arsc.flat
+│   │   │   │   │           ├── values-v21_values-v21.arsc.flat
+│   │   │   │   │           ├── values-v22_values-v22.arsc.flat
+│   │   │   │   │           ├── values-v23_values-v23.arsc.flat
+│   │   │   │   │           ├── values-v24_values-v24.arsc.flat
+│   │   │   │   │           ├── values-v25_values-v25.arsc.flat
+│   │   │   │   │           ├── values-v26_values-v26.arsc.flat
+│   │   │   │   │           ├── values-v27_values-v27.arsc.flat
+│   │   │   │   │           ├── values-v28_values-v28.arsc.flat
+│   │   │   │   │           ├── values-v29_values-v29.arsc.flat
+│   │   │   │   │           ├── values-v30_values-v30.arsc.flat
+│   │   │   │   │           ├── values-v31_values-v31.arsc.flat
+│   │   │   │   │           ├── values-v33_values-v33.arsc.flat
+│   │   │   │   │           ├── values-v34_values-v34.arsc.flat
+│   │   │   │   │           ├── values-v35_values-v35.arsc.flat
+│   │   │   │   │           ├── values-vi_values-vi.arsc.flat
+│   │   │   │   │           ├── values-w320dp-land-v13_values-w320dp-land-v13.arsc.flat
+│   │   │   │   │           ├── values-w360dp-port-v13_values-w360dp-port-v13.arsc.flat
+│   │   │   │   │           ├── values-w400dp-port-v13_values-w400dp-port-v13.arsc.flat
+│   │   │   │   │           ├── values-w600dp-land-v13_values-w600dp-land-v13.arsc.flat
+│   │   │   │   │           ├── values-watch-v20_values-watch-v20.arsc.flat
+│   │   │   │   │           ├── values-watch-v21_values-watch-v21.arsc.flat
+│   │   │   │   │           ├── values-xlarge-v4_values-xlarge-v4.arsc.flat
+│   │   │   │   │           ├── values-zh-rCN_values-zh-rCN.arsc.flat
+│   │   │   │   │           ├── values-zh-rHK_values-zh-rHK.arsc.flat
+│   │   │   │   │           ├── values-zh-rTW_values-zh-rTW.arsc.flat
+│   │   │   │   │           ├── values-zu_values-zu.arsc.flat
+│   │   │   │   │           ├── xml_backup_rules.xml.flat
+│   │   │   │   │           └── xml_data_extraction_rules.xml.flat
+│   │   │   │   ├── merged_res_blame_folder
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugResources
+│   │   │   │   │           └── out
+│   │   │   │   │               ├── multi-v2
+│   │   │   │   │               │   ├── mergeDebugResources.json
+│   │   │   │   │               │   ├── values-af.json
+│   │   │   │   │               │   ├── values-am.json
+│   │   │   │   │               │   ├── values-ar.json
+│   │   │   │   │               │   ├── values-as.json
+│   │   │   │   │               │   ├── values-az.json
+│   │   │   │   │               │   ├── values-b+es+419.json
+│   │   │   │   │               │   ├── values-b+sr+Latn.json
+│   │   │   │   │               │   ├── values-be.json
+│   │   │   │   │               │   ├── values-bg.json
+│   │   │   │   │               │   ├── values-bn.json
+│   │   │   │   │               │   ├── values-bs.json
+│   │   │   │   │               │   ├── values-ca.json
+│   │   │   │   │               │   ├── values-cs.json
+│   │   │   │   │               │   ├── values-da.json
+│   │   │   │   │               │   ├── values-de.json
+│   │   │   │   │               │   ├── values-el.json
+│   │   │   │   │               │   ├── values-en-rAU.json
+│   │   │   │   │               │   ├── values-en-rCA.json
+│   │   │   │   │               │   ├── values-en-rGB.json
+│   │   │   │   │               │   ├── values-en-rIN.json
+│   │   │   │   │               │   ├── values-en-rXC.json
+│   │   │   │   │               │   ├── values-es-rUS.json
+│   │   │   │   │               │   ├── values-es.json
+│   │   │   │   │               │   ├── values-et.json
+│   │   │   │   │               │   ├── values-eu.json
+│   │   │   │   │               │   ├── values-fa.json
+│   │   │   │   │               │   ├── values-fi.json
+│   │   │   │   │               │   ├── values-fr-rCA.json
+│   │   │   │   │               │   ├── values-fr.json
+│   │   │   │   │               │   ├── values-gl.json
+│   │   │   │   │               │   ├── values-gu.json
+│   │   │   │   │               │   ├── values-h320dp-port-v13.json
+│   │   │   │   │               │   ├── values-h360dp-land-v13.json
+│   │   │   │   │               │   ├── values-h480dp-land-v13.json
+│   │   │   │   │               │   ├── values-h480dp-v13.json
+│   │   │   │   │               │   ├── values-h550dp-port-v13.json
+│   │   │   │   │               │   ├── values-h720dp-v13.json
+│   │   │   │   │               │   ├── values-hdpi-v4.json
+│   │   │   │   │               │   ├── values-hi.json
+│   │   │   │   │               │   ├── values-hr.json
+│   │   │   │   │               │   ├── values-hu.json
+│   │   │   │   │               │   ├── values-hy.json
+│   │   │   │   │               │   ├── values-in.json
+│   │   │   │   │               │   ├── values-is.json
+│   │   │   │   │               │   ├── values-it.json
+│   │   │   │   │               │   ├── values-iw.json
+│   │   │   │   │               │   ├── values-ja.json
+│   │   │   │   │               │   ├── values-ka.json
+│   │   │   │   │               │   ├── values-kk.json
+│   │   │   │   │               │   ├── values-km.json
+│   │   │   │   │               │   ├── values-kn.json
+│   │   │   │   │               │   ├── values-ko.json
+│   │   │   │   │               │   ├── values-ky.json
+│   │   │   │   │               │   ├── values-land.json
+│   │   │   │   │               │   ├── values-large-v4.json
+│   │   │   │   │               │   ├── values-ldltr-v21.json
+│   │   │   │   │               │   ├── values-ldrtl-v17.json
+│   │   │   │   │               │   ├── values-lo.json
+│   │   │   │   │               │   ├── values-lt.json
+│   │   │   │   │               │   ├── values-lv.json
+│   │   │   │   │               │   ├── values-mk.json
+│   │   │   │   │               │   ├── values-ml.json
+│   │   │   │   │               │   ├── values-mn.json
+│   │   │   │   │               │   ├── values-mr.json
+│   │   │   │   │               │   ├── values-ms.json
+│   │   │   │   │               │   ├── values-my.json
+│   │   │   │   │               │   ├── values-nb.json
+│   │   │   │   │               │   ├── values-ne.json
+│   │   │   │   │               │   ├── values-night-v33.json
+│   │   │   │   │               │   ├── values-night-v8.json
+│   │   │   │   │               │   ├── values-nl.json
+│   │   │   │   │               │   ├── values-or.json
+│   │   │   │   │               │   ├── values-pa.json
+│   │   │   │   │               │   ├── values-pl.json
+│   │   │   │   │               │   ├── values-port.json
+│   │   │   │   │               │   ├── values-pt-rBR.json
+│   │   │   │   │               │   ├── values-pt-rPT.json
+│   │   │   │   │               │   ├── values-pt.json
+│   │   │   │   │               │   ├── values-ro.json
+│   │   │   │   │               │   ├── values-ru.json
+│   │   │   │   │               │   ├── values-si.json
+│   │   │   │   │               │   ├── values-sk.json
+│   │   │   │   │               │   ├── values-sl.json
+│   │   │   │   │               │   ├── values-sq.json
+│   │   │   │   │               │   ├── values-sr.json
+│   │   │   │   │               │   ├── values-sv.json
+│   │   │   │   │               │   ├── values-sw.json
+│   │   │   │   │               │   ├── values-sw600dp-v13.json
+│   │   │   │   │               │   ├── values-ta.json
+│   │   │   │   │               │   ├── values-te.json
+│   │   │   │   │               │   ├── values-th.json
+│   │   │   │   │               │   ├── values-tl.json
+│   │   │   │   │               │   ├── values-tr.json
+│   │   │   │   │               │   ├── values-uk.json
+│   │   │   │   │               │   ├── values-ur.json
+│   │   │   │   │               │   ├── values-uz.json
+│   │   │   │   │               │   ├── values-v16.json
+│   │   │   │   │               │   ├── values-v17.json
+│   │   │   │   │               │   ├── values-v18.json
+│   │   │   │   │               │   ├── values-v21.json
+│   │   │   │   │               │   ├── values-v22.json
+│   │   │   │   │               │   ├── values-v23.json
+│   │   │   │   │               │   ├── values-v24.json
+│   │   │   │   │               │   ├── values-v25.json
+│   │   │   │   │               │   ├── values-v26.json
+│   │   │   │   │               │   ├── values-v27.json
+│   │   │   │   │               │   ├── values-v28.json
+│   │   │   │   │               │   ├── values-v29.json
+│   │   │   │   │               │   ├── values-v30.json
+│   │   │   │   │               │   ├── values-v31.json
+│   │   │   │   │               │   ├── values-v33.json
+│   │   │   │   │               │   ├── values-v34.json
+│   │   │   │   │               │   ├── values-v35.json
+│   │   │   │   │               │   ├── values-vi.json
+│   │   │   │   │               │   ├── values-w320dp-land-v13.json
+│   │   │   │   │               │   ├── values-w360dp-port-v13.json
+│   │   │   │   │               │   ├── values-w400dp-port-v13.json
+│   │   │   │   │               │   ├── values-w600dp-land-v13.json
+│   │   │   │   │               │   ├── values-watch-v20.json
+│   │   │   │   │               │   ├── values-watch-v21.json
+│   │   │   │   │               │   ├── values-xlarge-v4.json
+│   │   │   │   │               │   ├── values-zh-rCN.json
+│   │   │   │   │               │   ├── values-zh-rHK.json
+│   │   │   │   │               │   ├── values-zh-rTW.json
+│   │   │   │   │               │   ├── values-zu.json
+│   │   │   │   │               │   └── values.json
+│   │   │   │   │               └── single
+│   │   │   │   │                   └── mergeDebugResources.json
+│   │   │   │   ├── merged_shaders
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugShaders
+│   │   │   │   │           └── out
+│   │   │   │   ├── merged_test_only_native_libs
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mergeDebugNativeLibs
+│   │   │   │   │           └── out
+│   │   │   │   ├── mixed_scope_dex_archive
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   ├── navigation_json
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── extractDeepLinksDebug
+│   │   │   │   │           └── navigation.json
+│   │   │   │   ├── nested_resources_validation_report
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── generateDebugResources
+│   │   │   │   │           └── nestedResourcesValidationReport.txt
+│   │   │   │   ├── packaged_manifests
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugManifestForPackage
+│   │   │   │   │           ├── AndroidManifest.xml
+│   │   │   │   │           └── output-metadata.json
+│   │   │   │   ├── packaged_res
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── packageDebugResources
+│   │   │   │   │           ├── color
+│   │   │   │   │           │   ├── filter_date_radio_text.xml
+│   │   │   │   │           │   └── switch_toggle_color.xml
+│   │   │   │   │           ├── drawable
+│   │   │   │   │           │   ├── bg_badge_not_selected.xml
+│   │   │   │   │           │   ├── bg_badge_selected.xml
+│   │   │   │   │           │   ├── bg_badge_waiting.xml
+│   │   │   │   │           │   ├── bg_button_filled.xml
+│   │   │   │   │           │   ├── bg_button_outline.xml
+│   │   │   │   │           │   ├── bg_card_white.xml
+│   │   │   │   │           │   ├── bg_edit_avatar_badge.xml
+│   │   │   │   │           │   ├── bg_event_card_image.xml
+│   │   │   │   │           │   ├── bg_filter_chip.xml
+│   │   │   │   │           │   ├── bg_filter_date_field.xml
+│   │   │   │   │           │   ├── bg_filter_date_radio.xml
+│   │   │   │   │           │   ├── bg_filter_date_unselected.xml
+│   │   │   │   │           │   ├── bg_history_tag.xml
+│   │   │   │   │           │   ├── bg_image_placeholder.xml
+│   │   │   │   │           │   ├── bg_input_active_dropdown.xml
+│   │   │   │   │           │   ├── bg_input_default.xml
+│   │   │   │   │           │   ├── bg_input_signup.xml
+│   │   │   │   │           │   ├── bg_notification_dot.xml
+│   │   │   │   │           │   ├── bg_organizer_card.xml
+│   │   │   │   │           │   ├── bg_profile_header.xml
+│   │   │   │   │           │   ├── bg_status_tag_orange.xml
+│   │   │   │   │           │   ├── bg_status_tag.xml
+│   │   │   │   │           │   ├── bg_tab_pill.xml
+│   │   │   │   │           │   ├── bg_tab_selected.xml
+│   │   │   │   │           │   ├── bg_tab_unselected.xml
+│   │   │   │   │           │   ├── event_card_placeholder.xml
+│   │   │   │   │           │   ├── ic_add_box.xml
+│   │   │   │   │           │   ├── ic_app_logo.png
+│   │   │   │   │           │   ├── ic_arrow_back.xml
+│   │   │   │   │           │   ├── ic_calendar_24.xml
+│   │   │   │   │           │   ├── ic_calendar.xml
+│   │   │   │   │           │   ├── ic_cancel_circle.xml
+│   │   │   │   │           │   ├── ic_check_circle.xml
+│   │   │   │   │           │   ├── ic_close.xml
+│   │   │   │   │           │   ├── ic_confirmation_number.xml
+│   │   │   │   │           │   ├── ic_delete_24.xml
+│   │   │   │   │           │   ├── ic_description_24.xml
+│   │   │   │   │           │   ├── ic_edit_24.xml
+│   │   │   │   │           │   ├── ic_edit.xml
+│   │   │   │   │           │   ├── ic_favorite_24.xml
+│   │   │   │   │           │   ├── ic_fullscreen_24.xml
+│   │   │   │   │           │   ├── ic_home_24.xml
+│   │   │   │   │           │   ├── ic_home.xml
+│   │   │   │   │           │   ├── ic_image_placeholder.xml
+│   │   │   │   │           │   ├── ic_image_placeholder2.xml
+│   │   │   │   │           │   ├── ic_launcher_background.xml
+│   │   │   │   │           │   ├── ic_launcher_foreground.xml
+│   │   │   │   │           │   ├── ic_list.xml
+│   │   │   │   │           │   ├── ic_location.xml
+│   │   │   │   │           │   ├── ic_more_horiz.xml
+│   │   │   │   │           │   ├── ic_more_vert.xml
+│   │   │   │   │           │   ├── ic_notifications_24.xml
+│   │   │   │   │           │   ├── ic_notifications.xml
+│   │   │   │   │           │   ├── ic_person_24.xml
+│   │   │   │   │           │   ├── ic_person.xml
+│   │   │   │   │           │   ├── ic_qr_code_scanner.xml
+│   │   │   │   │           │   ├── ic_search.xml
+│   │   │   │   │           │   ├── ic_tags_24.xml
+│   │   │   │   │           │   ├── ic_warning_24.xml
+│   │   │   │   │           │   ├── outline_arrow_back_ios_24.xml
+│   │   │   │   │           │   ├── outline_arrow_drop_down_24.xml
+│   │   │   │   │           │   ├── outline_arrow_forward_ios_24.xml
+│   │   │   │   │           │   ├── outline_article_person_24.xml
+│   │   │   │   │           │   ├── outline_close_24.xml
+│   │   │   │   │           │   ├── outline_feature_search_24.xml
+│   │   │   │   │           │   ├── outline_filter_alt_24.xml
+│   │   │   │   │           │   └── sharp_add_24.xml
+│   │   │   │   │           ├── layout
+│   │   │   │   │           │   ├── activity_edit_profile_user.xml
+│   │   │   │   │           │   ├── activity_event_detail.xml
+│   │   │   │   │           │   ├── activity_event_status.xml
+│   │   │   │   │           │   ├── activity_events_list.xml
+│   │   │   │   │           │   ├── activity_filter_events.xml
+│   │   │   │   │           │   ├── activity_home.xml
+│   │   │   │   │           │   ├── activity_my_events.xml
+│   │   │   │   │           │   ├── activity_notifications_setting.xml
+│   │   │   │   │           │   ├── activity_notifications.xml
+│   │   │   │   │           │   ├── activity_organizer_entrants_list.xml
+│   │   │   │   │           │   ├── activity_organizer_event.xml
+│   │   │   │   │           │   ├── activity_profile_user.xml
+│   │   │   │   │           │   ├── activity_sign_up.xml
+│   │   │   │   │           │   ├── activity_welcome.xml
+│   │   │   │   │           │   ├── bottom_nav.xml
+│   │   │   │   │           │   ├── button_primary.xml
+│   │   │   │   │           │   ├── button_secondary.xml
+│   │   │   │   │           │   ├── confirm_popup.xml
+│   │   │   │   │           │   ├── dialog_delete_profile_confirm.xml
+│   │   │   │   │           │   ├── dialog_draw_replacements.xml
+│   │   │   │   │           │   ├── fragment_entrants_list.xml
+│   │   │   │   │           │   ├── fragment_event_confirmation.xml
+│   │   │   │   │           │   ├── fragment_event_create.xml
+│   │   │   │   │           │   ├── fragment_terms_of_service.xml
+│   │   │   │   │           │   ├── item_event_card_featured.xml
+│   │   │   │   │           │   ├── item_event_card.xml
+│   │   │   │   │           │   ├── item_filter_category.xml
+│   │   │   │   │           │   ├── item_history_tag.xml
+│   │   │   │   │           │   ├── item_my_event_card.xml
+│   │   │   │   │           │   ├── item_notification.xml
+│   │   │   │   │           │   ├── layout_entrant_card.xml
+│   │   │   │   │           │   └── layout_top_bar.xml
+│   │   │   │   │           ├── mipmap-anydpi-v26
+│   │   │   │   │           │   ├── ic_launcher_round.xml
+│   │   │   │   │           │   └── ic_launcher.xml
+│   │   │   │   │           ├── mipmap-hdpi-v4
+│   │   │   │   │           │   ├── ic_launcher_round.webp
+│   │   │   │   │           │   └── ic_launcher.webp
+│   │   │   │   │           ├── mipmap-mdpi-v4
+│   │   │   │   │           │   ├── ic_launcher_round.webp
+│   │   │   │   │           │   └── ic_launcher.webp
+│   │   │   │   │           ├── mipmap-xhdpi-v4
+│   │   │   │   │           │   ├── ic_launcher_round.webp
+│   │   │   │   │           │   └── ic_launcher.webp
+│   │   │   │   │           ├── mipmap-xxhdpi-v4
+│   │   │   │   │           │   ├── ic_launcher_round.webp
+│   │   │   │   │           │   └── ic_launcher.webp
+│   │   │   │   │           ├── mipmap-xxxhdpi-v4
+│   │   │   │   │           │   ├── ic_launcher_round.webp
+│   │   │   │   │           │   └── ic_launcher.webp
+│   │   │   │   │           ├── values
+│   │   │   │   │           │   └── values.xml
+│   │   │   │   │           ├── values-night-v8
+│   │   │   │   │           │   └── values-night-v8.xml
+│   │   │   │   │           └── xml
+│   │   │   │   │               ├── backup_rules.xml
+│   │   │   │   │               └── data_extraction_rules.xml
+│   │   │   │   ├── project_dex_archive
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   │               ├── 0ba3c78ed9fc56f9d1bdc827a7c824b5c59f3fe888712fc7ce11196bd945ffca_0.jar
+│   │   │   │   │               ├── 0ba3c78ed9fc56f9d1bdc827a7c824b5c59f3fe888712fc7ce11196bd945ffca_1.jar
+│   │   │   │   │               ├── 0ba3c78ed9fc56f9d1bdc827a7c824b5c59f3fe888712fc7ce11196bd945ffca_2.jar
+│   │   │   │   │               ├── 0ba3c78ed9fc56f9d1bdc827a7c824b5c59f3fe888712fc7ce11196bd945ffca_3.jar
+│   │   │   │   │               ├── 0ba3c78ed9fc56f9d1bdc827a7c824b5c59f3fe888712fc7ce11196bd945ffca_4.jar
+│   │   │   │   │               └── com
+│   │   │   │   │                   └── example
+│   │   │   │   │                       └── zephyrevents
+│   │   │   │   │                           ├── controller
+│   │   │   │   │                           │   ├── EventController.dex
+│   │   │   │   │                           │   ├── LotteryController.dex
+│   │   │   │   │                           │   ├── LotteryController$1.dex
+│   │   │   │   │                           │   ├── LotteryController$1$1.dex
+│   │   │   │   │                           │   ├── LotteryController$1$1$1.dex
+│   │   │   │   │                           │   ├── NotificationController.dex
+│   │   │   │   │                           │   ├── NotificationController$1.dex
+│   │   │   │   │                           │   ├── NotificationController$2.dex
+│   │   │   │   │                           │   ├── NotificationController$3.dex
+│   │   │   │   │                           │   ├── NotificationController$4.dex
+│   │   │   │   │                           │   ├── UserController.dex
+│   │   │   │   │                           │   ├── UserController$1.dex
+│   │   │   │   │                           │   ├── UserController$2.dex
+│   │   │   │   │                           │   ├── UserController$3.dex
+│   │   │   │   │                           │   ├── UserController$4.dex
+│   │   │   │   │                           │   ├── UserController$4$1.dex
+│   │   │   │   │                           │   └── UserController$5.dex
+│   │   │   │   │                           ├── model
+│   │   │   │   │                           │   ├── ContactInfo.dex
+│   │   │   │   │                           │   ├── Coordinate.dex
+│   │   │   │   │                           │   ├── Entrant.dex
+│   │   │   │   │                           │   ├── Event.dex
+│   │   │   │   │                           │   ├── EventStatus.dex
+│   │   │   │   │                           │   ├── EventTime.dex
+│   │   │   │   │                           │   ├── EventViewModel.dex
+│   │   │   │   │                           │   ├── Location.dex
+│   │   │   │   │                           │   ├── MyEventEntry.dex
+│   │   │   │   │                           │   ├── Notification.dex
+│   │   │   │   │                           │   ├── NotificationType.dex
+│   │   │   │   │                           │   ├── NotifyingGroup.dex
+│   │   │   │   │                           │   ├── Status.dex
+│   │   │   │   │                           │   ├── User.dex
+│   │   │   │   │                           │   └── WaitlistEntry.dex
+│   │   │   │   │                           ├── repository
+│   │   │   │   │                           │   ├── Collections.dex
+│   │   │   │   │                           │   ├── EventRepository.dex
+│   │   │   │   │                           │   ├── EventRepository$1.dex
+│   │   │   │   │                           │   ├── EventRepository$10.dex
+│   │   │   │   │                           │   ├── EventRepository$11.dex
+│   │   │   │   │                           │   ├── EventRepository$12.dex
+│   │   │   │   │                           │   ├── EventRepository$2.dex
+│   │   │   │   │                           │   ├── EventRepository$3.dex
+│   │   │   │   │                           │   ├── EventRepository$4.dex
+│   │   │   │   │                           │   ├── EventRepository$5.dex
+│   │   │   │   │                           │   ├── EventRepository$6.dex
+│   │   │   │   │                           │   ├── EventRepository$7.dex
+│   │   │   │   │                           │   ├── EventRepository$8.dex
+│   │   │   │   │                           │   ├── EventRepository$9.dex
+│   │   │   │   │                           │   ├── NotificationRepository.dex
+│   │   │   │   │                           │   ├── NotificationRepository$1.dex
+│   │   │   │   │                           │   ├── NotificationRepository$2.dex
+│   │   │   │   │                           │   ├── RepositoryCallback.dex
+│   │   │   │   │                           │   ├── UserRepository.dex
+│   │   │   │   │                           │   ├── UserRepository$1.dex
+│   │   │   │   │                           │   ├── UserRepository$2.dex
+│   │   │   │   │                           │   ├── UserRepository$3.dex
+│   │   │   │   │                           │   ├── UserRepository$4.dex
+│   │   │   │   │                           │   ├── UserRepository$5.dex
+│   │   │   │   │                           │   ├── UserRepository$6.dex
+│   │   │   │   │                           │   ├── WaitlistRepository.dex
+│   │   │   │   │                           │   └── WaitlistRepository$1.dex
+│   │   │   │   │                           ├── util
+│   │   │   │   │                           │   ├── BottomNavHelper.dex
+│   │   │   │   │                           │   ├── DateTimeFormat.dex
+│   │   │   │   │                           │   ├── DistanceHelper.dex
+│   │   │   │   │                           │   ├── GenerateId.dex
+│   │   │   │   │                           │   ├── MyEventsStore.dex
+│   │   │   │   │                           │   ├── SampleEvents.dex
+│   │   │   │   │                           │   └── TimeHelper.dex
+│   │   │   │   │                           └── view
+│   │   │   │   │                               ├── DrawReplacementsDialog.dex
+│   │   │   │   │                               ├── EntrantAdapter.dex
+│   │   │   │   │                               ├── EntrantAdapter$EntrantCancelListener.dex
+│   │   │   │   │                               ├── EntrantAdapter$EntrantViewHolder.dex
+│   │   │   │   │                               ├── EntrantsListFragment.dex
+│   │   │   │   │                               ├── EntrantsListFragment$1.dex
+│   │   │   │   │                               ├── EntrantsListFragment$2.dex
+│   │   │   │   │                               ├── EntrantsListFragment$2$1.dex
+│   │   │   │   │                               ├── EventConfirmationFragment.dex
+│   │   │   │   │                               ├── EventConfirmationFragment$1.dex
+│   │   │   │   │                               ├── EventCreateFragment.dex
+│   │   │   │   │                               ├── EventCreateFragment$1.dex
+│   │   │   │   │                               ├── EventCreateFragment$2.dex
+│   │   │   │   │                               ├── EventDetailViewActivity.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$1.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$2.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$3.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$4.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$5.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$6.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$7.dex
+│   │   │   │   │                               ├── EventDetailViewActivity$8.dex
+│   │   │   │   │                               ├── EventListAdapter.dex
+│   │   │   │   │                               ├── EventsListActivity.dex
+│   │   │   │   │                               ├── EventsListActivity$1.dex
+│   │   │   │   │                               ├── EventsListActivity$2.dex
+│   │   │   │   │                               ├── EventStatusActivity.dex
+│   │   │   │   │                               ├── FeaturedEventListAdapter.dex
+│   │   │   │   │                               ├── FilterCategoryAdapter.dex
+│   │   │   │   │                               ├── FilterCategoryAdapter$ViewHolder.dex
+│   │   │   │   │                               ├── FilterEventsActivity.dex
+│   │   │   │   │                               ├── FilterEventsActivity$1.dex
+│   │   │   │   │                               ├── HomeActivity.dex
+│   │   │   │   │                               ├── HomeActivity$1.dex
+│   │   │   │   │                               ├── HomeActivity$2.dex
+│   │   │   │   │                               ├── MyEventListAdapter.dex
+│   │   │   │   │                               ├── MyEventListAdapter$1.dex
+│   │   │   │   │                               ├── MyEventListAdapter$2.dex
+│   │   │   │   │                               ├── MyEventsActivity.dex
+│   │   │   │   │                               ├── MyEventsActivity$1.dex
+│   │   │   │   │                               ├── MyEventsActivity$1$1.dex
+│   │   │   │   │                               ├── NotificationAdapter.dex
+│   │   │   │   │                               ├── NotificationAdapter$ViewHolder.dex
+│   │   │   │   │                               ├── OrganizerEntrantsListView.dex
+│   │   │   │   │                               ├── OrganizerEntrantsListView$EntrantsPagerAdapter.dex
+│   │   │   │   │                               ├── OrganizerEventAddEditView.dex
+│   │   │   │   │                               ├── SignUpActivity.dex
+│   │   │   │   │                               ├── SignUpActivity$1.dex
+│   │   │   │   │                               ├── SignUpActivity$2.dex
+│   │   │   │   │                               ├── TermsOfServiceFragment.dex
+│   │   │   │   │                               ├── TermsOfServiceFragment$1.dex
+│   │   │   │   │                               ├── TermsOfServiceFragment$OnTosAgreedListener.dex
+│   │   │   │   │                               ├── UserNotificationListView.dex
+│   │   │   │   │                               ├── UserProfileEditViewActivity.dex
+│   │   │   │   │                               ├── UserProfileEditViewActivity$1.dex
+│   │   │   │   │                               ├── UserProfileEditViewActivity$2.dex
+│   │   │   │   │                               ├── UserProfileEditViewActivity$3.dex
+│   │   │   │   │                               ├── UserProfileSettingsViewActivity.dex
+│   │   │   │   │                               ├── UserProfileSettingsViewActivity$1.dex
+│   │   │   │   │                               ├── UserProfileViewActivity.dex
+│   │   │   │   │                               ├── UserProfileViewActivity$1.dex
+│   │   │   │   │                               ├── UserProfileViewActivity$2.dex
+│   │   │   │   │                               └── WelcomeActivity.dex
+│   │   │   │   ├── runtime_app_classes_jar
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── bundleDebugClassesToRuntimeJar
+│   │   │   │   │           └── classes.jar
+│   │   │   │   ├── runtime_symbol_list
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugResources
+│   │   │   │   │           └── R.txt
+│   │   │   │   ├── signing_config_versions
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── writeDebugSigningConfigVersions
+│   │   │   │   │           └── signing-config-versions.json
+│   │   │   │   ├── source_set_path_map
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── mapDebugSourceSetPaths
+│   │   │   │   │           └── file-map.txt
+│   │   │   │   ├── stable_resource_ids_file
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── processDebugResources
+│   │   │   │   │           └── stableIds.txt
+│   │   │   │   ├── stripped_native_libs
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── stripDebugDebugSymbols
+│   │   │   │   │           └── out
+│   │   │   │   │               └── lib
+│   │   │   │   │                   ├── arm64-v8a
+│   │   │   │   │                   │   └── libdatastore_shared_counter.so
+│   │   │   │   │                   ├── armeabi-v7a
+│   │   │   │   │                   │   └── libdatastore_shared_counter.so
+│   │   │   │   │                   ├── x86
+│   │   │   │   │                   │   └── libdatastore_shared_counter.so
+│   │   │   │   │                   └── x86_64
+│   │   │   │   │                       └── libdatastore_shared_counter.so
+│   │   │   │   ├── sub_project_dex_archive
+│   │   │   │   │   └── debug
+│   │   │   │   │       └── dexBuilderDebug
+│   │   │   │   │           └── out
+│   │   │   │   ├── symbol_list_with_package_name
+│   │   │   │   │   └── debug
+│   │   │   │   │       ├── generateDebugRFile
+│   │   │   │   │       │   └── package-aware-r.txt
+│   │   │   │   │       └── processDebugResources
+│   │   │   │   │           └── package-aware-r.txt
+│   │   │   │   └── validate_signing_config
+│   │   │   │       └── debug
+│   │   │   │           └── validateSigningDebug
+│   │   │   ├── outputs
+│   │   │   │   └── logs
+│   │   │   │       └── manifest-merger-debug-report.txt
+│   │   │   ├── reports
+│   │   │   │   └── tests
+│   │   │   │       └── testDebugUnitTest
+│   │   │   │           ├── classes
+│   │   │   │           │   ├── com.example.zephyrevents.controller.EventControllerTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.controller.LotteryControllerTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.controller.UserControllerTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.ExampleUnitTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.repository.EventRepositoryTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.repository.NotificationRepositoryTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.repository.UserRepositoryTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.repository.WaitlistRepositoryTest.html
+│   │   │   │           │   ├── com.example.zephyrevents.util.DistenceHelperTest.html
+│   │   │   │           │   └── com.example.zephyrevents.util.TimeHelperTest.html
+│   │   │   │           ├── css
+│   │   │   │           │   ├── base-style.css
+│   │   │   │           │   └── style.css
+│   │   │   │           ├── index.html
+│   │   │   │           ├── js
+│   │   │   │           │   └── report.js
+│   │   │   │           └── packages
+│   │   │   │               ├── com.example.zephyrevents.controller.html
+│   │   │   │               ├── com.example.zephyrevents.html
+│   │   │   │               ├── com.example.zephyrevents.repository.html
+│   │   │   │               └── com.example.zephyrevents.util.html
+│   │   │   ├── test-results
+│   │   │   │   └── testDebugUnitTest
+│   │   │   │       ├── binary
+│   │   │   │       │   ├── output.bin
+│   │   │   │       │   ├── output.bin.idx
+│   │   │   │       │   └── results.bin
+│   │   │   │       ├── TEST-com.example.zephyrevents.controller.EventControllerTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.controller.LotteryControllerTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.controller.UserControllerTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.ExampleUnitTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.repository.EventRepositoryTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.repository.NotificationRepositoryTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.repository.UserRepositoryTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.repository.WaitlistRepositoryTest.xml
+│   │   │   │       ├── TEST-com.example.zephyrevents.util.DistenceHelperTest.xml
+│   │   │   │       └── TEST-com.example.zephyrevents.util.TimeHelperTest.xml
+│   │   │   └── tmp
+│   │   │       ├── compileDebugJavaWithJavac
+│   │   │       │   ├── compileTransaction
+│   │   │       │   │   ├── backup-dir
+│   │   │       │   │   └── stash-dir
+│   │   │       │   │       ├── EntrantsListFragment.class.uniqueId4
+│   │   │       │   │       ├── EntrantsListFragment$1.class.uniqueId1
+│   │   │       │   │       ├── EntrantsListFragment$2.class.uniqueId6
+│   │   │       │   │       ├── EntrantsListFragment$2$1.class.uniqueId5
+│   │   │       │   │       ├── LotteryController.class.uniqueId7
+│   │   │       │   │       ├── LotteryController$1.class.uniqueId0
+│   │   │       │   │       ├── LotteryController$1$1.class.uniqueId2
+│   │   │       │   │       └── LotteryController$1$1$1.class.uniqueId3
+│   │   │       │   └── previous-compilation-data.bin
+│   │   │       ├── compileDebugUnitTestJavaWithJavac
+│   │   │       │   ├── compileTransaction
+│   │   │       │   │   ├── backup-dir
+│   │   │       │   │   └── stash-dir
+│   │   │       │   │       └── UserControllerTest.class.uniqueId0
+│   │   │       │   └── previous-compilation-data.bin
+│   │   │       └── testDebugUnitTest
+│   │   ├── build.gradle.kts
+│   │   ├── google-services.json
+│   │   ├── proguard-rules.pro
+│   │   └── src
+│   │       ├── androidTest
+│   │       │   └── java
+│   │       │       └── com
+│   │       │           └── example
+│   │       │               └── zephyrevents
+│   │       │                   └── ExampleInstrumentedTest.java
+│   │       ├── main
+│   │       │   ├── AndroidManifest.xml
+│   │       │   ├── java
+│   │       │   │   └── com
+│   │       │   │       └── example
+│   │       │   │           └── zephyrevents
+│   │       │   │               ├── controller
+│   │       │   │               │   ├── EventController.java
+│   │       │   │               │   ├── LotteryController.java
+│   │       │   │               │   ├── NotificationController.java
+│   │       │   │               │   └── UserController.java
+│   │       │   │               ├── model
+│   │       │   │               │   ├── ContactInfo.java
+│   │       │   │               │   ├── Coordinate.java
+│   │       │   │               │   ├── Entrant.java
+│   │       │   │               │   ├── Event.java
+│   │       │   │               │   ├── EventStatus.java
+│   │       │   │               │   ├── EventTime.java
+│   │       │   │               │   ├── EventViewModel.java
+│   │       │   │               │   ├── Location.java
+│   │       │   │               │   ├── MyEventEntry.java
+│   │       │   │               │   ├── Notification.java
+│   │       │   │               │   ├── NotificationType.java
+│   │       │   │               │   ├── NotifyingGroup.java
+│   │       │   │               │   ├── Status.java
+│   │       │   │               │   ├── User.java
+│   │       │   │               │   └── WaitlistEntry.java
+│   │       │   │               ├── repository
+│   │       │   │               │   ├── Collections.java
+│   │       │   │               │   ├── EventRepository.java
+│   │       │   │               │   ├── NotificationRepository.java
+│   │       │   │               │   ├── RepositoryCallback.java
+│   │       │   │               │   ├── UserRepository.java
+│   │       │   │               │   └── WaitlistRepository.java
+│   │       │   │               ├── util
+│   │       │   │               │   ├── BottomNavHelper.java
+│   │       │   │               │   ├── DateTimeFormat.java
+│   │       │   │               │   ├── DistanceHelper.java
+│   │       │   │               │   ├── GenerateId.java
+│   │       │   │               │   ├── MyEventsStore.java
+│   │       │   │               │   ├── SampleEvents.java
+│   │       │   │               │   └── TimeHelper.java
+│   │       │   │               └── view
+│   │       │   │                   ├── DrawReplacementsDialog.java
+│   │       │   │                   ├── EntrantAdapter.java
+│   │       │   │                   ├── EntrantsListFragment.java
+│   │       │   │                   ├── EventConfirmationFragment.java
+│   │       │   │                   ├── EventCreateFragment.java
+│   │       │   │                   ├── EventDetailViewActivity.java
+│   │       │   │                   ├── EventListAdapter.java
+│   │       │   │                   ├── EventsListActivity.java
+│   │       │   │                   ├── EventStatusActivity.java
+│   │       │   │                   ├── FeaturedEventListAdapter.java
+│   │       │   │                   ├── FilterCategoryAdapter.java
+│   │       │   │                   ├── FilterEventsActivity.java
+│   │       │   │                   ├── HomeActivity.java
+│   │       │   │                   ├── MyEventListAdapter.java
+│   │       │   │                   ├── MyEventsActivity.java
+│   │       │   │                   ├── NotificationAdapter.java
+│   │       │   │                   ├── OrganizerEntrantsListView.java
+│   │       │   │                   ├── OrganizerEventAddEditView.java
+│   │       │   │                   ├── SignUpActivity.java
+│   │       │   │                   ├── TermsOfServiceFragment.java
+│   │       │   │                   ├── UserNotificationListView.java
+│   │       │   │                   ├── UserProfileEditViewActivity.java
+│   │       │   │                   ├── UserProfileSettingsViewActivity.java
+│   │       │   │                   ├── UserProfileViewActivity.java
+│   │       │   │                   └── WelcomeActivity.java
+│   │       │   └── res
+│   │       │       ├── color
+│   │       │       │   ├── filter_date_radio_text.xml
+│   │       │       │   └── switch_toggle_color.xml
+│   │       │       ├── drawable
+│   │       │       │   ├── bg_badge_not_selected.xml
+│   │       │       │   ├── bg_badge_selected.xml
+│   │       │       │   ├── bg_badge_waiting.xml
+│   │       │       │   ├── bg_button_filled.xml
+│   │       │       │   ├── bg_button_outline.xml
+│   │       │       │   ├── bg_card_white.xml
+│   │       │       │   ├── bg_edit_avatar_badge.xml
+│   │       │       │   ├── bg_event_card_image.xml
+│   │       │       │   ├── bg_filter_chip.xml
+│   │       │       │   ├── bg_filter_date_field.xml
+│   │       │       │   ├── bg_filter_date_radio.xml
+│   │       │       │   ├── bg_filter_date_unselected.xml
+│   │       │       │   ├── bg_history_tag.xml
+│   │       │       │   ├── bg_image_placeholder.xml
+│   │       │       │   ├── bg_input_active_dropdown.xml
+│   │       │       │   ├── bg_input_default.xml
+│   │       │       │   ├── bg_input_signup.xml
+│   │       │       │   ├── bg_notification_dot.xml
+│   │       │       │   ├── bg_organizer_card.xml
+│   │       │       │   ├── bg_profile_header.xml
+│   │       │       │   ├── bg_status_tag_orange.xml
+│   │       │       │   ├── bg_status_tag.xml
+│   │       │       │   ├── bg_tab_pill.xml
+│   │       │       │   ├── bg_tab_selected.xml
+│   │       │       │   ├── bg_tab_unselected.xml
+│   │       │       │   ├── event_card_placeholder.xml
+│   │       │       │   ├── ic_add_box.xml
+│   │       │       │   ├── ic_app_logo.png
+│   │       │       │   ├── ic_arrow_back.xml
+│   │       │       │   ├── ic_calendar_24.xml
+│   │       │       │   ├── ic_calendar.xml
+│   │       │       │   ├── ic_cancel_circle.xml
+│   │       │       │   ├── ic_check_circle.xml
+│   │       │       │   ├── ic_close.xml
+│   │       │       │   ├── ic_confirmation_number.xml
+│   │       │       │   ├── ic_delete_24.xml
+│   │       │       │   ├── ic_description_24.xml
+│   │       │       │   ├── ic_edit_24.xml
+│   │       │       │   ├── ic_edit.xml
+│   │       │       │   ├── ic_favorite_24.xml
+│   │       │       │   ├── ic_fullscreen_24.xml
+│   │       │       │   ├── ic_home_24.xml
+│   │       │       │   ├── ic_home.xml
+│   │       │       │   ├── ic_image_placeholder.xml
+│   │       │       │   ├── ic_image_placeholder2.xml
+│   │       │       │   ├── ic_launcher_background.xml
+│   │       │       │   ├── ic_launcher_foreground.xml
+│   │       │       │   ├── ic_list.xml
+│   │       │       │   ├── ic_location.xml
+│   │       │       │   ├── ic_more_horiz.xml
+│   │       │       │   ├── ic_more_vert.xml
+│   │       │       │   ├── ic_notifications_24.xml
+│   │       │       │   ├── ic_notifications.xml
+│   │       │       │   ├── ic_person_24.xml
+│   │       │       │   ├── ic_person.xml
+│   │       │       │   ├── ic_qr_code_scanner.xml
+│   │       │       │   ├── ic_search.xml
+│   │       │       │   ├── ic_tags_24.xml
+│   │       │       │   ├── ic_warning_24.xml
+│   │       │       │   ├── outline_arrow_back_ios_24.xml
+│   │       │       │   ├── outline_arrow_drop_down_24.xml
+│   │       │       │   ├── outline_arrow_forward_ios_24.xml
+│   │       │       │   ├── outline_article_person_24.xml
+│   │       │       │   ├── outline_close_24.xml
+│   │       │       │   ├── outline_feature_search_24.xml
+│   │       │       │   ├── outline_filter_alt_24.xml
+│   │       │       │   └── sharp_add_24.xml
+│   │       │       ├── layout
+│   │       │       │   ├── activity_edit_profile_user.xml
+│   │       │       │   ├── activity_event_detail.xml
+│   │       │       │   ├── activity_event_status.xml
+│   │       │       │   ├── activity_events_list.xml
+│   │       │       │   ├── activity_filter_events.xml
+│   │       │       │   ├── activity_home.xml
+│   │       │       │   ├── activity_my_events.xml
+│   │       │       │   ├── activity_notifications_setting.xml
+│   │       │       │   ├── activity_notifications.xml
+│   │       │       │   ├── activity_organizer_entrants_list.xml
+│   │       │       │   ├── activity_organizer_event.xml
+│   │       │       │   ├── activity_profile_user.xml
+│   │       │       │   ├── activity_sign_up.xml
+│   │       │       │   ├── activity_welcome.xml
+│   │       │       │   ├── bottom_nav.xml
+│   │       │       │   ├── button_primary.xml
+│   │       │       │   ├── button_secondary.xml
+│   │       │       │   ├── confirm_popup.xml
+│   │       │       │   ├── dialog_delete_profile_confirm.xml
+│   │       │       │   ├── dialog_draw_replacements.xml
+│   │       │       │   ├── fragment_entrants_list.xml
+│   │       │       │   ├── fragment_event_confirmation.xml
+│   │       │       │   ├── fragment_event_create.xml
+│   │       │       │   ├── fragment_terms_of_service.xml
+│   │       │       │   ├── item_event_card_featured.xml
+│   │       │       │   ├── item_event_card.xml
+│   │       │       │   ├── item_filter_category.xml
+│   │       │       │   ├── item_history_tag.xml
+│   │       │       │   ├── item_my_event_card.xml
+│   │       │       │   ├── item_notification.xml
+│   │       │       │   ├── layout_entrant_card.xml
+│   │       │       │   └── layout_top_bar.xml
+│   │       │       ├── mipmap-anydpi-v26
+│   │       │       │   ├── ic_launcher_round.xml
+│   │       │       │   └── ic_launcher.xml
+│   │       │       ├── mipmap-hdpi
+│   │       │       │   ├── ic_launcher_round.webp
+│   │       │       │   └── ic_launcher.webp
+│   │       │       ├── mipmap-mdpi
+│   │       │       │   ├── ic_launcher_round.webp
+│   │       │       │   └── ic_launcher.webp
+│   │       │       ├── mipmap-xhdpi
+│   │       │       │   ├── ic_launcher_round.webp
+│   │       │       │   └── ic_launcher.webp
+│   │       │       ├── mipmap-xxhdpi
+│   │       │       │   ├── ic_launcher_round.webp
+│   │       │       │   └── ic_launcher.webp
+│   │       │       ├── mipmap-xxxhdpi
+│   │       │       │   ├── ic_launcher_round.webp
+│   │       │       │   └── ic_launcher.webp
+│   │       │       ├── values
+│   │       │       │   ├── colors.xml
+│   │       │       │   ├── strings.xml
+│   │       │       │   └── themes.xml
+│   │       │       ├── values-night
+│   │       │       │   └── themes.xml
+│   │       │       └── xml
+│   │       │           ├── backup_rules.xml
+│   │       │           └── data_extraction_rules.xml
+│   │       └── test
+│   │           └── java
+│   │               └── com
+│   │                   └── example
+│   │                       └── zephyrevents
+│   │                           ├── controller
+│   │                           │   ├── EventControllerTest.java
+│   │                           │   ├── LotteryControllerTest.java
+│   │                           │   └── UserControllerTest.java
+│   │                           ├── ExampleUnitTest.java
+│   │                           ├── repository
+│   │                           │   ├── EventRepositoryTest.java
+│   │                           │   ├── NotificationRepositoryTest.java
+│   │                           │   ├── UserRepositoryTest.java
+│   │                           │   └── WaitlistRepositoryTest.java
+│   │                           └── util
+│   │                               ├── DistenceHelperTest.java
+│   │                               └── TimeHelperTest.java
+│   ├── build
+│   │   └── reports
+│   │       └── problems
+│   │           └── problems-report.html
+│   ├── build.gradle.kts
+│   ├── gradle
+│   │   ├── libs.versions.toml
+│   │   └── wrapper
+│   │       ├── gradle-wrapper.jar
+│   │       └── gradle-wrapper.properties
+│   ├── gradle.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   ├── local.properties
+│   └── settings.gradle.kts
+├── doc
+│   └── team.txt
+├── foo
+├── HOW_TO_GENERATE_JAVADOC.md
+├── javadoc
+├── README.md
+├── scripts
+│   ├── err
+│   ├── foo
+│   └── gen_javadoc.sh
+└── tree
+
+507 directories, 1330 files

@@ -32,7 +32,7 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
         findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
 
-        // NEW: Check if we are editing an existing event
+        //  Check if we are editing an existing event
         String editEventId = getIntent().getStringExtra("EXTRA_EDIT_EVENT_ID");
         if (editEventId != null) {
             EventViewModel viewModel = new androidx.lifecycle.ViewModelProvider(this).get(EventViewModel.class);
