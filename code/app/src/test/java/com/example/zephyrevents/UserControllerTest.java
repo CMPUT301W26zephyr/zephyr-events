@@ -82,6 +82,7 @@ public class UserControllerTest {
     }
 
     @Test
+    // Tests whether the user can edit their profile information
     public void testUpdateCurrentUserProfile(){
         when(mockPrefs.getString(eq("current_user_id"), any())).thenReturn("test-user-id");
 
