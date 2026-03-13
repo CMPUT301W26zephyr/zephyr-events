@@ -45,6 +45,7 @@ public class UserControllerTest {
     }
 
     @Test
+    // Verifies that isUserLoggedIn returns true when the SharedPreferences contain the key
     public void testIsUserLoggedIn_ReturnsTrue_WhenPrefsContainsId() {
         when(mockPrefs.contains("current_user_id")).thenReturn(true);
         assertTrue(userController.isUserLoggedIn());
