@@ -24,6 +24,13 @@ public class UserController {
         this.prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
+    // Constructor for unit testing
+    @androidx.annotation.VisibleForTesting
+    public UserController(UserRepository userRepository, SharedPreferences prefs) {
+        this.userRepository = userRepository;
+        this.prefs = prefs;
+    }
+
     /**
      * Checks if a user is currently logged in (tracked locally).
      */

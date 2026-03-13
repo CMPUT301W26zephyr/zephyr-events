@@ -24,6 +24,13 @@ public class LotteryController {
         // notificationController = new NotificationController();
     }
 
+    // Constructor for unit testing
+    @androidx.annotation.VisibleForTesting
+    public LotteryController(EventRepository event, WaitlistRepository waitlist) {
+        this.waitlistRepository = waitlist;
+        this.eventRepository = event;
+    }
+
     // Added a callback so the UI knows when the lottery finishes saving!
     public void runLottery(String eventId, RepositoryCallback<Void> callback) {
         eventRepository.getEventById(eventId, new RepositoryCallback<Event>() {
