@@ -1,4 +1,4 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.controller;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,7 +13,6 @@ import org.mockito.ArgumentCaptor;
 
 import android.content.SharedPreferences;
 
-import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;

@@ -1,10 +1,9 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.util;
 
 import static org.junit.Assert.*;
 
 
 import com.example.zephyrevents.model.Coordinate;
-import com.example.zephyrevents.util.DistanceHelper;
 
 import org.junit.Test;
 
