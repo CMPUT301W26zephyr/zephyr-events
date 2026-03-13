@@ -14,8 +14,8 @@ public class MyEventEntry {
     private final EventStatus status;
     /** When the user joined the waitlist */
     private final long joinedAtMillis;
-    /** For history placeholder cards
     private final String placeholderTitle;
+    /** For history placeholder cards
 
     /**
      * Creates an entry for a real event (Lotteries).
