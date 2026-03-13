@@ -19,6 +19,3 @@ fi
   cd code
   ./gradlew generateJavadoc
 )
-
-# Open generated docs
-open "$DOC_PATH"
