@@ -38,6 +38,11 @@ public class EventRepository {
         db = FirebaseFirestore.getInstance();
     }
 
+    //allow injection for testing, gotta change this for the other classes aswell after.
+    //remember to change for others later.
+    public EventRepository(FirebaseFirestore db) {
+        this.db = db;
+    }
     public void saveEvent(Event event, RepositoryCallback<Void> callback) {
         if (event == null) {
             var e = new IllegalArgumentException("Event cannot be null");

@@ -1,11 +1,10 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.controller;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.Status;
 import com.example.zephyrevents.model.WaitlistEntry;
