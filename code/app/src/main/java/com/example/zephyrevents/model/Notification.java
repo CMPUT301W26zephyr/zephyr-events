@@ -7,15 +7,15 @@ import com.example.zephyrevents.util.GenerateId;
  */
 public class Notification {
 
-    String notificationId;
-    String userId;
-    String eventId;
-    long time;
-    NotificationType type;
+    private String notificationId;
+    private String userId;
+    private String eventId;
+    private long time;
+    private NotificationType type;
 
-    String text; // Should text be generated later based on the type?
-    boolean sent;
-    boolean read;
+    private String text; // Should text be generated later based on the type?
+    private boolean sent;
+    private boolean read;
 
     // no arg constructor for firebase
     public Notification() {}
