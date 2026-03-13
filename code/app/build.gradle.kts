@@ -84,7 +84,8 @@ val generateJavadoc by tasks.registering(Javadoc::class) {
     exclude("**/R.java", "**/BuildConfig.java")
 
     // 2. Output directory
-    destinationDir = file("$buildDir/reports/javadoc")
+    //destinationDir = file("$buildDir/reports/javadoc")
+    destinationDir = file("${rootProject.projectDir}/../javadoc")
 
     // 3. Wait for the app to compile so dependencies are downloaded and generated
     dependsOn("assembleDebug")

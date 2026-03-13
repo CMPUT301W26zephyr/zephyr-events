@@ -6,7 +6,7 @@ set -e
 # Go to repo root
 cd "$(dirname "$0")/.."
 
-DOC_PATH="code/app/build/reports/javadoc/index.html"
+DOC_PATH="javadoc/index.html"
 
 # Open existing docs only
 if [ "$1" = "-o" ]; then
@@ -14,7 +14,7 @@ if [ "$1" = "-o" ]; then
   exit 0
 fi
 
-# Generate Javadoc using the Gradle task in code/app/build.gradle.kts
+# Generate Javadoc using the Gradle task in code/app/build.gradle.kts 
 (
   cd code
   ./gradlew generateJavadoc
