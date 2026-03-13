@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Controller that manages logic related to the event lottery system.
+ * Handles random selection of winners from an event's waitlist.
+ */
 public class LotteryController {
 
     private final WaitlistRepository waitlistRepository;
@@ -32,6 +36,16 @@ public class LotteryController {
     }
 
     // Added a callback so the UI knows when the lottery finishes saving!
+
+    /**
+     * Executes the lottery process for a specific event.
+     * - Fetches event and all Waitlist entries for that event
+     * - Filters entries for eligible entrants (Status.WAITLISTED)
+     * - Shuffles pool and selects winners and losers (Status.LOST)
+     *
+     * @param eventId   Unique identifier of the event for run the lottery on.
+     * @param callback  A RepositoryCallback to notify when the lottery selection finishes.
+     */
     public void runLottery(String eventId, RepositoryCallback<Void> callback) {
         eventRepository.getEventById(eventId, new RepositoryCallback<Event>() {
             @Override

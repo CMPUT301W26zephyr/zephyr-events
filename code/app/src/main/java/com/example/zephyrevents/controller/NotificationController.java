@@ -7,6 +7,9 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.model.NotifyingGroup;
 import java.util.List;
 
+/**
+ * Controller that manages logic related to Notifications.
+ */
 public class NotificationController {
 
     private final NotificationRepository notificationRepository;
