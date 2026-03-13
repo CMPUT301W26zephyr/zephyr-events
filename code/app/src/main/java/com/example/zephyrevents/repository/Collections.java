@@ -1,5 +1,8 @@
 package com.example.zephyrevents.repository;
 
+/**
+ * Defines constant strings for firebase collection names.
+ */
 public final class Collections {
 
     // constants for firebase collections, avoids magic strings everywhere, prevents bugs.

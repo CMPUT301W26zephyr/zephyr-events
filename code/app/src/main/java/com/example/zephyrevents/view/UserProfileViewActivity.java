@@ -18,6 +18,11 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.util.BottomNavHelper;
 
+/**
+ * Activity that displays the user profile.
+ * Allows navigation to viewing notifications, settings, and editing profile details.
+ * Allows deleting user account.
+ */
 public class UserProfileViewActivity extends AppCompatActivity {
     private UserController userController;
 

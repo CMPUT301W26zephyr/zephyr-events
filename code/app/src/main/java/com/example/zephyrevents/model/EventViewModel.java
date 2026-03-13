@@ -2,7 +2,7 @@ package com.example.zephyrevents.model;
 import androidx.lifecycle.ViewModel;
 
 /**
- * Data holder ViewModel (why?) with public fields to track state of an event while in activities
+ * Data holder ViewModel with public fields to track state of an event while creating or editing
  */
 public class EventViewModel extends ViewModel {
     // Edit Mode Tracking

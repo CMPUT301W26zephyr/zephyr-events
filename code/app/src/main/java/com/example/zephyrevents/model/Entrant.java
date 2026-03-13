@@ -1,7 +1,7 @@
 package com.example.zephyrevents.model;
 
 /**
- * Class with public fields used to represent Entrants in Activities/Fragments/Adapters
+ * Data holder with public fields used to represent Entrants in Views/EntrantAdapter
  */
 public class Entrant {
     public String name;

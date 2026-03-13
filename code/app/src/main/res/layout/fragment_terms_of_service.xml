@@ -21,7 +21,7 @@
 
             <ImageView
                 android:layout_width="150dp"
-                android:layout_height="120dp"
+                android:layout_height="100dp"
                 android:layout_marginTop="16dp"
                 android:src="@drawable/ic_image_placeholder2" />
 
@@ -36,9 +36,13 @@
                 android:orientation="vertical"
                 android:layout_marginTop="24dp">
 
-                <TextView style="@style/TxtTos"
-                    android:text="@string/LoremIpsum"
-                    />
+                <TextView style="@style/TxtTos" android:text="@string/tos_p1" />
+                <TextView style="@style/TxtTos" android:text="@string/tos_p2" />
+                <TextView style="@style/TxtTos" android:text="@string/tos_p3" />
+                <TextView style="@style/TxtTos" android:text="@string/tos_p4" />
+                <TextView style="@style/TxtTos" android:text="@string/tos_p5" />
+                <TextView style="@style/TxtTos" android:text="@string/tos_p6" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

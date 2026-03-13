@@ -13,6 +13,10 @@ import androidx.fragment.app.DialogFragment;
 import com.example.zephyrevents.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+/**
+ * Dialog that shows the Terms of Service
+ * Defines callback interface for host activity to receive "Confirm" button pressed.
+ */
 public class TermsOfServiceFragment extends DialogFragment {
 
     // Interface to communicate back to the Activity
