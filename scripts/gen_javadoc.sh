@@ -14,7 +14,7 @@ if [ "$1" = "-o" ]; then
   exit 0
 fi
 
-# Generate Javadoc using the Gradle task in code/app/build.gradle.kts
+# Generate Javadoc using the Gradle task in code/app/build.gradle.kts 
 (
   cd code
   ./gradlew generateJavadoc
