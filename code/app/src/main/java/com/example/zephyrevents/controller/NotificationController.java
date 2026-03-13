@@ -131,7 +131,6 @@ public class NotificationController {
     }
 
     // when user clicked notification icon, they can see all the notifications in 'my events'
-
     /**
      * Retrieves all notifications for a specific user to be displayed in the UI.
      * To be used in "My Events"
