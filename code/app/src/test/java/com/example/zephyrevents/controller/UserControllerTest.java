@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+// Gemini 3.1 Pro Preview, Google AiStudio, "How would you recommend testing this class?."
+
 public class UserControllerTest {
 
     private UserRepository mockRepo;
@@ -51,6 +53,7 @@ public class UserControllerTest {
     }
 
     @Test
+    // Verifies that SharedPreferences contains the key after calling SignUp
     public void testSignUp_SavesUserLocally_OnSuccess() {
         RepositoryCallback<Void> mockCallback = Mockito.mock(RepositoryCallback.class);
 
