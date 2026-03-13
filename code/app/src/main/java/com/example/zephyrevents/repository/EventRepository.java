@@ -12,14 +12,10 @@ import java.util.List;
 import com.example.zephyrevents.util.TimeHelper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.checkerframework.checker.units.qual.N;
-
 
 /*
     Gonna add better documentation later.
@@ -38,8 +34,6 @@ public class EventRepository {
         db = FirebaseFirestore.getInstance();
     }
 
-    //allow injection for testing, gotta change this for the other classes aswell after.
-    //remember to change for others later.
     public EventRepository(FirebaseFirestore db) {
         this.db = db;
     }
@@ -80,38 +74,6 @@ public class EventRepository {
         saveEvent(event, callback);
     }
 
-    /*
-    Yeah, this is problematic.
-    classic potential race condition :(
-    This is actually a pretty good learning moment
-    here you set the whole object when wanting to just update the event.
-    seems pretty reasonable, but then, say you have two users and the following class
-
-    public class user{
-        private String name;
-        private int grade;
-        private int age;
-    }
-
-    User("name", "b", "67") // The base user they want to change
-
-    Say one user wants to update the name
-    User("foobar", "b", "67"); // name changes here
-
-    and another wants to update the age
-    User("name", "b", "12") // age changes here
-
-    and then both clients use this updateEvent method
-    who ever reaches first gets overwritten
-    you will either have the age changed or the name changed.
-    not both, and that undermines what the updateEvent method promises.
-    so this is, badly written code by me lol. I wrote it in the middle of the night
-    so ill fix it later, but I was on the bus and was just like, that's a perfect
-    example of a race condition that might not be obvious to someone.
-    it wasn't obvious to me last night until I thought about it more.
-
-    Honestly for now we are not gonna run into a race condition, Imma just leave it for now.
-     */
     public void updateEvent(Event event, RepositoryCallback<Void> callback) {
         saveEvent(event, callback);
     }
