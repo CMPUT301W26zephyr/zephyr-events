@@ -33,6 +33,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -46,6 +51,7 @@ dependencies {
 
     testImplementation("org.mockito:mockito-core:5.23.0")  // Mockito framework
     testImplementation("org.mockito:mockito-inline:5.2.0")  // Allows mocking final classes
+
 
 
     // Import the Firebase BoM
