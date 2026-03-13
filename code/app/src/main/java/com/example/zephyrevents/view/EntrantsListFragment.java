@@ -24,7 +24,9 @@ import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.repository.WaitlistRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EntrantsListFragment extends Fragment {
 
@@ -68,22 +70,18 @@ public class EntrantsListFragment extends Fragment {
         Button btnRunLottery = view.findViewById(R.id.btn_run_lottery);
         Button btnExportCsv = view.findViewById(R.id.btn_export_csv);
 
-        // 1. Manually set the text for your buttons here
         btnNotify.setText("Notify");
         btnDrawReplacements.setText("Draw Replacements");
         btnRunLottery.setText("Run Lottery");
         btnExportCsv.setText("Export CSV");
 
-        // Turn on buttons based on the current tab
-        if (tabIndex == 0) { // Waitlist
+        if (tabIndex == 0) {
             btnNotify.setVisibility(View.VISIBLE);
             btnRunLottery.setVisibility(View.VISIBLE);
 
-            // Ensure Draw Replacements is hidden initially (max 2 buttons)
             btnDrawReplacements.setVisibility(View.GONE);
 
             btnDrawReplacements.setOnClickListener(v -> {
-                // Calls your dialog
                 new DrawReplacementsDialog().show(getParentFragmentManager(), "DRAW_DIALOG");
             });
 
@@ -94,7 +92,6 @@ public class EntrantsListFragment extends Fragment {
                     public void onSuccess(Void result) {
                         Toast.makeText(requireContext(), "Lottery Complete!", Toast.LENGTH_SHORT).show();
 
-                        // 2. Swap the buttons upon successful lottery run
                         btnRunLottery.setVisibility(View.GONE);
                         btnDrawReplacements.setVisibility(View.VISIBLE);
 
@@ -109,15 +106,15 @@ public class EntrantsListFragment extends Fragment {
 
             btnNotify.setOnClickListener(v -> Toast.makeText(requireContext(), "Notify Waitlist Clicked", Toast.LENGTH_SHORT).show());
 
-        } else if (tabIndex == 1) { // Winners
+        } else if (tabIndex == 1) {
             btnNotify.setVisibility(View.VISIBLE);
             btnNotify.setOnClickListener(v -> Toast.makeText(requireContext(), "Notify Winners Clicked", Toast.LENGTH_SHORT).show());
 
-        } else if (tabIndex == 2) { // Unregistered
+        } else if (tabIndex == 2) {
             btnNotify.setVisibility(View.VISIBLE);
             btnNotify.setOnClickListener(v -> Toast.makeText(requireContext(), "Notify Unregistered Clicked", Toast.LENGTH_SHORT).show());
 
-        } else if (tabIndex == 3) { // Final List
+        } else if (tabIndex == 3) {
             btnNotify.setVisibility(View.VISIBLE);
             btnExportCsv.setVisibility(View.VISIBLE);
 
@@ -136,19 +133,17 @@ public class EntrantsListFragment extends Fragment {
                 boolean lotteryHasRun = false;
 
                 for (WaitlistEntry e : result) {
-                    // If anyone has a post-lottery status, we know the lottery ran
                     if (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED ||
                             e.getStatus() == Status.DECLINED || e.getStatus() == Status.LOST) {
                         lotteryHasRun = true;
                     }
 
                     if (tabIndex == 0 && e.getStatus() == Status.WAITLISTED) filtered.add(e);
-                    if (tabIndex == 1 && (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED)) filtered.add(e);
+                    if (tabIndex == 1 && (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED || e.getStatus() == Status.DECLINED)) filtered.add(e);
                     if (tabIndex == 2 && e.getStatus() == Status.SELECTED) filtered.add(e);
                     if (tabIndex == 3 && e.getStatus() == Status.ACCEPTED) filtered.add(e);
                 }
 
-                // Handle persistent button states based on database reality
                 if (tabIndex == 0 && getView() != null) {
                     Button btnRunLottery = getView().findViewById(R.id.btn_run_lottery);
                     Button btnDrawReplacements = getView().findViewById(R.id.btn_draw_replacements);
@@ -163,7 +158,25 @@ public class EntrantsListFragment extends Fragment {
                 }
 
                 List<Entrant> entrantList = new ArrayList<>();
-                EntrantAdapter adapter = new EntrantAdapter(entrantList);
+                Map<Entrant, WaitlistEntry> entryMap = new HashMap<>();
+
+                EntrantAdapter adapter = new EntrantAdapter(entrantList, entrant -> {
+                    WaitlistEntry mappedEntry = entryMap.get(entrant);
+                    if (mappedEntry != null) {
+                        waitlistRepository.updateStatus(eventId, mappedEntry.getUserId(), Status.DECLINED, new RepositoryCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                loadData(recyclerView);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Toast.makeText(requireContext(), "Failed to cancel entrant", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+
                 recyclerView.setAdapter(adapter);
 
                 for (WaitlistEntry entry : filtered) {
@@ -171,12 +184,18 @@ public class EntrantsListFragment extends Fragment {
                         @Override
                         public void onSuccess(User user) {
                             String name = (user != null && user.getName() != null) ? user.getName() : "Unknown User";
-                            entrantList.add(new Entrant(name, "Status: " + entry.getStatus().name(), false));
+                            boolean showCancel = (tabIndex == 2);
+                            Entrant entrant = new Entrant(name, "Status: " + entry.getStatus().name(), showCancel);
+                            entryMap.put(entrant, entry);
+                            entrantList.add(entrant);
                             adapter.notifyDataSetChanged();
                         }
                         @Override
                         public void onFailure(Exception e) {
-                            entrantList.add(new Entrant("Unknown User", "Status: " + entry.getStatus().name(), false));
+                            boolean showCancel = (tabIndex == 2);
+                            Entrant entrant = new Entrant("Unknown User", "Status: " + entry.getStatus().name(), showCancel);
+                            entryMap.put(entrant, entry);
+                            entrantList.add(entrant);
                             adapter.notifyDataSetChanged();
                         }
                     });
