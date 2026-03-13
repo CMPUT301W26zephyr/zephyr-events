@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-// Gemini 3.1 Pro Preview, Google AiStudio, "How would you recommend testing this class?."
+// Gemini 3.1 Pro Preview, Google AiStudio, "<code> How would you recommend testing this class?." - 2023-03-12
 
 public class UserControllerTest {
 

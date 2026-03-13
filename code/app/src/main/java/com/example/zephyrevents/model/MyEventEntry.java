@@ -3,7 +3,7 @@ package com.example.zephyrevents.model;
 import com.example.zephyrevents.util.SampleEvents;
 
 /**
- * Represents one event in "My Events" (either in Lotteries or History).
+ * Represents one event in "My Events" (either in Lotteries or History)...
  * Used to show event title, duration text ("1 day ago"), and status badge.
  */
 public class MyEventEntry {

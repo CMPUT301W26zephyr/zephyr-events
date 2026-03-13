@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.List;
 
-// Gemini 3.1 Pro Preview, Google AiStudio, "Please write tests for LotteryController using junit and mockito."
+// Gemini 3.1 Pro Preview, Google AiStudio, "Please write tests for LotteryController using junit and mockito." - 2023-03-12
 
 public class LotteryControllerTest {
     private EventRepository mockEventRepo;

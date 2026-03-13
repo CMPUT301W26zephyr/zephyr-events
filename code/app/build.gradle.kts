@@ -52,8 +52,6 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.23.0")  // Mockito framework
     testImplementation("org.mockito:mockito-inline:5.2.0")  // Allows mocking final classes
 
-
-
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
 
@@ -72,3 +70,45 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.2.0")
 
 }
+
+// Gemini 3.1 Pro Preview, Google AiStudio, "What is the best way to fix this issue? Adding:
+//implementation(files("/Users/jasonhu/Library/Android/sdk/platforms/android-36/android.jar"))
+//does work, though with a bunch of warnings. Is that recommended?"
+
+val generateJavadoc by tasks.registering(Javadoc::class) {
+    description = "Generates standard Javadoc for the app."
+    group = "documentation"
+
+    // 1. Set the source files
+    source = fileTree("src/main/java")
+    exclude("**/R.java", "**/BuildConfig.java")
+
+    // 2. Output directory
+    destinationDir = file("$buildDir/reports/javadoc")
+
+    // 3. Wait for the app to compile so dependencies are downloaded and generated
+    dependsOn("assembleDebug")
+
+    doFirst {
+        // Dynamically grab the correct android.jar from your installed SDK
+        val androidBootClasspath = android.bootClasspath
+
+        // Grab all dependencies (AndroidX, Firebase, etc.) from the debug build
+        val dependencyClasspath = project.files()
+        android.applicationVariants.all {
+            if (name == "debug") {
+                dependencyClasspath.from(javaCompileProvider.get().classpath)
+            }
+        }
+
+        // Tell the Javadoc tool where everything is
+        classpath = project.files(androidBootClasspath, dependencyClasspath)
+    }
+
+    // Ignore missing tags or minor doc errors so the build doesn't fail
+    (options as StandardJavadocDocletOptions).apply {
+        isFailOnError = false
+        addStringOption("Xdoclint:none", "-quiet")
+    }
+}
+// Run ./gradlew generateJavadoc
