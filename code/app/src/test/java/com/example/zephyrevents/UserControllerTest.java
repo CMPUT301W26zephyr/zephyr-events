@@ -8,6 +8,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.zephyrevents.model.ContactInfo;
+import org.mockito.ArgumentCaptor;
+
 import android.content.SharedPreferences;
 
 import com.example.zephyrevents.controller.UserController;
@@ -76,5 +79,46 @@ public class UserControllerTest {
 
         verify(mockEditor).remove("current_user_id");
         verify(mockEditor).apply();
+    }
+
+    @Test
+    public void testUpdateCurrentUserProfile(){
+        when(mockPrefs.getString(eq("current_user_id"), any())).thenReturn("test-user-id");
+
+        User existinguser = new User();
+        existinguser.setId("test-user-id");
+        existinguser.setName("John Doe");
+        existinguser.setLocation("Canada");
+        ContactInfo existingcontact = new ContactInfo();
+        existingcontact.setEmail("johndoe@gmail.com");
+        existingcontact.setPhone("123");
+        existinguser.setContactInfo(existingcontact);
+
+        doAnswer(invocation -> {
+            RepositoryCallback<User> callback = invocation.getArgument(1);
+            callback.onSuccess(existinguser);
+            return null;
+
+        }).when(mockRepo).getUserById(eq("test-user-id"), any());
+
+        doAnswer(invocation -> {
+            RepositoryCallback<Void> saveCallback = invocation.getArgument(1);
+            saveCallback.onSuccess(null);
+            return null;
+        }).when(mockRepo).saveUser(any(User.class), any());
+
+        RepositoryCallback<Void> callback = Mockito.mock(RepositoryCallback.class);
+        userController.updateCurrentUserProfile("new name", "new@gmail.com", "000", "USA",callback);
+
+        verify(callback).onSuccess(null);
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(mockRepo).saveUser(userCaptor.capture(), any());
+        User savedUser = userCaptor.getValue();
+        assertTrue("new name".equals(savedUser.getName()));
+        assertTrue("USA".equals(savedUser.getLocation()));
+        assertTrue("new@gmail.com".equals(savedUser.getContactInfo().getEmail()));
+        assertTrue("000".equals(savedUser.getContactInfo().getPhone()));
+
     }
 }
