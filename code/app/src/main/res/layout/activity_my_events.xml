@@ -8,7 +8,7 @@
     android:background="@color/light_grey"
     tools:context=".view.MyEventsActivity">
 
-    <!-- Toolbar: back, My Events (red), notification bell -->
+    <!-- Toolbar -->
     <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

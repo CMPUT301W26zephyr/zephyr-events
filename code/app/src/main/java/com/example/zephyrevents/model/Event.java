@@ -21,21 +21,11 @@ public class Event {
     private String organizerId;
     private String imageUrl;
     private EventStatus status;
-
-    /**
-     * Optional: organizer display name. Used on event detail screen.
-     */
     private String organizerName;
-    /**
-     * Optional: max number of participants. Used for waitlist info.
-     */
     private int currentApplicants;
 
-    // no arg constructor for firebase
     public Event() {
     }
-
-    ;
 
     public Event(String id, String name, String description, long startTime,  long endTime ){
         this.eventId = GenerateId.getUniqueId();
@@ -43,8 +33,6 @@ public class Event {
         this.time = new EventTime(startTime, endTime);
         this.description = description;
     }
-
-
 
     public Event(String name, String description, long startTime, long endTime, String location, long lng, long lat, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status) {
         this.eventId = GenerateId.getUniqueId();

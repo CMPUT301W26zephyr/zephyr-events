@@ -44,16 +44,15 @@ public class MyEventsActivity extends AppCompatActivity {
         tabLotteries.setOnClickListener(v -> showLotteries());
         tabHistory.setOnClickListener(v -> showHistory());
 
-        // --- NEW: Fix Toolbar Buttons ---
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
-        // Find notification bell (Assuming standard naming, adjust ID if your XML differs)
+        // Find notification bell
         View notifBell = findViewById(R.id.toolbar_notifications);
         if (notifBell != null) {
             notifBell.setOnClickListener(v -> startActivity(new Intent(this, UserNotificationListView.class)));
         }
 
-        // --- NEW: Make list items clickable ---
+        // Make list items clickable
         listView.setOnItemClickListener((parent, view, position, id) -> {
             WaitlistEntry entry = (WaitlistEntry) parent.getItemAtPosition(position);
             if (entry != null && entry.getEventId() != null) {

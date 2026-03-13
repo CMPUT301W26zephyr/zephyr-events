@@ -3,7 +3,7 @@ package com.example.zephyrevents.model;
 import com.example.zephyrevents.util.GenerateId;
 
 /**
- * This is a class that defines an notification.
+ * This is a class that defines a notification.
  */
 public class Notification {
 

@@ -12,9 +12,9 @@ public class MyEventEntry {
     private final String eventKey;
     /** SELECTED or PENDING (shown as WAITING) for lotteries; null for history placeholders. */
     private final EventStatus status;
-    /** When the user joined the waitlist (millis); used for "1 day ago" / "3 days ago". */
+    /** When the user joined the waitlist */
     private final long joinedAtMillis;
-    /** For history placeholder cards: title to show (e.g. "Placeholder"). Null for real events. */
+    /** For history placeholder cards
     private final String placeholderTitle;
 
     /**
@@ -28,7 +28,7 @@ public class MyEventEntry {
     }
 
     /**
-     * Creates a placeholder entry for History (e.g. "Placeholder", NOT SELECTED).
+     * Creates a placeholder entry for History
      */
     public MyEventEntry(String placeholderTitle) {
         this.eventKey = null;
