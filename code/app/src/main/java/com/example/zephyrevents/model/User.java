@@ -15,8 +15,20 @@ public class User {
     private boolean notificationsOptOut; // Opt out of all notifications account wide?
     private String userTimeZone; // Should be something like America/Edmonton
 
-    //Firebase no arg constructor
+    /**
+     * Firebase no arg constructor
+     */
     public User() {}
+
+    /**
+     * Constructor with all parameters; generates a unique ID.
+     * @param name
+     * @param email
+     * @param phone
+     * @param notificationsOptOut
+     * @param userTimeZone
+     * @param location
+     */
     public User(String name, String email, String phone, boolean notificationsOptOut, String userTimeZone, String location){
         this.contactInfo = new ContactInfo(email, phone);
         this.id = GenerateId.getUniqueId();
@@ -26,15 +38,35 @@ public class User {
         this.userTimeZone = userTimeZone;
     }
 
-    // constructor with default timezone
+    /**
+     * Constructor with default timezone
+     * @param name
+     * @param email
+     * @param phone
+     * @param notificationsOptOut
+     * @param location
+     */
     public User(String name, String email, String phone, boolean notificationsOptOut, String location ){
         this(name, email, phone, notificationsOptOut, TimeZone.getDefault().getID(), location);
     }
-    // constructor with default (false) notificationsOptOut
+    /**
+     * constructor with default notificationsOptOut setting (false)
+     * @param name
+     * @param email
+     * @param phone
+     * @param userTimeZone
+     * @param location
+     */
     public User(String name, String email, String phone,  String userTimeZone, String location ){
         this(name, email, phone, false, userTimeZone, location);
     }
-    // constructor with default (false) notificationsOptOut and default timezone
+    /**
+     * constructor with default notificationsOptOut setting (false) AND default timezone
+     * @param name
+     * @param email
+     * @param phone
+     * @param location
+     */
     public User(String name, String email, String phone, String location){
         this(name, email, phone, false, TimeZone.getDefault().getID(), location);
     }

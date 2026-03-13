@@ -22,7 +22,6 @@ public class UserController {
 
     /**
      * Public constructor for use within Android Activities or Fragments.
-     *
      * @param context Used to initialize SharedPreferences.
      */
     public UserController(Context context) {
@@ -32,7 +31,6 @@ public class UserController {
 
     /**
      * Constructor used for Unit Testing.
-     *
      * @param userRepository A mocked or custom {@link UserRepository}.
      * @param prefs A mocked or custom {@link SharedPreferences}.
      */
@@ -44,7 +42,6 @@ public class UserController {
 
     /**
      * Checks if a user is currently logged in (tracked locally).
-     *
      * @return true if user ID exists in SharedPreferences, otherwise false.
      */
     public boolean isUserLoggedIn() {
@@ -53,7 +50,6 @@ public class UserController {
 
     /**
      * Retrieves the local User ID.
-     *
      * @return The user ID string if user signed in, otherwise null.
      */
     public String getCurrentUserId() {
@@ -62,7 +58,6 @@ public class UserController {
 
     /**
      * Handles the Sign-Up logic for a new ueser.
-     *
      * @param name      The user's name
      * @param email     The user's email
      * @param phone     The user's phone number
@@ -98,7 +93,6 @@ public class UserController {
     /**
      * Fetches the full User object from Firebase, for the current user logged in.
      * If the remote document is missing (e.g. deleted by admin), triggers forceLogOut() immediately.
-     *
      * @param callback  A RepositoryCallback to handle success or failure
      */
     public void fetchCurrentUser(RepositoryCallback<User> callback) {
@@ -127,7 +121,6 @@ public class UserController {
     /**
      * Deletes the current user's account from Firebase and clears local session.
      * Note: local session cleared immediately even if network call fails.
-     *
      * @param callback  A RepositoryCallback to handle success or failure
      */
     public void deleteAccount(RepositoryCallback<Void> callback) {
@@ -165,7 +158,6 @@ public class UserController {
     /**
      * Updates the current user's profile in Firestore.
      * Fetches the existing User object, modifies requested fields, and then saves back to repository.
-
      * @param name      The user's name
      * @param email     The user's email
      * @param phone     The user's phone number
@@ -219,7 +211,6 @@ public class UserController {
     /**
      * Retrieves profile info of current session's user as a String array
      * Order: 0: Name, 1: Email, 2: Phone; 3: Country
-     *
      * @param callback  A RepositoryCallback to handle success or failure
      */
     public void getCurrentUserProfileInfo(RepositoryCallback<String[]> callback) {

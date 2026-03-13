@@ -1,5 +1,8 @@
 package com.example.zephyrevents.model;
 
+/**
+ * Encapsulates a location as a set of latitude-longitude coordinates.
+ */
 public class Coordinate {
     private double lat;
     private double lng;
@@ -7,6 +10,12 @@ public class Coordinate {
     // no arg constructor for firebase
     public Coordinate() {};
 
+    /**
+     * Constructor: arguments specify longitude and latitude.
+     *
+     * @param lat Latitude of user
+     * @param lng Longitude of user
+     */
     public Coordinate(double lat, double lng){
         this.lat = lat;
         this.lng = lng;

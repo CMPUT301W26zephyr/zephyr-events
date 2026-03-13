@@ -27,6 +27,15 @@ public class Event {
     public Event() {
     }
 
+    /**
+     * Constructor with essential parameters
+     *
+     * @param id
+     * @param name
+     * @param description
+     * @param startTime
+     * @param endTime
+     */
     public Event(String id, String name, String description, long startTime,  long endTime ){
         this.eventId = GenerateId.getUniqueId();
         this.name = name;
@@ -34,6 +43,24 @@ public class Event {
         this.description = description;
     }
 
+    /**
+     * Full constructor including detail fields for the event detail screen.
+     *
+     * @param name
+     * @param description
+     * @param startTime
+     * @param endTime
+     * @param location
+     * @param lng
+     * @param lat
+     * @param price
+     * @param capacity
+     * @param applicantCount
+     * @param registrationEndTime
+     * @param organizerId
+     * @param imageUrl
+     * @param status
+     */
     public Event(String name, String description, long startTime, long endTime, String location, long lng, long lat, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status) {
         this.eventId = GenerateId.getUniqueId();
         this.name = name;
@@ -48,10 +75,6 @@ public class Event {
         this.imageUrl = imageUrl;
         this.status = status;
     }
-
-    /**
-     * Full constructor including detail fields for the event detail screen.
-     */
 
     // Constructor to autogenerate string id.
     public Event(String name, String description, EventTime time, Location location, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status, String organizerName, int currentApplicants) {
@@ -77,6 +100,8 @@ public class Event {
 
     /**
      * Returns true if the event waitlist has reached capacity (no more join allowed).
+     *
+     * @return  true if event waitlist has reached capacity, otherwise false.
      */
     public boolean isCapacityFull() {
         return waitlistCapacity != null && waitlistCapacity > 0 && currentApplicants >= waitlistCapacity;
