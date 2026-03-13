@@ -39,6 +39,9 @@ public class NotificationRepository {
     public NotificationRepository() {
         db = FirebaseFirestore.getInstance();
     }
+    public NotificationRepository(FirebaseFirestore db) {
+        this.db = db;
+    }
 
     // Below is 'Create' part in CRUD using set()
     // Create -
