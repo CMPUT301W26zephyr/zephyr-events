@@ -16,7 +16,11 @@ import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
-
+/**
+ * Activity that allows the user to edit their profile.
+ * Allows setting Name, Email, Country/Region, and Phone number
+ * Coordinates persistence with UserController upon pressing SAVE
+ */
 public class UserProfileEditViewActivity extends AppCompatActivity {
     private UserController userController;
 

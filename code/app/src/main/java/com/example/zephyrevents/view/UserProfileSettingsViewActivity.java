@@ -12,7 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zephyrevents.R;
 
-
+/**
+ * Activity that allows the user to change local session settings.
+ * TODO: Coordinate notification settings with Firebase.
+ */
 public class UserProfileSettingsViewActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "notification_preference";

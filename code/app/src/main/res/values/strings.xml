@@ -55,5 +55,13 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="LoremIpsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur mollis, tortor eget viverra sagittis, mi felis luctus lorem, eu dictum orci nisl ut turpis. Duis sagittis id ipsum ac pellentesque. In ut magna volutpat, rutrum est ac, porta tortor. Pellentesque consequat lectus eu magna finibus, in viverra lacus consectetur. Curabitur fermentum, nisl sed elementum vestibulum, felis mauris dictum massa, ac euismod sem lacus sit amet sem. Ut ut dui tempus, cursus leo a, mollis ligula. Nullam rhoncus dui eget ante commodo ullamcorper. Praesent euismod vel urna at malesuada. Nullam rutrum lectus suscipit purus commodo ultricies. Cras nec quam id leo luctus convallis non ac tellus. Suspendisse potenti. Fusce ac arcu elit. Etiam mi arcu, lacinia eleifend velit ut, sollicitudin laoreet eros. Vestibulum arcu ex, efficitur quis maximus quis, feugiat nec lectus. Donec imperdiet mauris iaculis, convallis lorem a, venenatis augue. Mauris sagittis vel tortor et malesuada.</string>
+
+    <!-- Text sections for TOS   -->
+    <string name="tos_p1">All users who join an event\'s waitlist will be entered into a random draw once registration closes. Every entrant has an <b>equal chance</b> of being selected.</string>
+    <string name="tos_p2">Selected entrants will be notified to claim their spot; if they don\'t respond or decline, someone from the waiting list will be chosen.</string>
+    <string name="tos_p3">Everyone who joins the draw will be notified of the results. The lottery process is fully automated and impartial. <b>Event organizers and administrators cannot influence lottery outcomes.</b></string>
+    <string name="tos_p4">The information you provide is used only for event registration and communication within the app. It will never be used or shared for any external purpose.</string>
+    <string name="tos_p5">Organizers are responsible for ensuring that event details such as time, date, and requirements are accurate before publishing.</string>
+    <string name="tos_p6">By pressing <b>I agree</b>, you acknowledge that selection is based on chance and agree to these terms. Entering the lottery does not guarantee a spot in the event.</string>
     <string name="waitlist_capacity">Waitlist Capacity</string>
 </resources>

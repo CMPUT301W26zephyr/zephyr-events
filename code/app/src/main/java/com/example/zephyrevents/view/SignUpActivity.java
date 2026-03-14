@@ -18,7 +18,8 @@ import com.example.zephyrevents.view.HomeActivity;
 import com.example.zephyrevents.view.TermsOfServiceFragment;
 
 /**
- * SignUpActivity allows the user to create an account
+ * SignUpActivity allows the user to create an account if not signed in;
+ * Navigated to from WelcomeActivity;
  * Checks for required fields and TOS acceptance
  */
 public class SignUpActivity extends AppCompatActivity implements TermsOfServiceFragment.OnTosAgreedListener {
