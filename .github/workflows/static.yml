@@ -32,10 +32,10 @@ jobs:
           java-version: 17
 
       - name: Make script executable
-        run: chmod +x ./scripts/gen-javadoc.sh
+        run: chmod +x ./scripts/gen_javadoc.sh
 
       - name: Generate Javadocs
-        run: ./scripts/gen-javadoc.sh
+        run: ./scripts/gen_javadoc.sh
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
