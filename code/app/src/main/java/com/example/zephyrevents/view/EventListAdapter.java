@@ -55,13 +55,19 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         String dateStr = event.getTime().getStartTime() > 0 ? dateFormat.format(new Date(event.getTime().getStartTime())) : "";
         String locationStr = event.getLocation() != null ? event.getLocation().getLocationString() : "";
         String dateLocationStr;
+
         if (dateStr.isEmpty() && locationStr.isEmpty()) {
             dateLocationStr = getContext().getString(R.string.date_location);
         } else {
             dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : ", " + locationStr);
         }
         dateLocation.setText(dateLocationStr);
-        price.setText(String.valueOf(event.getPrice()));
+
+        if (event.getPrice() == 0.0) {
+            price.setText("Free");
+        } else {
+            price.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
+        }
 
         return row;
     }

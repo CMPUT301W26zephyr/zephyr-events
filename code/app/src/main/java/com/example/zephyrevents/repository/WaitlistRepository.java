@@ -15,16 +15,36 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Repository class for managing WaitlistEntry data in Firebase Firestore.
+ * This class handles the logic for users joining event waitlists,
+ * and status updates (e.g., selected/rejected), and aids selection process.
+ */
 public class WaitlistRepository {
 
     private final FirebaseFirestore db;
     private static final String TAG = "WaitlistRepository";
 
+    /**
+     * Default constructor. Uses the production Firestore instance.
+     */
     public WaitlistRepository() {
         db = FirebaseFirestore.getInstance();
     }
 
-    // CREATE - add user to Waitlist
+    /**
+     * Constructor with dependency injection for testing.
+     * @param db  The injected firestore instance.
+     */
+    public WaitlistRepository(FirebaseFirestore db) {
+        this.db = db;
+    }
+
+    /**
+     * Persists WaitlistEntry: Adds a user to the waitlist for an event (CREATE)
+     * @param entry    The WaitlistEntry containing userId, eventId, and initial status.
+     * @param callback Callback to handle success or failure.
+     */
     public void addUserToWaitlist(WaitlistEntry entry, RepositoryCallback<Void> callback) {
 
         if (entry == null) {
@@ -38,7 +58,11 @@ public class WaitlistRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    // READ - get all waitlist of an event
+    /**
+     * Fetches all waitlist entries associated with an event. (READ)
+     * @param eventId  The event ID
+     * @param callback Callback returning a List of WaitlistEntry objects.
+     */
     public void getWaitlist(String eventId, RepositoryCallback<List<WaitlistEntry>> callback) {
 
         db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
@@ -58,7 +82,13 @@ public class WaitlistRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    // UPDATE - change waitlist status like success and fail
+    /**
+     * Updates the status of a specific user's entry in an event's waitlist. (UPDATE)
+     * @param eventId   The event ID.
+     * @param userId    The user ID
+     * @param status    The new Status (e.g. SELECTED, REJECTED)
+     * @param callback  Callback to handle completion.
+     */
     public void updateStatus(String eventId, String userId, Status status, RepositoryCallback<Void> callback) {
 
         db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
@@ -76,7 +106,12 @@ public class WaitlistRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    // DELETE - remove from waitlist
+    /**
+     * Removes a user from the waitlist of a specific event. (DELETE)
+     * @param eventId   The event ID
+     * @param userId    The user ID
+     * @param callback  Handles completion
+     */
     public void removeUserFromWaitlist(String eventId, String userId, RepositoryCallback<Void> callback) {
 
         db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
@@ -94,7 +129,14 @@ public class WaitlistRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    // LOTTERY HELPER -gets waitlist - shuffles entries - returns first capacity users
+    /**
+     * Selects a random subset of entrants from an event's waitlist based on event capacity;
+     * fetches the entire waitlist, shuffles it (Random), and returns the top n users.
+     * TODO: make this happen remotely when?
+     * @param eventId  The ID of the event to draw from.
+     * @param capacity The maximum number of winners to select.
+     * @param callback Callback returning a List of the selected WaitlistEntry objects.
+     */
     public void selectRandomEntrants(String eventId, int capacity,
                                      RepositoryCallback<List<WaitlistEntry>> callback) {
 
@@ -117,5 +159,45 @@ public class WaitlistRepository {
                 callback.onFailure(e);
             }
         });
+    }
+
+    /**
+     * Get a specific user's WaitlistEntry for an event
+     * @param eventId   event ID
+     * @param userId    user ID
+     * @param callback  returns WaitlistEntry, or null if not found.
+     */
+    public void getUserWaitlistEntry(String eventId, String userId, RepositoryCallback<WaitlistEntry> callback) {
+        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        callback.onSuccess(querySnapshot.getDocuments().get(0).toObject(WaitlistEntry.class));
+                    } else {
+                        callback.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Get all waitlists joined by a specific user (across all events)
+     * @param userId    The user ID
+     * @param callback  Returns list of WaitlistEntries
+     */
+    public void getWaitlistsForUser(String userId, RepositoryCallback<List<WaitlistEntry>> callback) {
+        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<WaitlistEntry> entries = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        entries.add(doc.toObject(WaitlistEntry.class));
+                    }
+                    callback.onSuccess(entries);
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 }

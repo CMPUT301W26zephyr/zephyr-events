@@ -17,4 +17,13 @@
     <color name="badge_selected">#4CAF50</color>
     <color name="badge_waiting">#FFC107</color>
     <color name="badge_not_selected">#F44336</color>
+    <!-- Theme Colours -->
+    <color name="secondary_red">#FFCCD8</color>
+    <color name="notification_background">#FAFAFA</color>
+    <color name="accent">#E84D6D</color>
+    <color name="header_pink">#F6B5C4</color>
+    <color name="light_stroke">#ECECEC</color>
+    <color name="text_secondary">#7A7A7A</color>
+    <color name="danger">#D93B3B</color>
+
 </resources>

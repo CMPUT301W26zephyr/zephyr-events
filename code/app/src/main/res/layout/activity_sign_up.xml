@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="24dp"
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/btn_continue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_image_placeholder2" />
+
+        <TextView
+            style="@style/TxtTitle"
+            android:layout_marginTop="24dp"
+            android:text="Let's get started" />
+
+        <TextView
+            style="@style/TxtSub"
+            android:layout_marginTop="8dp"
+            android:text="Create an account to enjoy stress-free\naccess to your favorite events" />
+
+        <!-- Form: Full Name -->
+        <LinearLayout style="@style/FormLabelRow">
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Full name " />
+
+            <TextView style="@style/FormAsterisk" />
+        </LinearLayout>
+
+        <EditText
+            style="@style/SignupFormInput"
+            android:id="@+id/et_name"
+            android:inputType="textPersonName" />
+
+        <!-- Form: Email -->
+        <LinearLayout
+            style="@style/FormLabelRow"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Email " />
+
+            <TextView style="@style/FormAsterisk" />
+        </LinearLayout>
+
+        <EditText
+            style="@style/SignupFormInput"
+            android:id="@+id/et_email"
+            android:inputType="textEmailAddress" />
+
+        <!-- Form: Phone -->
+        <LinearLayout
+            style="@style/FormLabelRow"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Phone number (optional)" />
+        </LinearLayout>
+
+        <EditText
+            style="@style/SignupFormInput"
+            android:id="@+id/et_phone"
+            android:inputType="phone" />
+
+        <!-- Checkbox Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cb_tos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:scaleX="0.7"
+                android:scaleY="0.7" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="By checking the box you agree to our "
+                android:textColor="#666666"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_tos_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Terms and Conditions"
+                android:textColor="#FF3B5C"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_continue"
+        style="@style/Button.Filled"
+        android:layout_marginBottom="96dp"
+        android:text="CONTINUE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

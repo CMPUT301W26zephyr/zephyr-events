@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,27 +14,69 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
+        
         <activity
-            android:name=".view.EventsListActivity"
+            android:name=".view.SignUpActivity"
+            android:exported="false" />
+        
+        <activity
+            android:name=".view.WelcomeActivity"
+            android:theme="@style/Theme.App.Starting"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".view.HomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.EventsListActivity"
+            android:exported="false"/>
+
         <activity
             android:name=".view.EventDetailViewActivity"
             android:exported="false" />
-        <activity
-            android:name=".view.YoureInActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.InviteDeclinedActivity"
-            android:exported="false" />
+
         <activity
             android:name=".view.MyEventsActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".view.OrganizerEventAddEditView"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.OrganizerEntrantsListView"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserNotificationListView"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.FilterEventsActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileSettingsViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileEditViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.UserProfileViewActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".view.EventStatusActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>

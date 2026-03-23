@@ -13,20 +13,16 @@ import androidx.core.content.ContextCompat;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
-import com.example.zephyrevents.model.EventStatus;
-import com.example.zephyrevents.model.MyEventEntry;
-import com.example.zephyrevents.model.Status;
 import com.example.zephyrevents.model.WaitlistEntry;
+import com.example.zephyrevents.repository.RepositoryCallback;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 
-/**
- * Adapter for the My Events list (Lotteries and History tabs).
- * Shows event title, duration ("1 day ago" / "3 days ago"), and status badge
- * (SELECTED, WAITING, or NOT SELECTED).
- */
 public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
 
     private final LayoutInflater inflater;
@@ -45,80 +41,104 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
         }
 
         WaitlistEntry entry = getItem(position);
-        if (entry == null) {
-            return row;
-        }
+        if (entry == null) return row;
 
-        TextView title = row.findViewById(R.id.my_event_title);
-        TextView duration = row.findViewById(R.id.my_event_duration);
-        TextView status = row.findViewById(R.id.my_event_status);
+        TextView titleView = row.findViewById(R.id.item_event_title);
+        TextView dateLocationView = row.findViewById(R.id.item_event_date_location);
+        TextView priceView = row.findViewById(R.id.item_event_price);
+        TextView statusView = row.findViewById(R.id.item_event_status);
 
-        if (entry.isPlaceholder()) {
-            title.setText(entry.getPlaceholderTitle());
-            duration.setText("");
-            setStatusBadge(status, null, true);
-        } else {
-            // This is probably wrong, we probably want the title here not the id.
-            Event event = EventController.getInstance().getEvent(entry.getEventId());
-            title.setText(event != null ? event.getName() : entry.getEventId());
-            duration.setText(formatDuration(entry.getTimestamp()));
-            setStatusBadge(status, entry.getStatus(), false);
+        // Clear out old text while Firebase loads the actual event
+        titleView.setText("Loading...");
+        dateLocationView.setText("");
+        priceView.setText("");
+        statusView.setText("...");
+
+        if (entry.getEventId() != null) {
+            EventController.getInstance().getEventById(entry.getEventId(), new RepositoryCallback<Event>() {
+                @Override
+                public void onSuccess(Event result) {
+                    if (result != null) {
+                        titleView.setText(result.getName() != null ? result.getName() : "Unknown Event");
+
+                        if (result.getPrice() == 0.0) {
+                            priceView.setText("Free");
+                        } else {
+                            priceView.setText(String.format(Locale.getDefault(), "$%.2f", result.getPrice()));
+                        }
+
+                        String dateStr = "";
+                        if (result.getTime() != null && result.getTime().getStartTime() > 0) {
+                            dateStr = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(result.getTime().getStartTime()));
+                        }
+                        String locStr = result.getLocation() != null && result.getLocation().getLocationString() != null ? result.getLocation().getLocationString() : "";
+
+                        if (!dateStr.isEmpty() && !locStr.isEmpty()) {
+                            dateLocationView.setText(dateStr + ", " + locStr);
+                        } else {
+                            dateLocationView.setText(dateStr + locStr);
+                        }
+
+                        // Evaluate Organizer vs Status
+                        String currentUserId = new UserController(getContext()).getCurrentUserId();
+                        boolean isOrganizer = currentUserId != null && result.getOrganizerId() != null && result.getOrganizerId().equals(currentUserId);
+
+                        if (isOrganizer) {
+                            statusView.setText("ORGANIZER");
+                            statusView.setBackgroundResource(R.drawable.bg_badge_selected);
+                            // Keep the rounded corners but tint it blue
+                            statusView.getBackground().mutate().setTint(android.graphics.Color.parseColor("#2196F3"));
+                            statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+                        } else if (entry.getStatus() != null) {
+                            switch (entry.getStatus()) {
+                                case ACCEPTED:
+                                    statusView.setText("ACCEPTED");
+                                    statusView.setBackgroundResource(R.drawable.bg_badge_selected);
+                                    statusView.getBackground().mutate().setTintList(null); // Clear recycled tints
+                                    statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                                    break;
+
+                                case DECLINED:
+                                    statusView.setText("DECLINED");
+                                    statusView.setBackgroundResource(R.drawable.bg_badge_selected);
+                                    // Tint the rounded badge red
+                                    statusView.getBackground().mutate().setTint(ContextCompat.getColor(getContext(), R.color.invite_declined_red));
+                                    statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                                    break;
+
+                                case SELECTED:
+                                    statusView.setText("SELECTED");
+                                    statusView.setBackgroundResource(R.drawable.bg_badge_selected);
+                                    statusView.getBackground().mutate().setTintList(null);
+                                    statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                                    break;
+
+                                case LOST:
+                                    statusView.setText("NOT SELECTED");
+                                    statusView.setBackgroundResource(R.drawable.bg_badge_selected);
+                                    // Tint the rounded badge grey
+                                    statusView.getBackground().mutate().setTint(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+                                    statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                                    break;
+
+                                case WAITLISTED:
+                                default:
+                                    statusView.setText("WAITING");
+                                    statusView.setBackgroundResource(R.drawable.bg_badge_waiting);
+                                    statusView.getBackground().mutate().setTintList(null);
+                                    statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+                                    break;
+                            }
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Exception e) {
+                    titleView.setText("Unknown Event");
+                }
+            });
         }
 
         return row;
-    }
-
-    /**
-     * Sets the status badge text and style (green SELECTED, yellow WAITING, red NOT SELECTED / DECLINED).
-     */
-
-    // not my cleanest enum switch tbh, I'll clean it up later hopefully.
-    private void setStatusBadge(TextView statusView, Status userEventStatus, boolean notSelected){
-        if (notSelected || userEventStatus == null){
-            statusView.setText(R.string.status_not_selected);
-            statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_not_selected));
-            statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-            return;
-        }
-        switch (userEventStatus){
-            case REMOVED:
-                statusView.setText(R.string.status_declined);
-                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_not_selected));
-                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-                return;
-            case DECLINED:
-                statusView.setText(R.string.status_declined);
-                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_not_selected));
-                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-                return;
-            case SELECTED:
-                statusView.setText(R.string.status_selected);
-                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_selected));
-                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-            case ACCEPTED:
-                statusView.setText(R.string.status_selected);
-                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_selected));
-                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-            case WAITLISTED:
-                statusView.setText(R.string.status_waiting);
-                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_waiting));
-                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
-
-            default:
-                statusView.setText(R.string.status_waiting);
-                statusView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_badge_waiting));
-                statusView.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
-        }
-    }
-
-    /**
-     * Returns "1 day ago" or "X days ago" from joinedAtMillis to now.
-     */
-    private String formatDuration(long joinedAtMillis) {
-        if (joinedAtMillis <= 0) return "";
-        long diffMillis = System.currentTimeMillis() - joinedAtMillis;
-        long days = TimeUnit.MILLISECONDS.toDays(diffMillis);
-        if (days <= 0 || days == 1) return getContext().getString(R.string.one_day_ago);
-        return getContext().getString(R.string.days_ago, (int) days);
-    }
-}
+    }}

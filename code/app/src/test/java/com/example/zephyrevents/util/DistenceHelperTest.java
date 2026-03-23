@@ -1,10 +1,9 @@
-package com.example.zephyrevents;
+package com.example.zephyrevents.util;
 
 import static org.junit.Assert.*;
 
 
 import com.example.zephyrevents.model.Coordinate;
-import com.example.zephyrevents.util.DistanceHelper;
 
 import org.junit.Test;
 
@@ -69,7 +68,7 @@ public class DistenceHelperTest {
     }
     /**
      * A unit test that checks if DistanceHelper.isWithinDistance correctly returns true when two exact points are within a short distance.
-     * Checks if <= less than or equal to check works.
+     * Checks if less than or equal to check works.
      */
     @Test
     public void testEqual(){

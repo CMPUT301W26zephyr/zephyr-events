@@ -8,7 +8,7 @@
     android:background="@color/light_grey"
     tools:context=".view.MyEventsActivity">
 
-    <!-- Toolbar: back, My Events (red), notification bell -->
+    <!-- Toolbar -->
     <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -121,76 +121,13 @@
         app:layout_constraintTop_toBottomOf="@id/tabs"
         tools:listitem="@layout/item_my_event_card" />
 
-    <!-- Bottom nav: ticket highlighted (red), home grey -->
-    <LinearLayout
+    <include
         android:id="@+id/bottom_nav"
+        layout="@layout/bottom_nav"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:background="#FAFAFA"
-        android:elevation="8dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageButton
-            android:id="@+id/nav_home"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/nav_home"
-            android:src="@drawable/ic_home"
-            android:scaleType="centerInside"
-            android:padding="8dp"
-            app:tint="#757575" />
-
-        <ImageButton
-            android:id="@+id/nav_my_events"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/nav_my_events"
-            android:src="@drawable/ic_confirmation_number"
-            android:scaleType="centerInside"
-            android:padding="8dp"
-            app:tint="@color/primary_red" />
-
-        <ImageButton
-            android:id="@+id/nav_create_event"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/nav_create_event"
-            android:src="@drawable/ic_add_box"
-            android:scaleType="centerInside"
-            android:padding="8dp"
-            app:tint="#757575" />
-
-        <ImageButton
-            android:id="@+id/nav_scan_qr"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/nav_scan_qr"
-            android:src="@drawable/ic_qr_code_scanner"
-            android:scaleType="centerInside"
-            android:padding="8dp"
-            app:tint="#757575" />
-
-        <ImageButton
-            android:id="@+id/nav_profile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/nav_profile"
-            android:src="@drawable/ic_person"
-            android:scaleType="centerInside"
-            android:padding="8dp"
-            app:tint="#757575" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
