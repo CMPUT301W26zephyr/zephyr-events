@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.zephyrevents.R;
@@ -20,7 +19,6 @@ import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.util.BottomNavHelper;
 import com.example.zephyrevents.model.User;
 
 import java.util.ArrayList;
@@ -67,7 +65,12 @@ public class HomeFragment extends Fragment {
         TextView tvViewAll = view.findViewById(R.id.view_all);
         if (tvViewAll != null) {
             tvViewAll.setOnClickListener(v -> {
-                startActivity(new Intent(requireContext(), EventsListActivity.class));
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.fragment_container, new EventsListFragment())
+                        .addToBackStack(null)
+                        .commit();
             });
         }
 
@@ -76,7 +79,13 @@ public class HomeFragment extends Fragment {
         ImageView searchIcon = view.findViewById(R.id.btn_search);
         if (searchIcon != null) {
             searchIcon.setOnClickListener(v -> {
-                startActivity(new Intent(requireContext(), EventsListActivity.class));
+                // Swap to EventsListFragment and add it to the back stack
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.fragment_container, new EventsListFragment())
+                        .addToBackStack(null)
+                        .commit();
             });
         }
 

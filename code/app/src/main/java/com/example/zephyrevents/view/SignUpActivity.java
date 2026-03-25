@@ -79,7 +79,7 @@ public class SignUpActivity extends AppCompatActivity implements TermsOfServiceF
             public void onSuccess(Void result) {
                 // Navigate to Home
 //                System.out.println("SHOULD BE SUCCESSFULLY CREATED BRUH");
-                Intent intent = new Intent(SignUpActivity.this, HomeFragment.class);
+                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
