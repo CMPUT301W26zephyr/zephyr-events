@@ -8,7 +8,8 @@ import androidx.core.content.ContextCompat;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.view.EventsListActivity;
-import com.example.zephyrevents.view.HomeActivity;
+import com.example.zephyrevents.view.HomeFragment;
+import com.example.zephyrevents.view.MainActivity;
 import com.example.zephyrevents.view.MyEventsActivity;
 import com.example.zephyrevents.view.OrganizerEventAddEditView;
 import com.example.zephyrevents.view.UserProfileViewActivity;
@@ -25,14 +26,17 @@ public class BottomNavHelper {
 
         // 1. Home Button
         if (navHome != null) {
-            if (activity instanceof HomeActivity || activity instanceof EventsListActivity) {
+            // Check if we are in MainActivity (which holds HomeFragment)
+            if (activity instanceof MainActivity) {
                 navHome.setImageTintList(ColorStateList.valueOf(activeColor));
             }
             navHome.setOnClickListener(v -> {
-                if (!(activity instanceof HomeActivity)) {
-                    Intent intent = new Intent(activity, HomeActivity.class);
-                    // FIXED: Reorder instead of clearing top so the animation override works
-                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                if (!(activity instanceof MainActivity)) {
+                    // Launch MainActivity instead of the Fragment directly
+                    Intent intent = new Intent(activity, MainActivity.class);
+
+                    // CLEAR_TOP ensures we don't create an infinite stack of MainActivities
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     activity.startActivity(intent);
                     activity.overridePendingTransition(0, 0);
                 }

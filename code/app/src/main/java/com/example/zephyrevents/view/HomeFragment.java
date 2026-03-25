@@ -2,17 +2,23 @@ package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
-import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.util.BottomNavHelper;
 import com.example.zephyrevents.model.User;
@@ -26,28 +32,31 @@ import java.util.List;
  * Shows large cards of featured events (e.g. by popularity, proximity)
  * Checks if User account still exists upon creation; returns to WelcomeActivity if not exist.
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeFragment extends Fragment {
     UserController userController;
     private FeaturedEventListAdapter adapter;
     private List<Event> featuredEvents = new ArrayList<>();
     private EventController eventController;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_home, container, false); // Rename your layout files if you want
+    }
 
-        BottomNavHelper.setupBottomNav(this);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         eventController = EventController.getInstance();
 
         // Initially the ListView and Adapter are EMPTY (to add later)
-        adapter = new FeaturedEventListAdapter(this, featuredEvents);
-        ListView listView = findViewById(R.id.event_list);
+        adapter = new FeaturedEventListAdapter(requireContext(), featuredEvents);
+        ListView listView = view.findViewById(R.id.event_list);
         listView.setAdapter(adapter);
 
         // ListView Click Listener to open Event Details
-        listView.setOnItemClickListener((parent, view, position, id) -> {
+        listView.setOnItemClickListener((parent, v, position, id) -> {
             Event event = (Event) parent.getItemAtPosition(position);
             if (event != null && event.getEventId() != null) {
                 boolean invited = eventController.isInvitedEvent(event.getEventId());
@@ -55,24 +64,24 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        TextView tvViewAll = findViewById(R.id.view_all);
+        TextView tvViewAll = view.findViewById(R.id.view_all);
         if (tvViewAll != null) {
             tvViewAll.setOnClickListener(v -> {
-                startActivity(new Intent(HomeActivity.this, EventsListActivity.class));
+                startActivity(new Intent(requireContext(), EventsListActivity.class));
             });
         }
 
         // Search icon does the same thing as the textView for now
         // TODO: Possible to make it open the search box? Via intent
-        ImageView searchIcon = findViewById(R.id.btn_search);
+        ImageView searchIcon = view.findViewById(R.id.btn_search);
         if (searchIcon != null) {
             searchIcon.setOnClickListener(v -> {
-                startActivity(new Intent(HomeActivity.this, EventsListActivity.class));
+                startActivity(new Intent(requireContext(), EventsListActivity.class));
             });
         }
 
         // Fetch user data in the background to verify that account still exists
-        userController = new UserController(this);
+        userController = new UserController(requireContext());
         userController.fetchCurrentUser(new RepositoryCallback<User>() {
             @Override
             public void onSuccess(User result) {
@@ -84,11 +93,11 @@ public class HomeActivity extends AppCompatActivity {
                 // Check if the controller wiped the session because the doc was missing
                 if (!userController.isUserLoggedIn()) {
                     // Kick them back to WelcomeActivity
-                    Intent intent = new Intent(HomeActivity.this, WelcomeActivity.class);
+                    Intent intent = new Intent(requireContext(), WelcomeActivity.class);
                     intent.putExtra("TOAST_MESSAGE", "Your Account Has Been Removed.");
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                    finish();
+                    requireActivity().finish();
                 } else {
                     // If it was just a normal network error (e.g., user is offline), do nothing (or something, idrk)
                 }
@@ -98,7 +107,7 @@ public class HomeActivity extends AppCompatActivity {
 
     // Refresh featured events every time the screen becomes visible
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         loadFeaturedEvents();
     }
@@ -127,13 +136,13 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(HomeActivity.this, "Failed to load featured events.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Failed to load featured events.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void openEventDetail(String eventKey, boolean invited) {
-        Intent intent = new Intent(this, EventDetailViewActivity.class);
+        Intent intent = new Intent(requireContext(), EventDetailViewActivity.class);
         intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, eventKey);
         intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, invited);
         startActivity(intent);
