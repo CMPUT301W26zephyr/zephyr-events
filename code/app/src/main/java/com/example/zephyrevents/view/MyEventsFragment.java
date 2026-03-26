@@ -74,6 +74,12 @@ public class MyEventsFragment extends Fragment {
         showLotteries();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchUserEvents();
+    }
+
     private void fetchUserEvents() {
         String currentUserId = new UserController(requireContext()).getCurrentUserId();
         if (currentUserId == null) return;
