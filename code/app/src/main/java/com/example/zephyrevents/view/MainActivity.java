@@ -8,16 +8,34 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.example.zephyrevents.R;
 import com.google.android.material.transition.MaterialSharedAxis;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Fragment homeFragment;
+    private Fragment myEventsFragment;
+    private Fragment profileFragment;
+    private Fragment activeFragment;
+    private final FragmentManager fm = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState == null) {
+            homeFragment = new HomeFragment();
+            myEventsFragment = new MyEventsFragment();
+            profileFragment = new UserProfileViewFragment();
+            activeFragment = homeFragment;
+
+            setupFragments();
+        } else {  // Handle reloads after rotations
+            restoreFragmentReferences();
+        }
         setupBottomNav();
 
         if (savedInstanceState == null) {
@@ -36,33 +54,46 @@ public class MainActivity extends AppCompatActivity {
         String targetTab = intent.getStringExtra("TARGET_TAB");
 
         if ("MyEvents".equals(targetTab)) {
-            loadFragment(new MyEventsFragment());
+            switchFragment(myEventsFragment);
         } else if ("ProfileView".equals(targetTab)) {
-            loadFragment(new UserProfileViewFragment());
+            switchFragment(profileFragment);
         } else if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
+            switchFragment(homeFragment);
         }
     }
 
+    private void setupFragments() {
+        fm.beginTransaction()
+                .add(R.id.fragment_container, profileFragment, "profile").hide(profileFragment)
+                .add(R.id.fragment_container, myEventsFragment, "myEvents").hide(myEventsFragment)
+                .add(R.id.fragment_container, homeFragment, "home")
+                .commit();
+    }
+
     private void setupBottomNav() {
-        findViewById(R.id.nav_home).setOnClickListener(v -> loadFragment(new HomeFragment()));
-        findViewById(R.id.nav_my_events).setOnClickListener(v -> loadFragment(new MyEventsFragment()));
-        findViewById(R.id.nav_profile).setOnClickListener(v -> loadFragment(new UserProfileViewFragment()));
+        findViewById(R.id.nav_home).setOnClickListener(v -> switchFragment(homeFragment));
+        findViewById(R.id.nav_my_events).setOnClickListener(v -> switchFragment(myEventsFragment));
+        findViewById(R.id.nav_profile).setOnClickListener(v -> switchFragment(profileFragment));
 
         findViewById(R.id.nav_create_event).setOnClickListener(v -> {
             startActivity(new Intent(this, OrganizerEventAddEditView.class));
         });
+
+        findViewById(R.id.nav_scan_qr).setOnClickListener(v -> {
+            // TODO
+        });
     }
 
-    private void loadFragment(Fragment fragment) {
-        fragment.setEnterTransition(new com.google.android.material.transition.MaterialFadeThrough());
-        getSupportFragmentManager()
-                .beginTransaction()
-                //.setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.fragment_container, fragment)
+    private void switchFragment(Fragment target) {
+        if (activeFragment == target) return; // if already on target tab
+
+        fm.beginTransaction()
+                .hide(activeFragment)
+                .show(target)
                 .commit();
 
-        updateBottomNavColors(fragment);
+        activeFragment = target;
+        updateBottomNavColors(target);
     }
 
     private void updateBottomNavColors(Fragment fragment) {
@@ -85,4 +116,13 @@ public class MainActivity extends AppCompatActivity {
             navProfile.setImageTintList(ColorStateList.valueOf(activeColor));
         }
     }
-}
+
+    private void restoreFragmentReferences() {
+        homeFragment = fm.findFragmentByTag("home");
+        myEventsFragment = fm.findFragmentByTag("myEvents");
+        profileFragment = fm.findFragmentByTag("profile");
+
+        if (homeFragment != null && !homeFragment.isHidden()) activeFragment = homeFragment;
+        else if (myEventsFragment != null && !myEventsFragment.isHidden()) activeFragment = myEventsFragment;
+        else if (profileFragment != null && !profileFragment.isHidden()) activeFragment = profileFragment;
+    }}
