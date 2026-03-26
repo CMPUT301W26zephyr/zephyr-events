@@ -30,19 +30,11 @@
         </activity>
 
         <activity
-            android:name=".view.HomeActivity"
+            android:name=".view.MainActivity"
             android:exported="false" />
-
-        <activity
-            android:name=".view.EventsListActivity"
-            android:exported="false"/>
 
         <activity
             android:name=".view.EventDetailViewActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".view.MyEventsActivity"
             android:exported="false" />
 
         <activity
@@ -67,10 +59,6 @@
 
         <activity
             android:name=".view.UserProfileEditViewActivity"
-            android:exported="true" />
-
-        <activity
-            android:name=".view.UserProfileViewActivity"
             android:exported="true" />
 
         <activity

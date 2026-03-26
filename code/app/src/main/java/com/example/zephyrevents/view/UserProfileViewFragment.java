@@ -3,55 +3,59 @@ package com.example.zephyrevents.view;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.util.BottomNavHelper;
 
 /**
  * Activity that displays the user profile.
  * Allows navigation to viewing notifications, settings, and editing profile details.
  * Allows deleting user account.
  */
-public class UserProfileViewActivity extends AppCompatActivity {
+public class UserProfileViewFragment extends Fragment {
     private UserController userController;
 
     private TextView txtName;
     private TextView txtContact;
     private ImageView avatarImg;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_profile_user);
-        userController = new UserController(this);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_profile_user, container, false); // Rename your layout files if you want
+    }
 
-        txtName = findViewById(R.id.txtName);
-        txtContact = findViewById(R.id.txtContact);
-        avatarImg = findViewById(R.id.avatar_img);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        userController = new UserController(requireContext());
 
+        txtName = view.findViewById(R.id.txtName);
+        txtContact = view.findViewById(R.id.txtContact);
+        avatarImg = view.findViewById(R.id.avatar_img);
 
-        setUpClickListener();
+        setUpClickListener(view);
         refreshProfile();
-
-
 
     }
 
     @Override
-    protected void onResume(){
+    public void onResume(){
         super.onResume();
         refreshProfile();
     }
@@ -78,14 +82,14 @@ public class UserProfileViewActivity extends AppCompatActivity {
             @Override
             public void onFailure(Exception e) {
                 if (!userController.isUserLoggedIn()){
-                    Toast.makeText(UserProfileViewActivity.this, "Session expired or account removed.", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(UserProfileViewActivity.this, WelcomeActivity.class);
+                    Toast.makeText(requireContext(), "Session expired or account removed.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(requireContext(), WelcomeActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                    finish();
+                    requireActivity().finish();
 
                 } else{
-                    Toast.makeText(UserProfileViewActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -93,31 +97,30 @@ public class UserProfileViewActivity extends AppCompatActivity {
         });
     }
 
-    private void setUpClickListener(){
-        findViewById(R.id.btnEditAvatar).setOnClickListener(v -> openEditProfile());
-        findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
+    private void setUpClickListener(View view){
+        view.findViewById(R.id.btnEditAvatar).setOnClickListener(v -> openEditProfile());
+        view.findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
 
         // Split the Notification Actions
-        findViewById(R.id.rowNotifications).setOnClickListener(v -> {
-            startActivity(new Intent(this, UserNotificationListView.class));
+        view.findViewById(R.id.rowNotifications).setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), UserNotificationListView.class));
         });
-        findViewById(R.id.rowNotificationSettings).setOnClickListener(v -> {
-            startActivity(new Intent(this, UserProfileSettingsViewActivity.class));
+        view.findViewById(R.id.rowNotificationSettings).setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), UserProfileSettingsViewActivity.class));
         });
 
-        findViewById(R.id.rowTC).setOnClickListener(v -> { /* TODO: Open Terms */ });
-        findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
+        view.findViewById(R.id.rowTC).setOnClickListener(v -> { /* TODO: Open Terms */ });
+        view.findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
-        BottomNavHelper.setupBottomNav(this);
     }
 
     private void openEditProfile(){
-        startActivity(new Intent(this, UserProfileEditViewActivity.class));
+        startActivity(new Intent(requireContext(), UserProfileEditViewActivity.class));
     }
 
     private void showDeleteConfirmDialog(){
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_profile_confirm, null);
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_profile_confirm, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -133,17 +136,17 @@ public class UserProfileViewActivity extends AppCompatActivity {
 //                    Toast.makeText(UserProfileViewActivity.this, "Account Deleted", Toast.LENGTH_SHORT).show();
 
                     // Navigate back to WelcomeActivity and clear the stack
-                    Intent intent = new Intent(UserProfileViewActivity.this, WelcomeActivity.class);
+                    Intent intent = new Intent(requireContext(), WelcomeActivity.class);
                     intent.putExtra("TOAST_MESSAGE", "Account Deleted!");  // pass to notify the user of what happened
 
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                    finish();
+                    requireActivity().finish();
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    Toast.makeText(UserProfileViewActivity.this, "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });

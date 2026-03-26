@@ -11,6 +11,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.zephyrevents.R;
@@ -29,7 +30,15 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
             return insets;
         });
 
-        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> {
+            FragmentManager fm = getSupportFragmentManager();
+            if (fm.getBackStackEntryCount() > 0) {
+                fm.popBackStack();
+            } else {
+                // Fallback if no fragment to pop, perhaps finish activity
+                finish();
+            }
+        });
         findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
 
         //  Check if we are editing an existing event
