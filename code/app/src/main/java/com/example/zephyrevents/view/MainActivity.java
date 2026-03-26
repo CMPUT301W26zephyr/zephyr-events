@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             routeIntent(getIntent(), null);
         }
+
+        updateBottomNavColors(activeFragment);
     }
 
     @Override
@@ -86,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void switchFragment(Fragment target) {
         if (activeFragment == target) return; // if already on target tab
-
+        while (fm.getBackStackEntryCount() > 0) {  // Exit any nested fragments
+            fm.popBackStackImmediate();
+        }
         fm.beginTransaction()
                 .hide(activeFragment)
                 .show(target)
@@ -125,4 +129,5 @@ public class MainActivity extends AppCompatActivity {
         if (homeFragment != null && !homeFragment.isHidden()) activeFragment = homeFragment;
         else if (myEventsFragment != null && !myEventsFragment.isHidden()) activeFragment = myEventsFragment;
         else if (profileFragment != null && !profileFragment.isHidden()) activeFragment = profileFragment;
-    }}
+    }
+}

@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
                 requireActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .replace(R.id.fragment_container, new EventsListFragment())
+                        .add(R.id.fragment_container, new EventsListFragment())
                         .addToBackStack(null)
                         .commit();
             });
@@ -83,7 +83,7 @@ public class HomeFragment extends Fragment {
                 requireActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .replace(R.id.fragment_container, new EventsListFragment())
+                        .add(R.id.fragment_container, new EventsListFragment())
                         .addToBackStack(null)
                         .commit();
             });
