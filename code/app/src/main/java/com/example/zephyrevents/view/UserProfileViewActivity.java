@@ -18,6 +18,14 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.util.BottomNavHelper;
 
+import android.text.TextUtils;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
+import com.bumptech.glide.Glide;
+
+
+
 /**
  * Activity that displays the user profile.
  * Allows navigation to viewing notifications, settings, and editing profile details.
@@ -30,6 +38,9 @@ public class UserProfileViewActivity extends AppCompatActivity {
     private TextView txtContact;
     private ImageView avatarImg;
 
+    private ActivityResultLauncher<PickVisualMediaRequest> pickProfileImage;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +51,26 @@ public class UserProfileViewActivity extends AppCompatActivity {
         txtName = findViewById(R.id.txtName);
         txtContact = findViewById(R.id.txtContact);
         avatarImg = findViewById(R.id.avatar_img);
+
+        pickProfileImage = registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(),
+                uri -> {
+                    if (uri == null) return;
+                    userController.updateProfileImg(uri, new RepositoryCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            Toast.makeText(UserProfileViewActivity.this, "Photo updated", Toast.LENGTH_SHORT).show();
+                            refreshProfile();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(UserProfileViewActivity.this,
+                                    "Upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+        );
 
 
 
@@ -73,6 +104,17 @@ public class UserProfileViewActivity extends AppCompatActivity {
                 txtName.setText(name.isEmpty() ? "John Doe" : name);
                 txtContact.setText(contactinfo);
 
+                String avatarUrl = (data != null && data.length > 4 && data[4] != null) ? data[4] : "";
+                if (!TextUtils.isEmpty(avatarUrl)){
+                    Glide.with(UserProfileViewActivity.this)
+                            .load(avatarUrl)
+                            .circleCrop()
+                            .into(avatarImg);
+                } else {
+                    avatarImg.setImageResource(R.drawable.ic_person_24);
+
+                }
+
             }
 
             @Override
@@ -94,7 +136,13 @@ public class UserProfileViewActivity extends AppCompatActivity {
     }
 
     private void setUpClickListener(){
-        findViewById(R.id.btnEditAvatar).setOnClickListener(v -> openEditProfile());
+        findViewById(R.id.btnEditAvatar).setOnClickListener(v ->
+                pickProfileImage.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build()
+                ));
+
+
         findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
 
         // Split the Notification Actions

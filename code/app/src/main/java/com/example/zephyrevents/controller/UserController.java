@@ -7,6 +7,10 @@ import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
 import java.util.UUID;
+import android.net.Uri;
+import com.example.zephyrevents.repository.ProfileImageRepository;
+
+
 
 /**
  * Controller that manages logic related to users, user profiles, and session state.
@@ -15,6 +19,8 @@ import java.util.UUID;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final ProfileImageRepository profileImageRepository;
+
     private final SharedPreferences prefs;
 
     private static final String PREF_NAME = "AppPrefs";
@@ -27,7 +33,9 @@ public class UserController {
      */
     public UserController(Context context) {
         this.userRepository = new UserRepository();
+        this.profileImageRepository = new ProfileImageRepository();
         this.prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
     }
 
     /**
@@ -39,6 +47,7 @@ public class UserController {
     @androidx.annotation.VisibleForTesting
     public UserController(UserRepository userRepository, SharedPreferences prefs) {
         this.userRepository = userRepository;
+        this.profileImageRepository = null;
         this.prefs = prefs;
     }
 
@@ -218,7 +227,7 @@ public class UserController {
 
     /**
      * Convenience: Retrieves profile info of current session's user as a String array
-     * Order: 0: Name, 1: Email, 2: Phone; 3: Country
+     * Order: 0: Name, 1: Email, 2: Phone; 3: Country, 4: AvatarUrl
      *
      * @param callback  A RepositoryCallback to handle success or failure
      */
@@ -235,12 +244,64 @@ public class UserController {
                 String email = (ci != null && ci.getEmail() != null) ? ci.getEmail() : "";
                 String phone = (ci != null && ci.getPhone() != null) ? ci.getPhone() : "";
                 String country = user.getLocation() == null ? "" : user.getLocation();
-                callback.onSuccess(new String[]{ name, email, phone, country });
+                String avatarUrl = user.getAvatarUrl() == null ? "" : user.getAvatarUrl();
+                callback.onSuccess(new String[]{ name, email, phone, country, avatarUrl });
             }
             @Override
             public void onFailure(Exception e) {
                 callback.onFailure(e);
             }
+        });
+    }
+
+    public void updateProfileImg(Uri imageUri, RepositoryCallback<Void> callback){
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            callback.onFailure(new Exception("No user found"));
+            return;
+        }
+        if(profileImageRepository == null){
+            callback.onFailure(new Exception("Profile image not available"));
+            return;
+        }
+        profileImageRepository.uploadProfileImage(imageUri, userId, new RepositoryCallback<String>(){
+            @Override
+            public void onSuccess(String downloadUrl){
+                fetchCurrentUser(new RepositoryCallback<User>() {
+                    @Override
+                    public void onSuccess(User result) {
+                        if (result == null){
+                            callback.onFailure(new Exception("User not found"));
+                            return;
+                        }
+                        result.setAvatarUrl(downloadUrl);
+                        userRepository.saveUser(result, new RepositoryCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                callback.onSuccess(null);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                callback.onFailure(e);
+
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+
+                    }
+                });
+            }
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+
         });
     }
 }
