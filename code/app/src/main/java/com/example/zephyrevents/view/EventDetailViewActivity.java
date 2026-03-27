@@ -99,6 +99,15 @@ public class EventDetailViewActivity extends AppCompatActivity {
             });
         }
 
+        LinearLayout btnGenerateQr = findViewById(R.id.btn_generate_qr);
+        if (btnGenerateQr != null) {
+            String finalEventId = eventId;
+            btnGenerateQr.setOnClickListener(v -> {
+                EventQrCodeFragment qrCodeFragment = EventQrCodeFragment.newInstance(finalEventId);
+                qrCodeFragment.show(getSupportFragmentManager(), "qr_code_dialog");
+            });
+        }
+
         EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
             @Override
             public void onSuccess(Event result) {

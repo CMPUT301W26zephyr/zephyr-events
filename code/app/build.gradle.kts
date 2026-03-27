@@ -69,6 +69,9 @@ dependencies {
     // Splash screen api
     implementation("androidx.core:core-splashscreen:1.2.0")
 
+    // QR Codes
+    implementation("com.google.zxing:core:3.5.4")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
 
 // Gemini 3.1 Pro Preview, Google AiStudio, "What is the best way to fix this issue? Adding:
