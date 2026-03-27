@@ -96,7 +96,6 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, OrganizerEventAddEditView.class);
                 intent.putExtra("EXTRA_EDIT_EVENT_ID", event.getEventId());
                 startActivity(intent);
-                finish();
             });
         }
 
@@ -115,6 +114,23 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    // For refreshing upon returning to the page (e.g. from editing)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String eventId = getIntent().getStringExtra(EXTRA_EVENT);
+        if (eventId != null) {
+            EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
+                @Override
+                public void onSuccess(Event result) {
+                    event = result;
+                    populateUI();
+                }
+                @Override public void onFailure(Exception e) {}
+            });
+        }
     }
 
     private void findViews() {
