@@ -35,7 +35,15 @@
 
         <activity
             android:name=".view.EventDetailViewActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter android:label="Open Event">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="zephyrevents" android:host="eventdetails" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".view.OrganizerEventAddEditView"

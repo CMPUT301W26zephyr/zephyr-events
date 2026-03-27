@@ -1,6 +1,7 @@
 package com.example.zephyrevents.view;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -64,6 +65,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
+
+        // Handle link parameter (e.g. from qr code)
+        if (eventId == null) {
+            Uri data = getIntent().getData();
+            if (data != null) {
+                eventId = data.getQueryParameter("id");
+            }
+        }
 
         if (eventId == null) {
             Toast.makeText(this, "Error: No Event ID provided.", Toast.LENGTH_SHORT).show();
