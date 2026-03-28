@@ -132,8 +132,18 @@ public class HomeFragment extends Fragment {
                 featuredEvents.clear();
 
                 if (result != null && !result.isEmpty()) {
+                    List<Event> publicOnly = new ArrayList<>();
+                    for (Event e : result) {
+                        if (e != null && !e.isPrivateEvent()) {
+                            publicOnly.add(e);
+                        }
+                    }
+                    if (publicOnly.isEmpty()) {
+                        adapter.notifyDataSetChanged();
+                        return;
+                    }
                     // Create a copy of the list, shuffle, select up to 3 events
-                    List<Event> shuffledList = new ArrayList<>(result);
+                    List<Event> shuffledList = new ArrayList<>(publicOnly);
                     Collections.shuffle(shuffledList);
                     int limit = Math.min(3, shuffledList.size());
                     for (int i = 0; i < limit; i++) {

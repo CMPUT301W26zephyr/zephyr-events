@@ -65,6 +65,10 @@
             android:name=".view.EventStatusActivity"
             android:exported="true" />
 
+        <activity
+            android:name=".view.InviteUsersActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

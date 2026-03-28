@@ -10,6 +10,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Repository class for managing User data in Firestore.
@@ -184,6 +189,53 @@ public class UserRepository {
      * @param optOut    true to opt-out, false to opt-in.
      * @param callback  handles result
      */
+    /**
+     * Client-side search across name, email, and phone (substring match). Suitable for small user bases.
+     */
+    public void searchUsers(String query, RepositoryCallback<List<User>> callback) {
+        if (query == null || query.trim().isEmpty()) {
+            callback.onSuccess(new ArrayList<>());
+            return;
+        }
+        final String q = query.trim().toLowerCase(Locale.getDefault());
+        db.collection(Collections.USERS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<User> out = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        User u = doc.toObject(User.class);
+                        if (u == null) continue;
+                        if (u.getId() == null) u.setId(doc.getId());
+                        if (matchesUserQuery(u, q)) {
+                            out.add(u);
+                        }
+                    }
+                    callback.onSuccess(out);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    private static boolean matchesUserQuery(User u, String q) {
+        if (u.getName() != null && u.getName().toLowerCase(Locale.getDefault()).contains(q)) {
+            return true;
+        }
+        if (u.getContactInfo() != null) {
+            String email = u.getContactInfo().getEmail();
+            if (email != null && email.toLowerCase(Locale.getDefault()).contains(q)) {
+                return true;
+            }
+            String phone = u.getContactInfo().getPhone();
+            if (phone != null) {
+                String digits = phone.replaceAll("\\D", "");
+                String qDigits = q.replaceAll("\\D", "");
+                if (!qDigits.isEmpty() && digits.contains(qDigits)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void updateNotificationOptOut(User user, String userId,
                                          boolean optOut,
                                          RepositoryCallback<Void> callback) {

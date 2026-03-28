@@ -132,6 +132,31 @@ public class MyEventsFragment extends Fragment {
                             }
                         }
 
+                        // 3. Co-organizer events (same dummy pattern; adapter shows ORGANIZER badge)
+                        for (Event event : allEvents) {
+                            if (event.getCoOrganizerUserIds() != null
+                                    && event.getCoOrganizerUserIds().contains(currentUserId)
+                                    && !currentUserId.equals(event.getOrganizerId())) {
+                                boolean alreadyInList = false;
+                                for (WaitlistEntry w : waitlists) {
+                                    if (w.getEventId().equals(event.getEventId())) alreadyInList = true;
+                                }
+                                for (WaitlistEntry w : lotteries) {
+                                    if (w.getEventId().equals(event.getEventId())) alreadyInList = true;
+                                }
+                                for (WaitlistEntry w : history) {
+                                    if (w.getEventId().equals(event.getEventId())) alreadyInList = true;
+                                }
+
+                                if (!alreadyInList) {
+                                    WaitlistEntry coEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0, 0, null);
+                                    long eventTime = event.getTime() != null ? event.getTime().getStartTime() : 0;
+                                    if (eventTime > currentTime) lotteries.add(coEntry);
+                                    else history.add(coEntry);
+                                }
+                            }
+                        }
+
                         lotteryAdapter = new MyEventListAdapter(requireContext(), lotteries);
                         historyAdapter = new MyEventListAdapter(requireContext(), history);
 

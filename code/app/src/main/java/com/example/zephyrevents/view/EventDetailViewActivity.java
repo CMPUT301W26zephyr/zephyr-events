@@ -321,8 +321,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private void attachCommentsListener() {
         detachCommentsListener();
         if (event == null) return;
-        boolean isOrganizer = currentUserId != null && currentUserId.equals(event.getOrganizerId());
-        commentAdapter.setOrganizerContext(event.getOrganizerId(), isOrganizer);
+        boolean isManagingUser = currentUserId != null
+                && (currentUserId.equals(event.getOrganizerId())
+                || (event.getCoOrganizerUserIds() != null && event.getCoOrganizerUserIds().contains(currentUserId)));
+        commentAdapter.setOrganizerContext(event.getOrganizerId(), isManagingUser);
         commentsRegistration = commentRepository.listenToEventComments(event.getEventId(), new RepositoryCallback<List<EventComment>>() {
             @Override
             public void onSuccess(List<EventComment> result) {
@@ -442,14 +444,44 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_swimming));
 
         boolean isOrganizer = currentUserId != null && currentUserId.equals(event.getOrganizerId());
+        boolean isCoOrganizer = event.getCoOrganizerUserIds() != null
+                && currentUserId != null
+                && event.getCoOrganizerUserIds().contains(currentUserId);
+        boolean isManagingUser = isOrganizer || isCoOrganizer;
+
+        TextView badgePrivate = findViewById(R.id.badge_private_event);
+        if (badgePrivate != null) {
+            badgePrivate.setVisibility(event.isPrivateEvent() ? View.VISIBLE : View.GONE);
+        }
+
+        View manageQr = findViewById(R.id.manage_row_qr);
+        if (manageQr != null) {
+            manageQr.setVisibility(isManagingUser && !event.isPrivateEvent() ? View.VISIBLE : View.GONE);
+        }
 
         MaterialCardView organizerCard = findViewById(R.id.organizer_card);
         if (organizerCard != null) {
             organizerCard.setOnClickListener(v -> { /* reserved: organizer profile */ });
         }
 
-        if (isOrganizer) {
-            organizerName.setText("You");
+        if (isManagingUser) {
+            if (isOrganizer) {
+                organizerName.setText("You");
+            } else if (event.getOrganizerId() != null) {
+                userRepository.getUserById(event.getOrganizerId(), new RepositoryCallback<User>() {
+                    @Override
+                    public void onSuccess(User user) {
+                        organizerName.setText(user != null && user.getName() != null ? user.getName() : "Organizer");
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        organizerName.setText("Organizer");
+                    }
+                });
+            } else {
+                organizerName.setText("Organizer");
+            }
             tabManage.setVisibility(View.VISIBLE);
             sectionManage.setVisibility(View.VISIBLE);
             attendeeButtonsContainer.setVisibility(View.VISIBLE);
@@ -520,8 +552,15 @@ public class EventDetailViewActivity extends AppCompatActivity {
                     statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag));
                 }
 
-                if (!isOrganizer) {
-                    if (myEntry == null) {
+                if (!isManagingUser) {
+                    boolean pendingInvite = !"unknown_user".equals(currentUserId)
+                            && event.getPendingPrivateWaitlistInviteUserIds().contains(currentUserId);
+
+                    if (myEntry == null && pendingInvite) {
+                        showPrivateWaitlistInviteButtons();
+                    } else if (myEntry == null && event.isPrivateEvent() && !pendingInvite) {
+                        showPrivateEventNotInvited();
+                    } else if (myEntry == null) {
                         if (isClosedForNew) {
                             showWaitlistClosedButton(trueCapacityFull, lotteryRun, pastDeadline);
                         } else {
@@ -680,5 +719,73 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(null);
         buttonSecondary.setVisibility(View.GONE);
+    }
+
+    private void showPrivateEventNotInvited() {
+        buttonPrimary.setVisibility(View.VISIBLE);
+        buttonPrimary.setEnabled(false);
+        buttonPrimary.setText(R.string.private_event_need_invite);
+        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
+        buttonPrimary.setOnClickListener(null);
+        buttonSecondary.setVisibility(View.GONE);
+    }
+
+    private void showPrivateWaitlistInviteButtons() {
+        buttonPrimary.setVisibility(View.VISIBLE);
+        buttonPrimary.setEnabled(true);
+        buttonPrimary.setText(R.string.accept_invite);
+        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
+        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
+        buttonPrimary.setOnClickListener(v -> acceptPrivateWaitlistInvite());
+
+        buttonSecondary.setVisibility(View.VISIBLE);
+        buttonSecondary.setText(R.string.decline_invite);
+        buttonSecondary.setOnClickListener(v -> declinePrivateWaitlistInvite());
+    }
+
+    private void acceptPrivateWaitlistInvite() {
+        if (event == null || "unknown_user".equals(currentUserId)) return;
+        event.getPendingPrivateWaitlistInviteUserIds().remove(currentUserId);
+        EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
+                new WaitlistRepository().addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void r) {
+                        Toast.makeText(EventDetailViewActivity.this, "Joined waitlist!", Toast.LENGTH_SHORT).show();
+                        populateUI();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EventDetailViewActivity.this, "Could not join waitlist.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EventDetailViewActivity.this, "Could not update event.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void declinePrivateWaitlistInvite() {
+        if (event == null || "unknown_user".equals(currentUserId)) return;
+        event.getPendingPrivateWaitlistInviteUserIds().remove(currentUserId);
+        EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                Toast.makeText(EventDetailViewActivity.this, "Invitation declined", Toast.LENGTH_SHORT).show();
+                populateUI();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EventDetailViewActivity.this, "Could not update event.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
