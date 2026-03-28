@@ -25,5 +25,7 @@
     <color name="light_stroke">#ECECEC</color>
     <color name="text_secondary">#7A7A7A</color>
     <color name="danger">#D93B3B</color>
+    <!-- TikTok-style creator badge on comments -->
+    <color name="creator_badge_blue">#5BA3E8</color>
 
 </resources>
