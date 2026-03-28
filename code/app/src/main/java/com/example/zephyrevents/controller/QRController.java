@@ -1,11 +1,15 @@
 package com.example.zephyrevents.controller;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.widget.Toast;
 
 import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.view.EventDetailViewActivity;
@@ -15,6 +19,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import java.io.OutputStream;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -68,6 +73,7 @@ public class QRController {
             return bitmap;
 
         } catch (WriterException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -89,5 +95,40 @@ public class QRController {
             }
         }
         return null;
+    }
+
+    public static void saveQRCodeImage(Context context, Bitmap qrBitmap, String eventId) {
+        String filename = "EventQR_" + eventId + "_" + System.currentTimeMillis() + ".png";
+        OutputStream fos;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+
+            // NOTE: Android 10 and above
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/ZephyrEvents");
+            values.put(MediaStore.Images.Media.IS_PENDING, 1);
+            Uri imageUri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            if (imageUri != null) {
+                fos = context.getContentResolver().openOutputStream(imageUri);
+                assert fos != null;
+                qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.close();
+
+                // Release the "pending" status for Android 10+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    values.clear();
+                    values.put(MediaStore.Images.Media.IS_PENDING, 0);
+                    context.getContentResolver().update(imageUri, values, null, null);
+                }
+
+                Toast.makeText(context, "QR Code saved to Gallery in Pictures/ZephyrEvents", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Failed to save image", Toast.LENGTH_SHORT).show();
+        }
     }
 }

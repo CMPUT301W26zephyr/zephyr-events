@@ -1,6 +1,7 @@
 package com.example.zephyrevents.view;
 
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
@@ -65,7 +66,10 @@ public class EventQrCodeFragment extends DialogFragment {
         ImageButton back = view.findViewById(R.id.button_back);
         if (back != null) back.setOnClickListener(v -> dismiss());
 
-        // Get QR Code
+        ImageButton download = view.findViewById(R.id.button_download);
+        if (download != null) download.setOnClickListener(v -> QRController.saveQRCodeImage(v.getContext(), qrBitmap, eventID));
+
+        // Set QR Code
         ImageView qrImageView = view.findViewById(R.id.image_qr_code);
         if (qrBitmap != null) {
             qrImageView.setImageBitmap(qrBitmap);
