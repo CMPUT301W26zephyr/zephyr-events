@@ -1,6 +1,7 @@
 package com.example.zephyrevents.view;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -65,6 +66,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
 
+        // Handle link parameter (e.g. from qr code)
+        if (eventId == null) {
+            Uri data = getIntent().getData();
+            if (data != null) {
+                eventId = data.getQueryParameter("id");
+            }
+        }
+
         if (eventId == null) {
             Toast.makeText(this, "Error: No Event ID provided.", Toast.LENGTH_SHORT).show();
             finish();
@@ -87,7 +96,15 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, OrganizerEventAddEditView.class);
                 intent.putExtra("EXTRA_EDIT_EVENT_ID", event.getEventId());
                 startActivity(intent);
-                finish();
+            });
+        }
+
+        LinearLayout btnGenerateQr = findViewById(R.id.btn_generate_qr);
+        if (btnGenerateQr != null) {
+            String finalEventId = eventId;
+            btnGenerateQr.setOnClickListener(v -> {
+                EventQrCodeFragment qrCodeFragment = EventQrCodeFragment.newInstance(finalEventId);
+                qrCodeFragment.show(getSupportFragmentManager(), "qr_code_dialog");
             });
         }
 
@@ -106,6 +123,23 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    // For refreshing upon returning to the page (e.g. from editing)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String eventId = getIntent().getStringExtra(EXTRA_EVENT);
+        if (eventId != null) {
+            EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
+                @Override
+                public void onSuccess(Event result) {
+                    event = result;
+                    populateUI();
+                }
+                @Override public void onFailure(Exception e) {}
+            });
+        }
     }
 
     private void findViews() {

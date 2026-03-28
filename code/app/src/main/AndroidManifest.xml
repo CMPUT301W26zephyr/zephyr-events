@@ -14,57 +14,60 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
-        
+        <activity
+            android:name=".view.QrScannerActivity"
+            android:exported="false" />
         <activity
             android:name=".view.SignUpActivity"
             android:exported="false" />
-        
         <activity
             android:name=".view.WelcomeActivity"
-            android:theme="@style/Theme.App.Starting"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.MainActivity"
             android:exported="false" />
-
         <activity
             android:name=".view.EventDetailViewActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter android:label="Open Event">
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="eventdetails"
+                    android:scheme="zephyrevents" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".view.OrganizerEventAddEditView"
             android:exported="true" />
-
         <activity
             android:name=".view.OrganizerEntrantsListView"
             android:exported="true" />
-
         <activity
             android:name=".view.UserNotificationListView"
             android:exported="true" />
-
         <activity
             android:name=".view.FilterEventsActivity"
             android:exported="true" />
-
         <activity
             android:name=".view.UserProfileSettingsViewActivity"
             android:exported="true" />
-
         <activity
             android:name=".view.UserProfileEditViewActivity"
             android:exported="true" />
-
         <activity
             android:name=".view.EventStatusActivity"
             android:exported="true" />
-
     </application>
 
 </manifest>
