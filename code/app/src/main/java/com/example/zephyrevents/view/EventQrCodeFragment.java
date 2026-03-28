@@ -1,14 +1,15 @@
 package com.example.zephyrevents.view;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.QRController;
@@ -16,9 +17,8 @@ import com.example.zephyrevents.controller.QRController;
 /**
  */
 public class EventQrCodeFragment extends DialogFragment {
-    private QRController qrController;
     private String eventID;
-
+    private Bitmap qrBitmap;
     public EventQrCodeFragment() {}
 
     /**
@@ -40,9 +40,9 @@ public class EventQrCodeFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
 
-        this.qrController = new QRController();
         if (getArguments() != null) {
             this.eventID = getArguments().getString("id");
+            qrBitmap = QRController.generateEventQRCode(eventID, 220);  // generate asap
         }
     }
 
@@ -64,6 +64,12 @@ public class EventQrCodeFragment extends DialogFragment {
 
         ImageButton back = view.findViewById(R.id.button_back);
         if (back != null) back.setOnClickListener(v -> dismiss());
+
+        // Get QR Code
+        ImageView qrImageView = view.findViewById(R.id.image_qr_code);
+        if (qrBitmap != null) {
+            qrImageView.setImageBitmap(qrBitmap);
+        }
 
         return view;
     }
