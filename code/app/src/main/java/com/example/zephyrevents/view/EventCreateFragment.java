@@ -12,6 +12,7 @@ import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -71,6 +72,35 @@ public class EventCreateFragment extends Fragment {
         CalendarView calEvent = view.findViewById(R.id.calendar_event);
         TextView textRegPeriod = view.findViewById(R.id.text_reg_period);
         TextView textEvent = view.findViewById(R.id.text_event_date);
+        TimePicker timePicker = view.findViewById(R.id.timePicker);
+        timePicker.setOnTimeChangedListener((view1, hourOfDay, minute) -> {
+
+            int hour = hourOfDay;
+            String amPm;
+
+            if (hour == 0) {
+                hour += 12;
+                amPm = "AM";
+            } else if (hour == 12) {
+                amPm = "PM";
+            } else if (hour > 12) {
+                hour -= 12;
+                amPm = "PM";
+            } else {
+                amPm = "AM";
+            }
+
+            String formattedHour = (hour < 10) ? "0" + hour : String.valueOf(hour);
+            String formattedMinute = (minute < 10) ? "0" + minute : String.valueOf(minute);
+
+            String msg = formattedHour + ":" + formattedMinute + " " + amPm;
+
+            // 🔥 You decide what to do with this:
+            Toast.makeText(requireContext(), "Time: " + msg, Toast.LENGTH_SHORT).show();
+
+            // OR store it in your ViewModel
+            //viewModel.selectedTime = msg;
+        });
 
         Button btnDelete = view.findViewById(R.id.btn_delete_event);
 
@@ -209,6 +239,8 @@ public class EventCreateFragment extends Fragment {
             textEvent.setTextColor(Color.parseColor("#888888"));
         });
 
+
+
         // 5. VALIDATION AND NAVIGATION
         String topBarTitle = viewModel.isEditMode ? "Edit Event" : "Create Event";
 
@@ -246,6 +278,7 @@ public class EventCreateFragment extends Fragment {
                 }
         );
     }
+
 
     private void updateRegistrationText(TextView textView) {
         String startText = selectedStartDate.isEmpty() ? "..." : selectedStartDate;

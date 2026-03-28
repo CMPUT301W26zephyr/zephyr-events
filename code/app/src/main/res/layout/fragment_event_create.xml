@@ -264,6 +264,14 @@
                     android:layout_height="wrap_content"
                     android:theme="@style/CustomInlineCalendar" />
             </androidx.cardview.widget.CardView>
+            <TimePicker
+                android:id="@+id/timePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="24dp"
+                android:timePickerMode="spinner"
+                android:layout_gravity="center" />
+
 
             <TextView
                 android:id="@+id/text_event_date"
