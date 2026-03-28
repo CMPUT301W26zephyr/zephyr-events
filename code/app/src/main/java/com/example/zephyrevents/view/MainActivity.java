@@ -5,13 +5,20 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.QRController;
 import com.google.android.material.transition.MaterialSharedAxis;
+import com.journeyapps.barcodescanner.CaptureActivity;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +27,21 @@ public class MainActivity extends AppCompatActivity {
     private Fragment profileFragment;
     private Fragment activeFragment;
     private final FragmentManager fm = getSupportFragmentManager();
+
+    // QR Code scanner
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(
+            new ScanContract(),
+            result -> {
+                if (result.getContents() != null) {
+                    Intent eventIntent = QRController.getEventIntentFromUri(this, result.getContents());
+
+                    if (eventIntent != null) {
+                        startActivity(eventIntent);
+                    } else {
+                        Toast.makeText(this, "Invalid QR Code", Toast.LENGTH_SHORT).show();
+                    }                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +104,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.nav_scan_qr).setOnClickListener(v -> {
-            // TODO
+            ScanOptions options = new ScanOptions();
+            options.setPrompt("Scan an Event QR Code");
+            options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+            options.setBeepEnabled(true);
+            options.setOrientationLocked(true);
+            options.setCaptureActivity(QrScannerActivity.class);
+            barcodeLauncher.launch(options);
         });
     }
 

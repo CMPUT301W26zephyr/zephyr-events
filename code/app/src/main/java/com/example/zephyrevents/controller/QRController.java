@@ -1,11 +1,14 @@
 package com.example.zephyrevents.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 
 import com.example.zephyrevents.repository.UserRepository;
+import com.example.zephyrevents.view.EventDetailViewActivity;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -67,5 +70,24 @@ public class QRController {
         } catch (WriterException e) {
             return null;
         }
+    }
+
+    /**
+     * Parses a scanned string from an Event QR code and returns an Intent to its DetailViewActivity
+     * @param context Context for making Intent
+     * @param rawUri Raw uri
+     */
+    public static Intent getEventIntentFromUri(Context context, String rawUri) {
+        if (rawUri.startsWith(EVENT_LINK_PREFIX)) {
+            Uri uri = Uri.parse(rawUri);
+            String eventId = uri.getQueryParameter("id");
+
+            if (eventId != null) {
+                Intent intent = new Intent(context, EventDetailViewActivity.class);
+                intent.putExtra("EVENT_ID", eventId);
+                return intent;
+            }
+        }
+        return null;
     }
 }
