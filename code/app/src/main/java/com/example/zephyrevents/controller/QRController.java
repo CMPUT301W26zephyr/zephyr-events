@@ -90,7 +90,7 @@ public class QRController {
 
             if (eventId != null) {
                 Intent intent = new Intent(context, EventDetailViewActivity.class);
-                intent.putExtra("EVENT_ID", eventId);
+            intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, eventId);
                 return intent;
             }
         }

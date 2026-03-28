@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             ScanOptions options = new ScanOptions();
             options.setPrompt("Scan an Event QR Code");
             options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
-            options.setBeepEnabled(true);
+            options.setBeepEnabled(false);
             options.setOrientationLocked(true);
             options.setCaptureActivity(QrScannerActivity.class);
             barcodeLauncher.launch(options);
