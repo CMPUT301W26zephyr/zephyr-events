@@ -18,6 +18,7 @@ import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -131,11 +132,18 @@ public class EventConfirmationFragment extends Fragment {
                     eventLoc.setLocationString(displayLocation);
                     newEvent.setLocation(eventLoc);
 
-                    // Parse the dates into EventTime format
-                    SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault());
+                    // Parse the dates into EventTime format using the FULL formatter including time
+                    SimpleDateFormat sdfFull = new SimpleDateFormat("MMM d, yyyy, h:mm a", java.util.Locale.getDefault());
+                    SimpleDateFormat sdfDateOnly = new SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault());
+
                     try {
                         if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
-                            Date eDate = sdf.parse(viewModel.eventDate);
+                            Date eDate = null;
+                            try {
+                                eDate = sdfFull.parse(viewModel.eventDate);
+                            } catch (ParseException e) {
+                                eDate = sdfDateOnly.parse(viewModel.eventDate); // Fallback for old data
+                            }
                             if (eDate != null) {
                                 com.example.zephyrevents.model.EventTime time = new com.example.zephyrevents.model.EventTime(eDate.getTime(), eDate.getTime() + 7200000);
                                 newEvent.setTime(time);
@@ -143,7 +151,12 @@ public class EventConfirmationFragment extends Fragment {
                         }
                         if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
                             String[] parts = viewModel.registrationPeriod.split(" - ");
-                            Date regEnd = sdf.parse(parts[1]);
+                            Date regEnd = null;
+                            try {
+                                regEnd = sdfFull.parse(parts[1]);
+                            } catch (ParseException e) {
+                                regEnd = sdfDateOnly.parse(parts[1]); // Fallback for old data
+                            }
                             if (regEnd != null) newEvent.setRegistrationEndTime(regEnd.getTime());
                         }
                     } catch (Exception e) { e.printStackTrace(); }

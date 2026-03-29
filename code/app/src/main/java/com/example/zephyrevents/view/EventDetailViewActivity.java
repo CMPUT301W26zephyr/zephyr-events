@@ -441,7 +441,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
 
         if (event.getTime() != null && event.getTime().getStartTime() > 0) {
-            eventDate.setText(new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getTime().getStartTime())));
+            eventDate.setText(new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault()).format(new Date(event.getTime().getStartTime())));
         } else {
             eventDate.setText(getString(R.string.date));
         }
@@ -466,7 +466,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         }
 
         if (event.getRegistrationEndTime() > 0) {
-            waitlistRegistrationEnds.setText(new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getRegistrationEndTime())));
+            waitlistRegistrationEnds.setText(new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault()).format(new Date(event.getRegistrationEndTime())));
         } else {
             waitlistRegistrationEnds.setText("N/A");
         }

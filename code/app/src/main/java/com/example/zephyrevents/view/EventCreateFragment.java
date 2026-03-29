@@ -13,6 +13,7 @@ import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,10 +40,32 @@ public class EventCreateFragment extends Fragment {
 
     private EventViewModel viewModel;
 
-    // Date Tracking
-    private String selectedStartDate = "";
-    private String selectedEndDate = "";
-    private String selectedEventDate = "";
+    // Use Calendars to precisely track exact milliseconds for validation
+    private final Calendar regStartCal = Calendar.getInstance();
+    private final Calendar regEndCal = Calendar.getInstance();
+    private final Calendar eventCal = Calendar.getInstance();
+
+    // Formatters to include both date and time for the UI and ViewModel
+    private final SimpleDateFormat sdfFull = new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault());
+    private final SimpleDateFormat sdfDateOnly = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+
+    private Button nextButton;
+
+    // Track if user has interacted with the calendars so we don't prematurely validate empty forms
+    private boolean startSelected = false;
+    private boolean endSelected = false;
+    private boolean eventSelected = false;
+
+    // Grab references for auto-scrolling and validation
+    private HorizontalScrollView scrollRegistration;
+    private View columnRegEnd;
+    private View columnEvent;
+    private CalendarView calStart, calEnd, calEvent;
+    private TimePicker timeStart, timeEnd, timeEvent;
+
+    // Class-level variables so validateDates() can access them
+    private TextView textRegPeriod;
+    private TextView textEvent;
 
     @Nullable
     @Override
@@ -55,7 +78,7 @@ public class EventCreateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
 
-        // 1. DEFINE ALL UI ELEMENTS FIRST so they can be used anywhere below
+        // 1. DEFINE ALL UI ELEMENTS
         EditText inputTitle = view.findViewById(R.id.input_event_title);
         AutoCompleteTextView dropdownType = view.findViewById(R.id.eventTypeDropdown);
         EditText inputPrice = view.findViewById(R.id.input_event_price);
@@ -67,13 +90,23 @@ public class EventCreateFragment extends Fragment {
         EditText inputAddress = view.findViewById(R.id.input_address);
         SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
 
-        HorizontalScrollView scrollRegistration = view.findViewById(R.id.scroll_registration);
-        View columnRegEnd = view.findViewById(R.id.column_reg_end);
-        CalendarView calStart = view.findViewById(R.id.calendar_reg_start);
-        CalendarView calEnd = view.findViewById(R.id.calendar_reg_end);
-        CalendarView calEvent = view.findViewById(R.id.calendar_event);
-        TextView textRegPeriod = view.findViewById(R.id.text_reg_period);
-        TextView textEvent = view.findViewById(R.id.text_event_date);
+        textRegPeriod = view.findViewById(R.id.text_reg_period);
+        textEvent = view.findViewById(R.id.text_event_date);
+
+        scrollRegistration = view.findViewById(R.id.scroll_registration);
+        columnRegEnd = view.findViewById(R.id.column_reg_end);
+        columnEvent = view.findViewById(R.id.column_event_date);
+
+        calStart = view.findViewById(R.id.calendar_reg_start);
+        timeStart = view.findViewById(R.id.time_reg_start);
+
+        calEnd = view.findViewById(R.id.calendar_reg_end);
+        timeEnd = view.findViewById(R.id.time_reg_end);
+
+        calEvent = view.findViewById(R.id.calendar_event);
+        timeEvent = view.findViewById(R.id.time_event);
+
+        nextButton = requireActivity().findViewById(R.id.next_button);
 
         Button btnDelete = view.findViewById(R.id.btn_delete_event);
         MaterialButtonToggleGroup toggleVisibility = view.findViewById(R.id.toggle_event_visibility);
@@ -131,7 +164,6 @@ public class EventCreateFragment extends Fragment {
                 });
             });
 
-            // Fetch the existing event from Firebase if we haven't loaded it yet
             if (!viewModel.isDataLoaded) {
                 EventController.getInstance().getEventById(viewModel.eventId, new RepositoryCallback<Event>() {
                     @Override
@@ -144,7 +176,6 @@ public class EventCreateFragment extends Fragment {
                             viewModel.organizerId = e.getOrganizerId();
                             viewModel.originalApplicants = e.getCurrentApplicants();
 
-                            // Separate the address from the location string if parenthesis exist
                             if (e.getLocation() != null && e.getLocation().getLocationString() != null) {
                                 String fullLoc = e.getLocation().getLocationString();
                                 if (fullLoc.contains("(") && fullLoc.contains(")")) {
@@ -157,12 +188,22 @@ public class EventCreateFragment extends Fragment {
                                 }
                             }
 
+                            long regEnd = e.getRegistrationEndTime();
+                            long eventTime = e.getTime() != null ? e.getTime().getStartTime() : 0;
+
+                            if (regEnd > 0 && eventTime > 0) {
+                                // Mocking regStart for old data safety
+                                viewModel.registrationPeriod = sdfFull.format(new Date(System.currentTimeMillis())) + " - " + sdfFull.format(new Date(regEnd));
+                                viewModel.eventDate = sdfFull.format(new Date(eventTime));
+
+                                restoreCalendarState(calStart, timeStart, calEnd, timeEnd, calEvent, timeEvent);
+                            }
+
                             viewModel.isDataLoaded = true;
                             viewModel.privateEvent = e.isPrivateEvent();
                             viewModel.coOrganizerUserIds = new ArrayList<>(e.getCoOrganizerUserIds());
                             viewModel.pendingPrivateWaitlistInviteUserIds = new ArrayList<>(e.getPendingPrivateWaitlistInviteUserIds());
 
-                            // Push downloaded data directly to UI
                             inputTitle.setText(viewModel.title);
                             inputPrice.setText(viewModel.price);
                             inputDesc.setText(viewModel.description);
@@ -185,7 +226,7 @@ public class EventCreateFragment extends Fragment {
             btnDelete.setVisibility(View.GONE);
         }
 
-        // 3. RESTORE EXISTING VIEWMODEL DATA (If returning from confirmation screen)
+        // 3. RESTORE EXISTING VIEWMODEL DATA
         inputTitle.setText(viewModel.title);
         dropdownType.setText(viewModel.type, false);
         inputPrice.setText(viewModel.price);
@@ -196,61 +237,19 @@ public class EventCreateFragment extends Fragment {
         inputAddress.setText(viewModel.address);
         switchGeo.setChecked(viewModel.requireGeolocation);
 
-        // 4. SETUP CALENDARS
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+        // 4. SETUP CALENDARS AND TIME PICKERS
         long today = System.currentTimeMillis() - 1000;
-        calStart.setMinDate(today);
-        calEnd.setMinDate(today);
-        calEvent.setMinDate(today);
+        if (!viewModel.isEditMode) {
+            calStart.setMinDate(today);
+            calEnd.setMinDate(today);
+            calEvent.setMinDate(today);
+        }
 
-        restoreCalendarState(calStart, calEnd, calEvent, textRegPeriod, textEvent, sdf);
+        setupDateAndTime(calStart, timeStart, regStartCal, 1);
+        setupDateAndTime(calEnd, timeEnd, regEndCal, 2);
+        setupDateAndTime(calEvent, timeEvent, eventCal, 3);
 
-        calStart.setOnDateChangeListener((calView, year, month, dayOfMonth) -> {
-            Calendar c = Calendar.getInstance(); c.set(year, month, dayOfMonth);
-            long selectedMillis = c.getTimeInMillis();
-            selectedStartDate = sdf.format(c.getTime());
-            updateRegistrationText(textRegPeriod);
-
-            calEnd.setMinDate(selectedMillis);
-            if (calEnd.getDate() < selectedMillis) {
-                calEnd.setDate(selectedMillis, true, true);
-                selectedEndDate = "";
-                updateRegistrationText(textRegPeriod);
-            }
-
-            if (calEvent.getMinDate() < selectedMillis) {
-                calEvent.setMinDate(selectedMillis);
-                if (calEvent.getDate() < selectedMillis) {
-                    calEvent.setDate(selectedMillis, true, true);
-                    selectedEventDate = "";
-                    textEvent.setText("Select an event date above");
-                    textEvent.setTextColor(Color.parseColor("#F44336"));
-                }
-            }
-            scrollRegistration.post(() -> scrollRegistration.smoothScrollTo(columnRegEnd.getLeft(), 0));
-        });
-
-        calEnd.setOnDateChangeListener((calView, year, month, dayOfMonth) -> {
-            Calendar c = Calendar.getInstance(); c.set(year, month, dayOfMonth);
-            long selectedMillis = c.getTimeInMillis();
-            selectedEndDate = sdf.format(c.getTime());
-            updateRegistrationText(textRegPeriod);
-
-            calEvent.setMinDate(selectedMillis);
-            if (calEvent.getDate() < selectedMillis) {
-                calEvent.setDate(selectedMillis, true, true);
-                selectedEventDate = "";
-                textEvent.setText("Select an event date above");
-                textEvent.setTextColor(Color.parseColor("#F44336"));
-            }
-        });
-
-        calEvent.setOnDateChangeListener((calView, year, month, dayOfMonth) -> {
-            Calendar c = Calendar.getInstance(); c.set(year, month, dayOfMonth);
-            selectedEventDate = sdf.format(c.getTime());
-            textEvent.setText("Official event date: " + selectedEventDate);
-            textEvent.setTextColor(Color.parseColor("#888888"));
-        });
+        restoreCalendarState(calStart, timeStart, calEnd, timeEnd, calEvent, timeEvent);
 
         // 5. VALIDATION AND NAVIGATION
         String topBarTitle = viewModel.isEditMode ? "Edit Event" : "Create Event";
@@ -258,18 +257,12 @@ public class EventCreateFragment extends Fragment {
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
                 topBarTitle, "NEXT", v -> {
                     boolean isValid = true;
+                    StringBuilder errorMsg = new StringBuilder("Please fill in the required fields\n");
 
-                    if (inputTitle.getText().toString().trim().isEmpty()) { inputTitle.setError("Required"); isValid = false; }
-                    if (inputAttendeeCount.getText().toString().trim().isEmpty()) { inputAttendeeCount.setError("Required"); isValid = false; }
-                    if (inputLocation.getText().toString().trim().isEmpty()) { inputLocation.setError("Required"); isValid = false; }
-
-                    if (selectedStartDate.isEmpty() || selectedEndDate.isEmpty()) {
-                        Toast.makeText(requireContext(), "Please select Registration Start and End dates.", Toast.LENGTH_SHORT).show();
-                        isValid = false;
-                    } else if (selectedEventDate.isEmpty()) {
-                        Toast.makeText(requireContext(), "Please select an Official Event Date.", Toast.LENGTH_SHORT).show();
-                        isValid = false;
-                    }
+                    if (inputTitle.getText().toString().trim().isEmpty() || inputAttendeeCount.getText().toString().trim().isEmpty() ||
+                            inputLocation.getText().toString().trim().isEmpty() || !startSelected || !endSelected || regStartCal.getTimeInMillis()
+                            >= regEndCal.getTimeInMillis() || !eventSelected || (endSelected && regEndCal.getTimeInMillis() >= eventCal.getTimeInMillis())) {
+                        isValid = false; }
 
                     if (isValid) {
                         viewModel.title = inputTitle.getText().toString().trim();
@@ -281,10 +274,14 @@ public class EventCreateFragment extends Fragment {
                         viewModel.location = inputLocation.getText().toString().trim();
                         viewModel.address = inputAddress.getText().toString().trim();
                         viewModel.requireGeolocation = switchGeo.isChecked();
-                        viewModel.registrationPeriod = selectedStartDate + " - " + selectedEndDate;
-                        viewModel.eventDate = selectedEventDate;
+
+                        // Save the full formatted strings (Date + Time) to the ViewModel
+                        viewModel.registrationPeriod = sdfFull.format(regStartCal.getTime()) + " - " + sdfFull.format(regEndCal.getTime());
+                        viewModel.eventDate = sdfFull.format(eventCal.getTime());
 
                         ((OrganizerEventAddEditView) requireActivity()).navigateToFragment(new EventConfirmationFragment(), true);
+                    } else {
+                        Toast.makeText(requireContext(), errorMsg.toString().trim(), Toast.LENGTH_LONG).show();
                     }
                 }
         );
@@ -304,14 +301,13 @@ public class EventCreateFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(Exception e) {
-                }
+                public void onFailure(Exception e) {}
             });
         }
     }
 
     private void updateInviteButtons(View dividerInvites, TextView labelInvites, View rowInviteButtons,
-                                   Button btnInviteEntrants, Button btnInviteCoorg) {
+                                     Button btnInviteEntrants, Button btnInviteCoorg) {
         boolean edit = viewModel.isEditMode && viewModel.eventId != null;
         boolean showCoorg = edit;
         boolean showEntrants = edit && viewModel.privateEvent;
@@ -324,35 +320,143 @@ public class EventCreateFragment extends Fragment {
         if (rowInviteButtons != null) rowInviteButtons.setVisibility(sectionVis);
     }
 
-    private void updateRegistrationText(TextView textView) {
-        String startText = selectedStartDate.isEmpty() ? "..." : selectedStartDate;
-        String endText = selectedEndDate.isEmpty() ? "..." : selectedEndDate;
-        textView.setText("Registration: " + startText + " to " + endText);
-        if (!selectedStartDate.isEmpty() && !selectedEndDate.isEmpty()) {
-            textView.setTextColor(Color.parseColor("#888888"));
-        } else {
-            textView.setTextColor(Color.parseColor("#F44336"));
+    private void setupDateAndTime(CalendarView calView, TimePicker timePicker, Calendar tracker, int type) {
+        timePicker.setHour(0);
+        timePicker.setMinute(0);
+
+        tracker.setTimeInMillis(calView.getDate());
+        tracker.set(Calendar.HOUR_OF_DAY, 0);
+        tracker.set(Calendar.MINUTE, 0);
+        tracker.set(Calendar.SECOND, 0);
+
+        calView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            tracker.set(Calendar.YEAR, year);
+            tracker.set(Calendar.MONTH, month);
+            tracker.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            long selectedMillis = tracker.getTimeInMillis();
+
+            if (type == 1) { // Reg Start
+                startSelected = true;
+                if (calEnd.getDate() < selectedMillis) {
+                    calEnd.setDate(selectedMillis, false, true);
+                    regEndCal.setTimeInMillis(selectedMillis);
+                }
+                calEnd.setMinDate(selectedMillis);
+                scrollRegistration.postDelayed(() -> scrollRegistration.smoothScrollTo(columnRegEnd.getLeft(), 0), 300);
+
+            } else if (type == 2) { // Reg End
+                endSelected = true;
+                if (calEvent.getDate() < selectedMillis) {
+                    calEvent.setDate(selectedMillis, false, true);
+                    eventCal.setTimeInMillis(selectedMillis);
+                }
+                calEvent.setMinDate(selectedMillis);
+                scrollRegistration.postDelayed(() -> scrollRegistration.smoothScrollTo(columnEvent.getLeft(), 0), 300);
+
+            } else if (type == 3) { // Event Date
+                eventSelected = true;
+            }
+
+            validateDates();
+        });
+
+        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
+            tracker.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            tracker.set(Calendar.MINUTE, minute);
+
+            if (type == 1) startSelected = true;
+            else if (type == 2) endSelected = true;
+            else if (type == 3) eventSelected = true;
+
+            validateDates();
+        });
+    }
+
+    private void validateDates() {
+        if (textRegPeriod == null || textEvent == null) return;
+
+        if (startSelected || endSelected) {
+            String startText = startSelected ? sdfFull.format(regStartCal.getTime()) : "...";
+            String endText = endSelected ? sdfFull.format(regEndCal.getTime()) : "...";
+
+            if (startSelected && endSelected) {
+                if (regStartCal.getTimeInMillis() < regEndCal.getTimeInMillis()) {
+                    textRegPeriod.setText("Registration: " + startText + " to " + endText);
+                    textRegPeriod.setTextColor(Color.parseColor("#888888"));
+                } else {
+                    textRegPeriod.setText("Registration start must be before end.");
+                    textRegPeriod.setTextColor(Color.parseColor("#F44336"));
+                }
+            } else {
+                textRegPeriod.setText("Registration: " + startText + " to " + endText);
+                textRegPeriod.setTextColor(Color.parseColor("#F44336"));
+            }
+        }
+
+        if (eventSelected) {
+            if (endSelected) {
+                if (regEndCal.getTimeInMillis() < eventCal.getTimeInMillis()) {
+                    textEvent.setText("Official Event Date: " + sdfFull.format(eventCal.getTime()));
+                    textEvent.setTextColor(Color.parseColor("#888888"));
+                } else {
+                    textEvent.setText("Event date must be after registration ends.");
+                    textEvent.setTextColor(Color.parseColor("#F44336"));
+                }
+            } else {
+                textEvent.setText("Official Event Date: " + sdfFull.format(eventCal.getTime()));
+                textEvent.setTextColor(Color.parseColor("#888888"));
+            }
         }
     }
 
-    private void restoreCalendarState(CalendarView calStart, CalendarView calEnd, CalendarView calEvent, TextView textRegPeriod, TextView textEvent, SimpleDateFormat sdf) {
+    private void restoreCalendarState(CalendarView calStart, TimePicker timeStart,
+                                      CalendarView calEnd, TimePicker timeEnd,
+                                      CalendarView calEvent, TimePicker timeEvent) {
         try {
             if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
                 String[] parts = viewModel.registrationPeriod.split(" - ");
-                selectedStartDate = parts[0]; selectedEndDate = parts[1];
-                Date startDate = sdf.parse(selectedStartDate); Date endDate = sdf.parse(selectedEndDate);
 
-                if (startDate != null) { calStart.setDate(startDate.getTime(), false, true); calEnd.setMinDate(startDate.getTime()); }
-                if (endDate != null) { calEnd.setDate(endDate.getTime(), false, true); calEvent.setMinDate(endDate.getTime()); }
-                updateRegistrationText(textRegPeriod);
+                Date startDate = parseDateLenient(parts[0]);
+                Date endDate = parseDateLenient(parts[1]);
+
+                if (startDate != null) {
+                    regStartCal.setTime(startDate);
+                    calStart.setDate(startDate.getTime(), false, true);
+                    timeStart.setHour(regStartCal.get(Calendar.HOUR_OF_DAY));
+                    timeStart.setMinute(regStartCal.get(Calendar.MINUTE));
+                    startSelected = true;
+                }
+                if (endDate != null) {
+                    regEndCal.setTime(endDate);
+                    calEnd.setDate(endDate.getTime(), false, true);
+                    timeEnd.setHour(regEndCal.get(Calendar.HOUR_OF_DAY));
+                    timeEnd.setMinute(regEndCal.get(Calendar.MINUTE));
+                    endSelected = true;
+                }
             }
             if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
-                selectedEventDate = viewModel.eventDate;
-                Date eventDate = sdf.parse(selectedEventDate);
-                if (eventDate != null) { calEvent.setDate(eventDate.getTime(), false, true); }
-                textEvent.setText("Official event date: " + selectedEventDate);
-                textEvent.setTextColor(Color.parseColor("#888888"));
+                Date eventD = parseDateLenient(viewModel.eventDate);
+                if (eventD != null) {
+                    eventCal.setTime(eventD);
+                    calEvent.setDate(eventD.getTime(), false, true);
+                    timeEvent.setHour(eventCal.get(Calendar.HOUR_OF_DAY));
+                    timeEvent.setMinute(eventCal.get(Calendar.MINUTE));
+                    eventSelected = true;
+                }
             }
-        } catch (ParseException e) { e.printStackTrace(); }
+            validateDates();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private Date parseDateLenient(String dateStr) {
+        try {
+            return sdfFull.parse(dateStr);
+        } catch (ParseException e) {
+            try {
+                return sdfDateOnly.parse(dateStr);
+            } catch (ParseException ex) {
+                return null;
+            }
+        }
     }
 }

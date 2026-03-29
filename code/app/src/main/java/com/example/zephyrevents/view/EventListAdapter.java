@@ -26,7 +26,7 @@ import java.util.Locale;
 public class EventListAdapter extends ArrayAdapter<Event> {
 
     private final LayoutInflater inflater;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault());
 
     public EventListAdapter(@NonNull Context context, @NonNull List<Event> events) {
         super(context, R.layout.item_event_card, events);
@@ -59,7 +59,7 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         if (dateStr.isEmpty() && locationStr.isEmpty()) {
             dateLocationStr = getContext().getString(R.string.date_location);
         } else {
-            dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : ", " + locationStr);
+            dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : "\n" + locationStr);
         }
         dateLocation.setText(dateLocationStr);
 
