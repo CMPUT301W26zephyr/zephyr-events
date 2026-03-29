@@ -1,98 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="6dp"
-    app:cardBackgroundColor="#FAFAFA"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="0dp"
-    app:strokeColor="#E0E0E0"
-    app:strokeWidth="1dp">
+    android:paddingTop="16dp"
+    android:paddingHorizontal="16dp"
+    android:background="#FFFFFF">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <!-- Circular Avatar -->
+    <TextView
+        android:id="@+id/notification_avatar"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:backgroundTint="#F5B7B1"
+        android:background="@color/secondary_red"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="AB" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/notification_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="#34495E"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/notification_time"
+        app:layout_constraintStart_toEndOf="@id/notification_avatar"
+        app:layout_constraintTop_toTopOf="@id/notification_avatar"
+        tools:text="You've been Selected!" />
 
-        <FrameLayout
-            android:id="@+id/image_container"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="#EEEEEE"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+    <!-- Description -->
+    <TextView
+        android:id="@+id/notification_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="#7F8C8D"
+        android:textSize="14sp"
+        android:lineSpacingExtra="2dp"
+        app:layout_constraintEnd_toStartOf="@id/notification_more"
+        app:layout_constraintStart_toStartOf="@id/notification_title"
+        app:layout_constraintTop_toBottomOf="@id/notification_title"
+        tools:text="Congrats! You've been chosen for Swimming Lessons. Confirm your spot today." />
 
-            <ImageView
-                android:id="@+id/event_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="center"
-                android:src="@drawable/ic_image_placeholder2"
-                app:tint="#BDBDBD" />
-        </FrameLayout>
+    <!-- Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_goto_event"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:text="Go to Event"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        app:backgroundTint="#FF3B5C"
+        app:cornerRadius="6dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:layout_constraintStart_toStartOf="@id/notification_title"
+        app:layout_constraintTop_toBottomOf="@id/notification_desc" />
 
-        <View
-            android:id="@+id/indicator_unread"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_marginTop="-4dp"
-            android:layout_marginStart="-4dp"
-            android:background="@drawable/bg_notification_dot"
-            app:layout_constraintStart_toStartOf="@id/image_container"
-            app:layout_constraintTop_toTopOf="@id/image_container" />
+    <!-- Time -->
+    <TextView
+        android:id="@+id/notification_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#95A5A6"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/notification_title"
+        tools:text="4 days" />
 
-        <LinearLayout
-            android:id="@+id/text_container"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/image_container"
-            app:layout_constraintTop_toTopOf="@id/image_container">
+    <!-- More Icon -->
+    <ImageView
+        android:id="@+id/notification_more"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/ic_more_horiz"
+        app:tint="#7F8C8D"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notification_time" />
 
-            <TextView
-                android:id="@+id/notification_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#333333"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+    <!-- List Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="#F2F3F4"
+        app:layout_constraintTop_toBottomOf="@id/btn_goto_event" />
 
-            <TextView
-                android:id="@+id/notification_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="#555555"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/notification_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="#AAAAAA"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_goto_event"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginTop="8dp"
-            android:text="Go to Event"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            app:backgroundTint="#FF3B5C"
-            app:cornerRadius="6dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_container" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

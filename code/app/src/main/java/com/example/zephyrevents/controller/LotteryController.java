@@ -20,12 +20,12 @@ public class LotteryController {
 
     private final WaitlistRepository waitlistRepository;
     private final EventRepository eventRepository;
-    // private final NotificationController notificationController;
+    private final NotificationController notificationController;
 
     public LotteryController() {
         waitlistRepository = new WaitlistRepository();
         eventRepository = new EventRepository();
-        // notificationController = new NotificationController();
+        notificationController = new NotificationController();
     }
 
     // Constructor for unit testing
@@ -33,6 +33,7 @@ public class LotteryController {
     public LotteryController(EventRepository event, WaitlistRepository waitlist) {
         this.waitlistRepository = waitlist;
         this.eventRepository = event;
+        this.notificationController = new NotificationController();
     }
 
     // Added a callback so the UI knows when the lottery finishes saving!
@@ -75,7 +76,15 @@ public class LotteryController {
                         final int[] completedUpdates = {0};
 
                         for (WaitlistEntry entry : eligible) {
+                            boolean isWinner = winners.contains(entry);
                             Status newStatus = winners.contains(entry) ? Status.SELECTED : Status.LOST;
+
+                            NotificationType type = isWinner ? NotificationType.WON_EVENT : NotificationType.LOST_EVENT;
+                            String message = isWinner
+                                    ? "Congrats! You've been chosen for \"" + event.getName() + "\". Confirm your spot today."
+                                    : "The draw for \"" + event.getName() + "\" is complete. You were not selected this time.";
+
+                            notificationController.sendAutomaticNotification(entry.getUserId(), eventId, type, message);
 
                             // Pass a callback to wait for the update to actually finish saving
                             waitlistRepository.updateStatus(eventId, entry.getUserId(), newStatus, new RepositoryCallback<Void>() {
@@ -91,8 +100,13 @@ public class LotteryController {
                                 private void checkCompletion() {
                                     completedUpdates[0]++;
                                     if (completedUpdates[0] == totalUpdates) {
-                                        // ONLY tell the UI to refresh when ALL updates are done
-                                        if(callback != null) callback.onSuccess(null);
+                                        notificationController.sendAutomaticNotification(
+                                                event.getOrganizerId(),
+                                                eventId,
+                                                NotificationType.LOTTERY_COMPLETED,
+                                                "The lottery for \"" + event.getName() + "\" has been successfully run."
+                                        );
+                                        if (callback != null) callback.onSuccess(null);
                                     }
                                 }
                             });
