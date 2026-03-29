@@ -49,7 +49,7 @@ public class AdminBrowseEventActivity extends AppCompatActivity {
             public void onSuccess(List<Event> result) {
 
                 eventList.clear();
-                eventList.addAll(result); // Event → Object 자동 업캐스팅
+                eventList.addAll(result);
 
                 runOnUiThread(() -> adapter.notifyDataSetChanged());
             }
