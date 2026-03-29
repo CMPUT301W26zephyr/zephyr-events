@@ -10,6 +10,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Repository class for managing User data in Firestore.
@@ -196,5 +200,23 @@ public class UserRepository {
         if (user.isNotificationsOptOut() == optOut){ return;}
         user.setNotificationsOptOut(optOut);
         saveUser(user, callback);
+    }
+
+    public void getAllUsers(RepositoryCallback<List<User>> callback) {
+
+        db.collection(Collections.USERS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+
+                    List<User> users = new ArrayList<>();
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        User user = doc.toObject(User.class);
+                        users.add(user);
+                    }
+
+                    callback.onSuccess(users);
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 }
