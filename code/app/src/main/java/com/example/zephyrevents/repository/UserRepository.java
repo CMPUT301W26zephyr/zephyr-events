@@ -14,6 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Repository class for managing User data in Firestore.
@@ -69,22 +70,22 @@ public class UserRepository {
             return; // exit before network call.
         }
         db.collection(Collections.USERS)
-            .document(user.getId())
-            .set(user)
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "firestore event added object id: " + user.getId());
-                    callback.onSuccess(null);
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "Error writing document", e);
-                    callback.onFailure(e);
-                }
-            });
+                .document(user.getId())
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "firestore event added object id: " + user.getId());
+                        callback.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                        callback.onFailure(e);
+                    }
+                });
 
     }
 
@@ -188,6 +189,53 @@ public class UserRepository {
      * @param optOut    true to opt-out, false to opt-in.
      * @param callback  handles result
      */
+    /**
+     * Client-side search across name, email, and phone (substring match). Suitable for small user bases.
+     */
+    public void searchUsers(String query, RepositoryCallback<List<User>> callback) {
+        if (query == null || query.trim().isEmpty()) {
+            callback.onSuccess(new ArrayList<>());
+            return;
+        }
+        final String q = query.trim().toLowerCase(Locale.getDefault());
+        db.collection(Collections.USERS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<User> out = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        User u = doc.toObject(User.class);
+                        if (u == null) continue;
+                        if (u.getId() == null) u.setId(doc.getId());
+                        if (matchesUserQuery(u, q)) {
+                            out.add(u);
+                        }
+                    }
+                    callback.onSuccess(out);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    private static boolean matchesUserQuery(User u, String q) {
+        if (u.getName() != null && u.getName().toLowerCase(Locale.getDefault()).contains(q)) {
+            return true;
+        }
+        if (u.getContactInfo() != null) {
+            String email = u.getContactInfo().getEmail();
+            if (email != null && email.toLowerCase(Locale.getDefault()).contains(q)) {
+                return true;
+            }
+            String phone = u.getContactInfo().getPhone();
+            if (phone != null) {
+                String digits = phone.replaceAll("\\D", "");
+                String qDigits = q.replaceAll("\\D", "");
+                if (!qDigits.isEmpty() && digits.contains(qDigits)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void updateNotificationOptOut(User user, String userId,
                                          boolean optOut,
                                          RepositoryCallback<Void> callback) {
