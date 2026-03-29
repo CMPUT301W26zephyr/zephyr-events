@@ -1,6 +1,7 @@
 package com.example.zephyrevents.view;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -103,6 +104,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
 
+        // Handle link parameter (e.g. from qr code)
+        if (eventId == null) {
+            Uri data = getIntent().getData();
+            if (data != null) {
+                eventId = data.getQueryParameter("id");
+            }
+        }
+
         if (eventId == null) {
             Toast.makeText(this, "Error: No Event ID provided.", Toast.LENGTH_SHORT).show();
             finish();
@@ -130,6 +139,23 @@ public class EventDetailViewActivity extends AppCompatActivity {
     protected void onDestroy() {
         detachCommentsListener();
         super.onDestroy();
+    }
+
+    // For refreshing upon returning to the page (e.g. from editing)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String eventId = getIntent().getStringExtra(EXTRA_EVENT);
+        if (eventId != null) {
+            EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
+                @Override
+                public void onSuccess(Event result) {
+                    event = result;
+                    populateUI();
+                }
+                @Override public void onFailure(Exception e) {}
+            });
+        }
     }
 
     private void findViews() {

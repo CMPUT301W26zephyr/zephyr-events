@@ -14,15 +14,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
-        
+
+        <activity
+            android:name=".view.QrScannerActivity"
+            android:exported="false" />
+
         <activity
             android:name=".view.SignUpActivity"
             android:exported="false" />
-        
+
         <activity
             android:name=".view.WelcomeActivity"
-            android:theme="@style/Theme.App.Starting"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

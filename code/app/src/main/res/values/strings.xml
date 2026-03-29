@@ -64,6 +64,7 @@
     <string name="tos_p5">Organizers are responsible for ensuring that event details such as time, date, and requirements are accurate before publishing.</string>
     <string name="tos_p6">By pressing <b>I agree</b>, you acknowledge that selection is based on chance and agree to these terms. Entering the lottery does not guarantee a spot in the event.</string>
     <string name="waitlist_capacity">Waitlist Capacity</string>
+    <string name="qr_code_description">Scan the QR code to enter the event\nlottery and receive your ticket.</string>
 
     <!-- Event detail tabs & comments -->
     <string name="tab_about">About</string>

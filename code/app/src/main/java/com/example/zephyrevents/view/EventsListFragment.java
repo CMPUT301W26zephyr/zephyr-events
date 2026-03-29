@@ -135,7 +135,7 @@ public class EventsListFragment extends Fragment {
     private void openEventDetail(String eventKey, boolean invited) {
         Intent intent = new Intent(requireContext(), EventDetailViewActivity.class);
         intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, eventKey);
-        intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, invited);
+        intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, invited);  // TODO: Make this better (like what even is this)
         startActivity(intent);
     }
 }
