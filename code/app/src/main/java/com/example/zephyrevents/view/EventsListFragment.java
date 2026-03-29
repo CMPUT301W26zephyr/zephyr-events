@@ -89,7 +89,11 @@ public class EventsListFragment extends Fragment {
             public void onSuccess(List<Event> result) {
                 allEvents.clear();
                 if (result != null) {
-                    allEvents.addAll(result);
+                    for (Event e : result) {
+                        if (e != null && !e.isPrivateEvent()) {
+                            allEvents.add(e);
+                        }
+                    }
                 }
 
                 // Re-apply the search filter if the user had text in the search bar

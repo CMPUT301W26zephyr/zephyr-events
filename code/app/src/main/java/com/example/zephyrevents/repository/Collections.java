@@ -12,4 +12,7 @@ public final class Collections {
 
     public static final String NOTIFICATIONS = "notifications";
     public static final String WAITLIST = "waitlist";
+
+    /** Event discussion threads; documents include {@code eventId} for querying. */
+    public static final String EVENT_COMMENTS = "event_comments";
 }
