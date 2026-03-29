@@ -266,7 +266,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
             });
         }
         if (rowQr != null) {
-            rowQr.setOnClickListener(v -> Toast.makeText(this, R.string.qr_not_available, Toast.LENGTH_SHORT).show());
+            rowQr.setOnClickListener(v -> {
+                if (event == null) return;
+                EventQrCodeFragment qrFragment = EventQrCodeFragment.newInstance(event.getEventId());
+                qrFragment.show(getSupportFragmentManager(), "EventQrCodeFragment");
+            });
         }
         if (rowMap != null) {
             rowMap.setOnClickListener(v -> Toast.makeText(this, R.string.map_not_available, Toast.LENGTH_SHORT).show());
