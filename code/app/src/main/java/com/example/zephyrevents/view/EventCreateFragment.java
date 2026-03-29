@@ -32,6 +32,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import android.net.Uri;
+import android.widget.ImageView;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
+import com.bumptech.glide.Glide;
+
 public class EventCreateFragment extends Fragment {
 
     private EventViewModel viewModel;
@@ -40,6 +47,29 @@ public class EventCreateFragment extends Fragment {
     private String selectedStartDate = "";
     private String selectedEndDate = "";
     private String selectedEventDate = "";
+
+    private ActivityResultLauncher<PickVisualMediaRequest> pickEventImg;
+    private ImageView eventImgPreview;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle saveInstanceState){
+        super.onCreate(saveInstanceState);
+        pickEventImg = registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(),
+                uri -> {
+                    if (uri == null) return;
+                    EventViewModel vm = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+                    vm.pendingEventImageUri = uri;
+                    vm.existingImgUrl = "";
+                    if (eventImgPreview != null) {
+                        Glide.with(this).load(uri).centerCrop().into(eventImgPreview);
+                    }
+                }
+        );
+
+
+    }
 
     @Nullable
     @Override
@@ -73,6 +103,21 @@ public class EventCreateFragment extends Fragment {
         TextView textEvent = view.findViewById(R.id.text_event_date);
 
         Button btnDelete = view.findViewById(R.id.btn_delete_event);
+
+        eventImgPreview = view.findViewById(R.id.event_image_preview);
+        View eventImgContainer = view.findViewById(R.id.event_image_container);
+
+        eventImgContainer.setOnClickListener(v ->
+                pickEventImg.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build()));
+
+        if (viewModel.pendingEventImageUri != null){
+            Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(eventImgPreview);
+
+        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()) {
+            Glide.with(this).load(viewModel.existingImgUrl).centerCrop().into(eventImgPreview);
+        }
 
         // Setup Dropdown
         String[] eventTypes = new String[]{"Educational", "Workshop", "Corporate", "Social", "Recreation", "Entertainment", "Networking", "Other"};
@@ -130,6 +175,12 @@ public class EventCreateFragment extends Fragment {
                             inputAttendeeCount.setText(viewModel.attendeeCount);
                             inputLocation.setText(viewModel.location);
                             inputAddress.setText(viewModel.address);
+
+                            if (e.getImageUrl() != null && !e.getImageUrl().isEmpty()) {
+                                viewModel.existingImgUrl = e.getImageUrl();
+                                viewModel.pendingEventImageUri = null;
+                                Glide.with(EventCreateFragment.this).load(e.getImageUrl()).centerCrop().into(eventImgPreview);
+                            }
                         }
                     }
                     @Override

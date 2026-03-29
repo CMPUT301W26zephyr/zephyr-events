@@ -19,6 +19,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.bumptech.glide.Glide;
+
+
 /**
  * Adapter that fills the "All Events" list with event cards.
  * Each row shows the event image, title, date and location, and price on the right.
@@ -67,6 +70,14 @@ public class EventListAdapter extends ArrayAdapter<Event> {
             price.setText("Free");
         } else {
             price.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
+        }
+
+        String imgUrl = event.getImageUrl();
+
+        if (imgUrl != null && !imgUrl.isEmpty()){
+            Glide.with(getContext()).load(imgUrl).centerCrop().into(image);
+        } else{
+            image.setImageResource(R.drawable.event_card_placeholder);
         }
 
         return row;

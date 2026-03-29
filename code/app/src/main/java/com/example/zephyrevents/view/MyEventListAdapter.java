@@ -23,6 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
+
+
 public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
 
     private final LayoutInflater inflater;
@@ -47,6 +51,7 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
         TextView dateLocationView = row.findViewById(R.id.item_event_date_location);
         TextView priceView = row.findViewById(R.id.item_event_price);
         TextView statusView = row.findViewById(R.id.item_event_status);
+        ImageView eventPoster = row.findViewById(R.id.item_event_image);
 
         // Clear out old text while Firebase loads the actual event
         titleView.setText("Loading...");
@@ -60,6 +65,16 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
                 public void onSuccess(Event result) {
                     if (result != null) {
                         titleView.setText(result.getName() != null ? result.getName() : "Unknown Event");
+
+                        if(eventPoster != null){
+                            String url = result.getImageUrl();
+                            if(url != null && !url.isEmpty()){
+                                Glide.with(getContext()).load(url).centerCrop().into(eventPoster);
+
+                            } else {
+                                eventPoster.setImageResource(R.drawable.event_card_placeholder);
+                            }
+                        }
 
                         if (result.getPrice() == 0.0) {
                             priceView.setText("Free");

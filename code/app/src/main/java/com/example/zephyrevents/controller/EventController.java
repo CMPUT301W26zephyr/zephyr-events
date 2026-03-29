@@ -9,6 +9,11 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.media.Image;
+import android.net.Uri;
+import com.example.zephyrevents.repository.ImageRepository;
+
+
 // TODO: Once no longer mocked, I recommend to convert into non-singleton class for consistency - Jason
 /**
  * Singleton controller managing event data and waitlist.
@@ -23,11 +28,14 @@ public class EventController {
     private List<WaitlistEntry> mockLotteries = new ArrayList<>();
     private List<WaitlistEntry> mockHistory = new ArrayList<>();
 
+    private final ImageRepository imageRepository;
+
     /**
      * Private constructor to enforce the Singleton pattern.
      */
     private EventController() {
         eventRepository = new EventRepository();
+        imageRepository = new ImageRepository();
     }
 
     /**
@@ -81,6 +89,34 @@ public class EventController {
     }
 
     // --- UPDATED: WAITLIST SIMULATOR METHODS NOW USE USER ID ---
+
+    /**
+     * if pendingimageUri exist then Upload image to storage and save event with imageUrl.
+     * else set imageUrl from the existing image url
+     */
+
+    public void saveEventWithOptionalImage(Event event, Uri pendingImageUri, String existingImageUrl, RepositoryCallback<Void> callback ){
+        if (pendingImageUri != null){
+            imageRepository.uploadEventImage(pendingImageUri, event.getEventId(), new RepositoryCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    event.setImageUrl(result);
+                    eventRepository.saveEvent(event, callback);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+
+                }
+            });
+        } else{
+            if (existingImageUrl != null && !existingImageUrl.isEmpty()){
+                event.setImageUrl(existingImageUrl);
+            }
+            eventRepository.saveEvent(event, callback);
+        }
+    }
 
     /**
      * Checks if user is in the mock waitlist for specific event.

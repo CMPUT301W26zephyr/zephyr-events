@@ -1,5 +1,7 @@
 package com.example.zephyrevents.model;
 import androidx.lifecycle.ViewModel;
+import android.net.Uri;
+
 
 /**
  * Data holder ViewModel with public fields to track state of an event while creating or editing
@@ -24,4 +26,8 @@ public class EventViewModel extends ViewModel {
     public boolean requireGeolocation = true;
     public String registrationPeriod = "";
     public String eventDate = "";
+
+    public Uri pendingEventImageUri = null;
+
+    public String existingImgUrl = "";
 }

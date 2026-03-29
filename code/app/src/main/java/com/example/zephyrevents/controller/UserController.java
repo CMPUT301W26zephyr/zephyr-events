@@ -8,7 +8,7 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
 import java.util.UUID;
 import android.net.Uri;
-import com.example.zephyrevents.repository.ProfileImageRepository;
+import com.example.zephyrevents.repository.ImageRepository;
 
 
 
@@ -19,7 +19,7 @@ import com.example.zephyrevents.repository.ProfileImageRepository;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final ProfileImageRepository profileImageRepository;
+    private final ImageRepository imageRepository;
 
     private final SharedPreferences prefs;
 
@@ -33,7 +33,7 @@ public class UserController {
      */
     public UserController(Context context) {
         this.userRepository = new UserRepository();
-        this.profileImageRepository = new ProfileImageRepository();
+        this.imageRepository = new ImageRepository();
         this.prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
     }
@@ -47,7 +47,7 @@ public class UserController {
     @androidx.annotation.VisibleForTesting
     public UserController(UserRepository userRepository, SharedPreferences prefs) {
         this.userRepository = userRepository;
-        this.profileImageRepository = null;
+        this.imageRepository = null;
         this.prefs = prefs;
     }
 
@@ -260,11 +260,11 @@ public class UserController {
             callback.onFailure(new Exception("No user found"));
             return;
         }
-        if(profileImageRepository == null){
+        if(imageRepository == null){
             callback.onFailure(new Exception("Profile image not available"));
             return;
         }
-        profileImageRepository.uploadProfileImage(imageUri, userId, new RepositoryCallback<String>(){
+        imageRepository.uploadProfileImage(imageUri, userId, new RepositoryCallback<String>(){
             @Override
             public void onSuccess(String downloadUrl){
                 fetchCurrentUser(new RepositoryCallback<User>() {
