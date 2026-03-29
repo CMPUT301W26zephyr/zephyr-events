@@ -2,19 +2,21 @@ package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.WaitlistEntry;
-import com.example.zephyrevents.util.BottomNavHelper;
 
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.WaitlistRepository;
@@ -22,7 +24,7 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyEventsActivity extends AppCompatActivity {
+public class MyEventsFragment extends Fragment {
 
     private ListView listView;
     private Button tabLotteries;
@@ -32,44 +34,54 @@ public class MyEventsActivity extends AppCompatActivity {
     private MyEventListAdapter historyAdapter;
     private boolean showingLotteries = true;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_events);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_my_events, container, false); // Rename your layout files if you want
+    }
 
-        listView = findViewById(R.id.my_events_list);
-        tabLotteries = findViewById(R.id.tab_lotteries);
-        tabHistory = findViewById(R.id.tab_history);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.findViewById(R.id.toolbar_back).setVisibility(View.INVISIBLE);
+
+        listView = view.findViewById(R.id.my_events_list);
+        tabLotteries = view.findViewById(R.id.tab_lotteries);
+        tabHistory = view.findViewById(R.id.tab_history);
 
         tabLotteries.setOnClickListener(v -> showLotteries());
         tabHistory.setOnClickListener(v -> showHistory());
 
-        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+        view.findViewById(R.id.toolbar_back).setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         // Find notification bell
-        View notifBell = findViewById(R.id.toolbar_notifications);
+        View notifBell = view.findViewById(R.id.toolbar_notifications);
         if (notifBell != null) {
-            notifBell.setOnClickListener(v -> startActivity(new Intent(this, UserNotificationListView.class)));
+            notifBell.setOnClickListener(v -> startActivity(new Intent(requireContext(), UserNotificationListView.class)));
         }
 
         // Make list items clickable
-        listView.setOnItemClickListener((parent, view, position, id) -> {
+        listView.setOnItemClickListener((parent, v, position, id) -> {
             WaitlistEntry entry = (WaitlistEntry) parent.getItemAtPosition(position);
             if (entry != null && entry.getEventId() != null) {
-                Intent intent = new Intent(this, EventDetailViewActivity.class);
+                Intent intent = new Intent(requireContext(), EventDetailViewActivity.class);
                 intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, entry.getEventId());
                 startActivity(intent);
             }
         });
 
-        BottomNavHelper.setupBottomNav(this);
-
         fetchUserEvents();
         showLotteries();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchUserEvents();
+    }
+
     private void fetchUserEvents() {
-        String currentUserId = new UserController(this).getCurrentUserId();
+        String currentUserId = new UserController(requireContext()).getCurrentUserId();
         if (currentUserId == null) return;
 
         // Fetch ALL events first so we can check their dates and find ones we organize
@@ -120,8 +132,33 @@ public class MyEventsActivity extends AppCompatActivity {
                             }
                         }
 
-                        lotteryAdapter = new MyEventListAdapter(MyEventsActivity.this, lotteries);
-                        historyAdapter = new MyEventListAdapter(MyEventsActivity.this, history);
+                        // 3. Co-organizer events (same dummy pattern; adapter shows ORGANIZER badge)
+                        for (Event event : allEvents) {
+                            if (event.getCoOrganizerUserIds() != null
+                                    && event.getCoOrganizerUserIds().contains(currentUserId)
+                                    && !currentUserId.equals(event.getOrganizerId())) {
+                                boolean alreadyInList = false;
+                                for (WaitlistEntry w : waitlists) {
+                                    if (w.getEventId().equals(event.getEventId())) alreadyInList = true;
+                                }
+                                for (WaitlistEntry w : lotteries) {
+                                    if (w.getEventId().equals(event.getEventId())) alreadyInList = true;
+                                }
+                                for (WaitlistEntry w : history) {
+                                    if (w.getEventId().equals(event.getEventId())) alreadyInList = true;
+                                }
+
+                                if (!alreadyInList) {
+                                    WaitlistEntry coEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0, 0, null);
+                                    long eventTime = event.getTime() != null ? event.getTime().getStartTime() : 0;
+                                    if (eventTime > currentTime) lotteries.add(coEntry);
+                                    else history.add(coEntry);
+                                }
+                            }
+                        }
+
+                        lotteryAdapter = new MyEventListAdapter(requireContext(), lotteries);
+                        historyAdapter = new MyEventListAdapter(requireContext(), history);
 
                         if (showingLotteries) listView.setAdapter(lotteryAdapter);
                         else listView.setAdapter(historyAdapter);
@@ -136,18 +173,18 @@ public class MyEventsActivity extends AppCompatActivity {
     private void showLotteries() {
         showingLotteries = true;
         tabLotteries.setBackgroundResource(R.drawable.bg_tab_selected);
-        tabLotteries.setTextColor(ContextCompat.getColor(this, R.color.white));
+        tabLotteries.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
         tabHistory.setBackgroundResource(R.drawable.bg_tab_unselected);
-        tabHistory.setTextColor(ContextCompat.getColor(this, R.color.black));
+        tabHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         listView.setAdapter(lotteryAdapter);
     }
 
     private void showHistory() {
         showingLotteries = false;
         tabHistory.setBackgroundResource(R.drawable.bg_tab_selected);
-        tabHistory.setTextColor(ContextCompat.getColor(this, R.color.white));
+        tabHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
         tabLotteries.setBackgroundResource(R.drawable.bg_tab_unselected);
-        tabLotteries.setTextColor(ContextCompat.getColor(this, R.color.black));
+        tabLotteries.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         listView.setAdapter(historyAdapter);
     }
 }

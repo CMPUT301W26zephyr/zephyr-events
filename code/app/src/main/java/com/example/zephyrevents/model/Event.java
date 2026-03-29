@@ -2,6 +2,9 @@ package com.example.zephyrevents.model;
 
 import com.example.zephyrevents.util.GenerateId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This is a class that defines an event.
  * Holds basic info (name, description, times) and optional detail fields
@@ -23,6 +26,13 @@ public class Event {
     private EventStatus status;
     private String organizerName;
     private int currentApplicants;
+
+    /** If true, event is hidden from public listings and has no promotional QR. */
+    private boolean privateEvent;
+    /** Users who may manage the event alongside the primary organizer. */
+    private List<String> coOrganizerUserIds;
+    /** Entrants invited to the private waitlist but who have not accepted yet. */
+    private List<String> pendingPrivateWaitlistInviteUserIds;
 
     public Event() {
     }
@@ -225,5 +235,35 @@ public class Event {
 
     public void setWaitlistCapacity(Integer waitlistCapacity) {
         this.waitlistCapacity = waitlistCapacity;
+    }
+
+    public boolean isPrivateEvent() {
+        return privateEvent;
+    }
+
+    public void setPrivateEvent(boolean privateEvent) {
+        this.privateEvent = privateEvent;
+    }
+
+    public List<String> getCoOrganizerUserIds() {
+        if (coOrganizerUserIds == null) {
+            coOrganizerUserIds = new ArrayList<>();
+        }
+        return coOrganizerUserIds;
+    }
+
+    public void setCoOrganizerUserIds(List<String> coOrganizerUserIds) {
+        this.coOrganizerUserIds = coOrganizerUserIds;
+    }
+
+    public List<String> getPendingPrivateWaitlistInviteUserIds() {
+        if (pendingPrivateWaitlistInviteUserIds == null) {
+            pendingPrivateWaitlistInviteUserIds = new ArrayList<>();
+        }
+        return pendingPrivateWaitlistInviteUserIds;
+    }
+
+    public void setPendingPrivateWaitlistInviteUserIds(List<String> pendingPrivateWaitlistInviteUserIds) {
+        this.pendingPrivateWaitlistInviteUserIds = pendingPrivateWaitlistInviteUserIds;
     }
 }

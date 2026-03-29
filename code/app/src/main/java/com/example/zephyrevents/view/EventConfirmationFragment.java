@@ -19,6 +19,7 @@ import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
@@ -44,6 +45,10 @@ public class EventConfirmationFragment extends Fragment {
         TextView location = view.findViewById(R.id.text_confirm_location);
         TextView geo = view.findViewById(R.id.text_confirm_geo);
         TextView capacity = view.findViewById(R.id.text_confirm_capacity);
+        TextView visibility = view.findViewById(R.id.text_confirm_visibility);
+        visibility.setText(viewModel.privateEvent
+                ? getString(R.string.visibility_private_label)
+                : getString(R.string.visibility_public_label));
 
         title.setText(viewModel.title);
         date.setText(viewModel.eventDate);
@@ -142,6 +147,10 @@ public class EventConfirmationFragment extends Fragment {
                             if (regEnd != null) newEvent.setRegistrationEndTime(regEnd.getTime());
                         }
                     } catch (Exception e) { e.printStackTrace(); }
+
+                    newEvent.setPrivateEvent(viewModel.privateEvent);
+                    newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
+                    newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
 
                     // 2. Save to Firebase
                     EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {

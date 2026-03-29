@@ -64,4 +64,69 @@
     <string name="tos_p5">Organizers are responsible for ensuring that event details such as time, date, and requirements are accurate before publishing.</string>
     <string name="tos_p6">By pressing <b>I agree</b>, you acknowledge that selection is based on chance and agree to these terms. Entering the lottery does not guarantee a spot in the event.</string>
     <string name="waitlist_capacity">Waitlist Capacity</string>
+    <string name="qr_code_description">Scan the QR code to enter the event\nlottery and receive your ticket.</string>
+
+    <!-- Event detail tabs & comments -->
+    <string name="tab_about">About</string>
+    <string name="tab_waitlist_info">Waitlist Info</string>
+    <string name="tab_comments">Comments</string>
+    <string name="comments_header">Comments (%1$d)</string>
+    <string name="add_comment">Add a comment</string>
+    <string name="comment_hint">Write something…</string>
+    <string name="post">Post</string>
+    <string name="reply">Reply</string>
+    <string name="view_n_replies">View %1$d replies</string>
+    <string name="view_one_reply">View 1 reply</string>
+    <string name="hide_replies">Hide replies</string>
+    <string name="new_comment">New comment</string>
+    <string name="reply_to_user">Reply to %1$s</string>
+    <string name="tab_manage">Manage</string>
+    <string name="manage_view_entrants">View entrants</string>
+    <string name="manage_edit_event">Edit event</string>
+    <string name="manage_generate_qr">Generate QR code</string>
+    <string name="manage_view_map">View map of entrants</string>
+    <string name="run_lottery">RUN LOTTERY</string>
+    <string name="creator_label">Creator</string>
+    <!-- Shown after author name (TikTok-style) -->
+    <string name="comment_creator_suffix"> · Creator</string>
+    <string name="delete_comment">Delete</string>
+    <string name="delete_comment_title">Delete comment?</string>
+    <string name="delete_comment_message">This will remove the comment and any replies.</string>
+    <string name="comment_deleted">Comment removed</string>
+    <string name="map_not_available">Map view is not available yet.</string>
+    <string name="qr_not_available">QR generation is not available from this screen yet.</string>
+    <string name="delete_comment_failed">Could not delete comment.</string>
+
+    <!-- Private / public events -->
+    <string name="visibility_public">Public</string>
+    <string name="visibility_private">Private</string>
+    <string name="private_event_warning">This event will not be visible on public event listings and will not generate a promotional QR code.</string>
+    <string name="invite_entrants">Invite entrants</string>
+    <string name="invite_coorganizer">Invite co-organizer</string>
+    <string name="event_form_section_invites">Invites</string>
+    <string name="delete_event">Delete event</string>
+    <string name="label_visibility_review">Visibility: </string>
+    <string name="visibility_public_label">Public</string>
+    <string name="visibility_private_label">Private</string>
+    <string name="badge_private_event">PRIVATE EVENT</string>
+    <string name="private_event_need_invite">This is a private event. You need an invitation to join the waitlist.</string>
+    <string name="coorganizer_cannot_join">You are a co-organizer for this event and cannot join the waitlist.</string>
+
+    <!-- Invite users -->
+    <string name="invite_coorganizer_title">Invite co-organizer</string>
+    <string name="invite_entrants_title">Invite entrants</string>
+    <string name="search">Search</string>
+    <string name="search_users_hint">Search by name, phone, or email</string>
+    <string name="invite_action">+ Invite</string>
+    <string name="remove_action">Remove</string>
+    <string name="next">Next</string>
+
+    <!-- Notifications copy -->
+    <string name="notif_private_invite_title">Private event invite</string>
+    <string name="notif_private_invite_body">You\'ve been invited to join the waiting list for %1$s.</string>
+    <string name="notif_coorganizer_title">Co-organizer request</string>
+    <string name="notif_coorganizer_body">You\'ve been invited to be a co-organizer for %1$s.</string>
+    <string name="cta_view_invite">View invite</string>
+    <string name="cta_go_to_event">Go to Event</string>
+    <string name="notifications_load_failed">Could not load notifications.</string>
 </resources>

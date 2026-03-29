@@ -4,27 +4,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.util.BottomNavHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventsListActivity extends AppCompatActivity {
+public class EventsListFragment extends Fragment {
 
     private EventListAdapter adapter;
     private List<Event> allEvents = new ArrayList<>();
@@ -32,22 +31,24 @@ public class EventsListActivity extends AppCompatActivity {
     private EventController controller;
     private EditText etSearchBar; // Added as a class variable to keep track of searches
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_events_list);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_events_list, container, false); // Rename your layout files if you want
+    }
 
-        BottomNavHelper.setupBottomNav(this);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         controller = EventController.getInstance();
 
         // Setup the ListView and Adapter completely empty first
-        adapter = new EventListAdapter(this, displayedEvents);
-        ListView listView = findViewById(R.id.event_list);
+        adapter = new EventListAdapter(requireContext(), displayedEvents);
+        ListView listView = view.findViewById(R.id.event_list);
         listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener((parent, view, position, id) -> {
+        listView.setOnItemClickListener((parent, v, position, id) -> {
             Event event = (Event) parent.getItemAtPosition(position);
             if (event != null && event.getEventId() != null) {
                 boolean invited = controller.isInvitedEvent(event.getEventId());
@@ -56,7 +57,7 @@ public class EventsListActivity extends AppCompatActivity {
         });
 
         // Setup Search Bar Filtering
-        etSearchBar = findViewById(R.id.etSearchBar);
+        etSearchBar = view.findViewById(R.id.etSearchBar);
         etSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -71,20 +72,16 @@ public class EventsListActivity extends AppCompatActivity {
         });
 
         // Setup Toolbar Buttons
-        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+        view.findViewById(R.id.toolbar_back).setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        findViewById(R.id.btnSearchFilter).setOnClickListener(v -> {
-            startActivity(new Intent(this, FilterEventsActivity.class));
+        view.findViewById(R.id.btnSearchFilter).setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), FilterEventsActivity.class));
         });
-
-        // Setup Bottom Nav
-        BottomNavHelper.setupBottomNav(this);
-
     }
 
     // Refresh data every time the screen becomes visible
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
         controller.getAllEvents(new RepositoryCallback<List<Event>>() {
@@ -92,7 +89,11 @@ public class EventsListActivity extends AppCompatActivity {
             public void onSuccess(List<Event> result) {
                 allEvents.clear();
                 if (result != null) {
-                    allEvents.addAll(result);
+                    for (Event e : result) {
+                        if (e != null && !e.isPrivateEvent()) {
+                            allEvents.add(e);
+                        }
+                    }
                 }
 
                 // Re-apply the search filter if the user had text in the search bar
@@ -132,9 +133,9 @@ public class EventsListActivity extends AppCompatActivity {
     }
 
     private void openEventDetail(String eventKey, boolean invited) {
-        Intent intent = new Intent(this, EventDetailViewActivity.class);
+        Intent intent = new Intent(requireContext(), EventDetailViewActivity.class);
         intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, eventKey);
-        intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, invited);
+        intent.putExtra(EventDetailViewActivity.EXTRA_INVITED, invited);  // TODO: Make this better (like what even is this)
         startActivity(intent);
     }
 }

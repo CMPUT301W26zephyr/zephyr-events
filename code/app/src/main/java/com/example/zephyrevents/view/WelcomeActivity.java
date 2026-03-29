@@ -1,7 +1,6 @@
 package com.example.zephyrevents.view;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -10,9 +9,6 @@ import androidx.core.splashscreen.SplashScreen;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.UserController;
-import com.example.zephyrevents.model.User;
-import com.example.zephyrevents.view.HomeActivity;
-import com.example.zephyrevents.view.SignUpActivity;
 
 /**
  * This activity is the entry point to the application
@@ -30,7 +26,7 @@ public class WelcomeActivity extends AppCompatActivity {
         UserController userController = new UserController(this);
 
         if (userController.isUserLoggedIn()) {
-            startActivity(new Intent(this, HomeActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
