@@ -27,14 +27,7 @@ public class OrganizerEntrantsListView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_organizer_entrants_list);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.top_bar), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(0, systemBars.top, 0, 0);
-            return insets;
-        });
 
         // Retrieve the Event ID passed from EventDetailViewActivity
         eventId = getIntent().getStringExtra(EventDetailViewActivity.EXTRA_EVENT);
@@ -53,13 +46,6 @@ public class OrganizerEntrantsListView extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             tab.setText(tabTitles[position]);
         }).attach();
-
-        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            View tab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(i);
-            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) tab.getLayoutParams();
-            p.setMargins(24, 12, 24, 12);
-            tab.requestLayout();
-        }
     }
 
     private class EntrantsPagerAdapter extends FragmentStateAdapter {

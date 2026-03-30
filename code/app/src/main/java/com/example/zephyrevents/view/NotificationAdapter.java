@@ -65,8 +65,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         long when = notif.getTime();
         if (when <= 0) when = System.currentTimeMillis();
         CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(when, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
-        // Clean up the text to match mockup style (e.g., "4 days" instead of "4 days ago")
-        holder.timeText.setText(timeAgo.toString().replace(" ago", ""));
+        holder.timeText.setText(timeAgo.toString());
 
         // 4. Mock the Avatar Initials (e.g. "AB" as requested, or dynamically generated)
         holder.avatarText.setText("ZE");

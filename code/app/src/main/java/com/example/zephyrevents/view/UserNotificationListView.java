@@ -1,6 +1,7 @@
 package com.example.zephyrevents.view;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ public class UserNotificationListView extends AppCompatActivity {
         title.setText(R.string.notifications);
 
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_notifications);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

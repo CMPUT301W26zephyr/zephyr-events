@@ -74,12 +74,6 @@ public class EntrantsListFragment extends Fragment {
         Button btnRunLottery = view.findViewById(R.id.btn_run_lottery);
         Button btnExportCsv = view.findViewById(R.id.btn_export_csv);
 
-        btnNotify.setText("Notify");
-        btnDrawReplacements.setText("Draw Replacements");
-        btnRunLottery.setText("Run Lottery");
-        btnExportCsv.setText("Export CSV");
-
-        // 1. Setup button visibilities based on the current tab
         if (tabIndex == 0) {
             btnNotify.setVisibility(View.VISIBLE);
             btnRunLottery.setVisibility(View.VISIBLE);
@@ -119,24 +113,22 @@ public class EntrantsListFragment extends Fragment {
             btnExportCsv.setOnClickListener(v -> Toast.makeText(requireContext(), "Exporting CSV...", Toast.LENGTH_SHORT).show());
         }
 
-        // 2. UNIFIED NOTIFY BUTTON LOGIC FOR ALL TABS
         btnNotify.setOnClickListener(v -> {
             if (currentFilteredList == null || currentFilteredList.isEmpty()) {
                 Toast.makeText(requireContext(), "No users in this list to notify.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Create a text input for the dialog
-            android.widget.EditText input = new android.widget.EditText(requireContext());
-            input.setHint("Type your message here...");
-            input.setPadding(50, 50, 50, 50);
+            // Inflate the custom themed XML layout
+            View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_notify_message, null);
+            com.google.android.material.textfield.TextInputEditText input = dialogView.findViewById(R.id.et_notify_message);
 
-            // Show the Dialog
-            new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Send Custom Notification")
-                    .setView(input)
-                    .setPositiveButton("Send", (dialog, which) -> {
-                        String msg = input.getText().toString().trim();
+            // Build the dialog
+            androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Send Notification")
+                    .setView(dialogView)
+                    .setPositiveButton("Send", (d, which) -> {
+                        String msg = input.getText() != null ? input.getText().toString().trim() : "";
                         if (msg.isEmpty()) {
                             Toast.makeText(requireContext(), "Message cannot be empty", Toast.LENGTH_SHORT).show();
                             return;
@@ -153,7 +145,15 @@ public class EntrantsListFragment extends Fragment {
                         Toast.makeText(requireContext(), "Notifications successfully sent!", Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton("Cancel", null)
-                    .show();
+                    .create();
+
+            dialog.show();
+
+            // Color the dialog buttons to match the app's red theme
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                    .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
+                    .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
         });
 
         loadData(recyclerView);
