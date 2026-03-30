@@ -105,12 +105,12 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
 
                         String dateStr = "";
                         if (result.getTime() != null && result.getTime().getStartTime() > 0) {
-                            dateStr = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(result.getTime().getStartTime()));
+                            dateStr = new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault()).format(new Date(result.getTime().getStartTime()));
                         }
                         String locStr = result.getLocation() != null && result.getLocation().getLocationString() != null ? result.getLocation().getLocationString() : "";
 
                         if (!dateStr.isEmpty() && !locStr.isEmpty()) {
-                            dateLocationView.setText(dateStr + ", " + locStr);
+                            dateLocationView.setText(dateStr + "\n" + locStr);
                         } else {
                             dateLocationView.setText(dateStr + locStr);
                         }

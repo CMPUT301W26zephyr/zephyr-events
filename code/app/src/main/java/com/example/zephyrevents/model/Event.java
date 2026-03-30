@@ -20,6 +20,7 @@ public class Event {
     private int capacity;
     private int applicantCount;
     private Integer waitlistCapacity;
+    private long registrationStartTime;
     private long registrationEndTime;
     private String organizerId;
     private String imageUrl;
@@ -179,6 +180,14 @@ public class Event {
 
     public void setApplicantCount(int applicantCount) {
         this.applicantCount = applicantCount;
+    }
+
+    public long getRegistrationStartTime() {
+        return registrationStartTime;
+    }
+
+    public void setRegistrationStartTime(long registrationStartTime) {
+        this.registrationStartTime = registrationStartTime;
     }
 
     public long getRegistrationEndTime() {

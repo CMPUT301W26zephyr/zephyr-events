@@ -21,6 +21,7 @@ public enum NotificationType {
     EVENT_END,
     WON_EVENT,
     LOST_EVENT,
+    LOTTERY_COMPLETED,
     MANUAL,
     /** Invited to join the waitlist of a private event. */
     PRIVATE_EVENT_INVITE,

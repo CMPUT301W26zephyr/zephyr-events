@@ -459,7 +459,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
 
         if (event.getTime() != null && event.getTime().getStartTime() > 0) {
-            eventDate.setText(new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getTime().getStartTime())));
+            eventDate.setText(new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault()).format(new Date(event.getTime().getStartTime())));
         } else {
             eventDate.setText(getString(R.string.date));
         }
@@ -484,7 +484,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         }
 
         if (event.getRegistrationEndTime() > 0) {
-            waitlistRegistrationEnds.setText(new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(event.getRegistrationEndTime())));
+            waitlistRegistrationEnds.setText(new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault()).format(new Date(event.getRegistrationEndTime())));
         } else {
             waitlistRegistrationEnds.setText("N/A");
         }
@@ -588,10 +588,15 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
                 boolean trueCapacityFull = event.getWaitlistCapacity() != null && event.getWaitlistCapacity() > 0 && trueCount >= event.getWaitlistCapacity();
                 boolean pastDeadline = event.getRegistrationEndTime() > 0 && System.currentTimeMillis() > event.getRegistrationEndTime();
+                boolean beforeRegistration = event.getRegistrationStartTime() > 0 && System.currentTimeMillis() < event.getRegistrationStartTime();
 
                 boolean isClosedForNew = trueCapacityFull || lotteryRun || pastDeadline;
 
-                if (isClosedForNew) {
+                // Set Status Tag
+                if (beforeRegistration) {
+                    statusTag.setText("COMING SOON");
+                    statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag_orange));
+                } else if (isClosedForNew) {
                     statusTag.setText("CLOSED");
                     statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag_orange));
                 } else {
@@ -599,7 +604,37 @@ public class EventDetailViewActivity extends AppCompatActivity {
                     statusTag.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_status_tag));
                 }
 
-                if (!isManagingUser) {
+                if (isManagingUser) {
+                    if (lotteryRun) {
+                        buttonPrimary.setVisibility(View.VISIBLE);
+                        buttonPrimary.setEnabled(false);
+                        buttonPrimary.setText("REGISTRATION CLOSED");
+                        buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, android.R.color.darker_gray));
+                        buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
+                        buttonSecondary.setVisibility(View.GONE);
+                    } else {
+                        if (pastDeadline) {
+                            // AUTO-RUN THE LOTTERY
+                            Toast.makeText(EventDetailViewActivity.this, "Registration ended. Running lottery...", Toast.LENGTH_SHORT).show();
+                            executeLottery();
+                        } else {
+                            buttonPrimary.setVisibility(View.VISIBLE);
+                            buttonPrimary.setEnabled(true);
+                            buttonPrimary.setText("RUN LOTTERY EARLY");
+                            buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_filled));
+                            buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
+                            buttonPrimary.setOnClickListener(v -> {
+                                new MaterialAlertDialogBuilder(EventDetailViewActivity.this)
+                                        .setTitle("Run Lottery")
+                                        .setMessage("Are you sure you want to prematurely close registration and run the lottery?")
+                                        .setPositiveButton("Run", (dialog, which) -> executeLottery())
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            });
+                        }
+                        buttonSecondary.setVisibility(View.GONE);
+                    }
+                } else {
                     boolean pendingInvite = !"unknown_user".equals(currentUserId)
                             && event.getPendingPrivateWaitlistInviteUserIds().contains(currentUserId);
 
@@ -608,22 +643,23 @@ public class EventDetailViewActivity extends AppCompatActivity {
                     } else if (myEntry == null && event.isPrivateEvent() && !pendingInvite) {
                         showPrivateEventNotInvited();
                     } else if (myEntry == null) {
-                        if (isClosedForNew) {
+                        if (beforeRegistration) {
+                            buttonPrimary.setVisibility(View.VISIBLE);
+                            buttonPrimary.setEnabled(false);
+                            String dateStr = new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(new Date(event.getRegistrationStartTime()));
+                            buttonPrimary.setText("OPENS " + dateStr.toUpperCase(Locale.getDefault()));
+                            buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, android.R.color.darker_gray));
+                            buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
+                            buttonSecondary.setVisibility(View.GONE);
+                        } else if (isClosedForNew) {
                             showWaitlistClosedButton(trueCapacityFull, lotteryRun, pastDeadline);
                         } else {
                             showJoinWaitlistButton(new WaitlistRepository());
                         }
                     } else {
                         switch (myEntry.getStatus()) {
-                            case WAITLISTED:
-                                showLeaveWaitlistButton(new WaitlistRepository());
-                                break;
-                            case SELECTED:
-                                showAcceptDeclineButtons(new WaitlistRepository());
-                                break;
-                            case LOST:
-                                showLostButton();
-                                break;
+                            case WAITLISTED: showLeaveWaitlistButton(new WaitlistRepository()); break;
+                            case SELECTED: showAcceptDeclineButtons(new WaitlistRepository()); break;
                             case ACCEPTED:
                                 buttonPrimary.setVisibility(View.VISIBLE);
                                 buttonPrimary.setEnabled(false);
@@ -638,15 +674,31 @@ public class EventDetailViewActivity extends AppCompatActivity {
                                 buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.invite_declined_red));
                                 buttonSecondary.setVisibility(View.GONE);
                                 break;
+                            case LOST:
+                                // SECOND CHANCE WAITLIST BUTTON
+                                buttonPrimary.setVisibility(View.VISIBLE);
+                                buttonPrimary.setEnabled(true);
+                                buttonPrimary.setText("JOIN SECOND CHANCE WAITLIST");
+                                buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_filled));
+                                buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
+                                buttonPrimary.setOnClickListener(v -> {
+                                    new WaitlistRepository().updateStatus(event.getEventId(), currentUserId, Status.WAITLISTED, new RepositoryCallback<Void>() {
+                                        @Override
+                                        public void onSuccess(Void result) {
+                                            Toast.makeText(EventDetailViewActivity.this, "Joined Second Chance Waitlist!", Toast.LENGTH_SHORT).show();
+                                            populateUI();
+                                        }
+                                        @Override
+                                        public void onFailure(Exception e) {}
+                                    });
+                                });
+                                buttonSecondary.setVisibility(View.GONE);
+                                break;
                         }
                     }
                 }
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                waitlistApplicants.setText(String.valueOf(event.getCurrentApplicants()));
-            }
+            @Override public void onFailure(Exception e) {}
         });
     }
 
@@ -835,4 +887,32 @@ public class EventDetailViewActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void executeLottery() {
+        buttonPrimary.setEnabled(false);
+        buttonPrimary.setText("RUNNING...");
+        new com.example.zephyrevents.controller.LotteryController().runLottery(event.getEventId(), new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                // Force deadline to NOW to officially lock out new entrants
+                event.setRegistrationEndTime(System.currentTimeMillis());
+                EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void res) {
+                        Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
+                        populateUI();
+                    }
+                    @Override
+                    public void onFailure(Exception e) { populateUI(); }
+                });
+            }
+            @Override
+            public void onFailure(Exception e) {
+                buttonPrimary.setEnabled(true);
+                buttonPrimary.setText("RUN LOTTERY");
+                Toast.makeText(EventDetailViewActivity.this, "Failed to run lottery.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

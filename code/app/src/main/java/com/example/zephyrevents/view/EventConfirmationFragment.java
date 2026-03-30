@@ -19,6 +19,7 @@ import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.ImageRepository;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -145,11 +146,14 @@ public class EventConfirmationFragment extends Fragment {
                     eventLoc.setLocationString(displayLocation);
                     newEvent.setLocation(eventLoc);
 
-                    // Parse the dates into EventTime format
-                    SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault());
+                    // Parse the dates into EventTime format using the FULL formatter including time
+                    SimpleDateFormat sdfFull = new SimpleDateFormat("MMM d, yyyy, h:mm a", java.util.Locale.getDefault());
+                    SimpleDateFormat sdfDateOnly = new SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault());
+
                     try {
                         if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
-                            Date eDate = sdf.parse(viewModel.eventDate);
+                            Date eDate = null;
+                            try { eDate = sdfFull.parse(viewModel.eventDate); } catch (ParseException e) { eDate = sdfDateOnly.parse(viewModel.eventDate); }
                             if (eDate != null) {
                                 com.example.zephyrevents.model.EventTime time = new com.example.zephyrevents.model.EventTime(eDate.getTime(), eDate.getTime() + 7200000);
                                 newEvent.setTime(time);
@@ -157,7 +161,11 @@ public class EventConfirmationFragment extends Fragment {
                         }
                         if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
                             String[] parts = viewModel.registrationPeriod.split(" - ");
-                            Date regEnd = sdf.parse(parts[1]);
+                            Date regStart = null, regEnd = null;
+                            try { regStart = sdfFull.parse(parts[0]); } catch (ParseException e) { regStart = sdfDateOnly.parse(parts[0]); }
+                            try { regEnd = sdfFull.parse(parts[1]); } catch (ParseException e) { regEnd = sdfDateOnly.parse(parts[1]); }
+
+                            if (regStart != null) newEvent.setRegistrationStartTime(regStart.getTime());
                             if (regEnd != null) newEvent.setRegistrationEndTime(regEnd.getTime());
                         }
                     } catch (Exception e) { e.printStackTrace(); }
@@ -166,28 +174,23 @@ public class EventConfirmationFragment extends Fragment {
                     newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
                     newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
 
-                    // 2. Save to Firebase
-                    EventController.getInstance().saveEventWithOptionalImage(newEvent, viewModel.pendingEventImageUri, viewModel.existingImgUrl, new RepositoryCallback<Void>() {
+                    EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
                         @Override
                         public void onSuccess(Void result) {
-                            viewModel.pendingEventImageUri = null;
-                            Toast.makeText(requireContext(),
-                                    viewModel.isEditMode ? "Event updated" : "Event created",
-                                    Toast.LENGTH_SHORT).show();
-                            requireActivity().finish();
+                            Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            Toast.makeText(requireContext(),
-                                    "Failed to save:" + e.getMessage(),
-                                     Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
                         }
                     });
 
-                    // 3. CLOSE IMMEDIATELY (Optimistic UI)
-                    // We don't wait for the network. We close the form instantly so the user isn't stuck waiting.
-                    //requireActivity().finish();
+                    // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
+                    if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
+                        new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
+                    }
+                    requireActivity().finish();
                 }
         );
     }

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,34 +39,42 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         Notification notif = notifications.get(position);
         NotificationType type = notif.getType();
 
+        // 1. Bind the explicit Mockup Titles
         String title;
-        if (type == NotificationType.PRIVATE_EVENT_INVITE) {
-            title = holder.itemView.getContext().getString(R.string.notif_private_invite_title);
+        if (type == NotificationType.WON_EVENT) {
+            title = "You've been Selected!";
+        } else if (type == NotificationType.LOST_EVENT) {
+            title = "Lottery Results";
+        } else if (type == NotificationType.LOTTERY_COMPLETED) {
+            title = "Lottery Complete";
+        } else if (type == NotificationType.PRIVATE_EVENT_INVITE) {
+            title = "You've been Invited";
         } else if (type == NotificationType.CO_ORGANIZER_INVITE) {
-            title = holder.itemView.getContext().getString(R.string.notif_coorganizer_title);
-        } else if (type != null) {
-            String typeStr = type.name().replace("_", " ").toLowerCase();
-            title = typeStr.substring(0, 1).toUpperCase() + typeStr.substring(1);
+            title = "Co-Organizer Invite";
+        } else if (type == NotificationType.MANUAL) {
+            title = "Organizer Update";
         } else {
-            title = holder.itemView.getContext().getString(R.string.notifications);
+            title = "Notification";
         }
         holder.titleText.setText(title);
 
+        // 2. Bind the description
         holder.descText.setText(notif.getText() != null ? notif.getText() : "");
 
+        // 3. Format Time
         long when = notif.getTime();
-        if (when <= 0) {
-            when = System.currentTimeMillis();
-        }
+        if (when <= 0) when = System.currentTimeMillis();
         CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(when, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
-        holder.timeText.setText(timeAgo);
+        holder.timeText.setText(timeAgo.toString());
 
-        holder.unreadIndicator.setVisibility(notif.isRead() ? View.GONE : View.VISIBLE);
+        // 4. Mock the Avatar Initials (e.g. "AB" as requested, or dynamically generated)
+        holder.avatarText.setText("ZE");
 
-        boolean isInviteType = type == NotificationType.PRIVATE_EVENT_INVITE
-                || type == NotificationType.CO_ORGANIZER_INVITE;
-        holder.btnGoto.setText(isInviteType ? R.string.cta_view_invite : R.string.cta_go_to_event);
+        // 5. Button Visibility logic (Losers don't get a button)
+        holder.btnGoto.setVisibility(View.VISIBLE);
+        holder.btnGoto.setText("View Event");
 
+        // Button Action
         holder.btnGoto.setOnClickListener(v -> {
             if (type == NotificationType.CO_ORGANIZER_INVITE) {
                 Intent intent = new Intent(v.getContext(), MainActivity.class);
@@ -90,16 +99,16 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView titleText, descText, timeText;
-        View unreadIndicator;
+        TextView avatarText, titleText, descText, timeText;
+        ImageView moreIcon;
         Button btnGoto;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            avatarText = itemView.findViewById(R.id.notification_avatar);
             titleText = itemView.findViewById(R.id.notification_title);
             descText = itemView.findViewById(R.id.notification_desc);
             timeText = itemView.findViewById(R.id.notification_time);
-            unreadIndicator = itemView.findViewById(R.id.indicator_unread);
             btnGoto = itemView.findViewById(R.id.btn_goto_event);
         }
     }
