@@ -15,6 +15,13 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
+import android.text.TextUtils;
+import com.bumptech.glide.Glide;
+import android.net.Uri;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
+import android.widget.ImageView;
 
 /**
  * Activity that allows the user to edit their profile.
@@ -29,10 +36,38 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     private Spinner spCountry;
     private EditText etPhone;
 
+    private ImageView avatarImg;
+    private ActivityResultLauncher<androidx.activity.result.PickVisualMediaRequest> pickImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_user);
+
+        avatarImg = findViewById(R.id.avatar_img);
+
+        pickImage = registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(),
+                uri -> {
+                    if (uri == null) return;
+                    Glide.with(this).load(uri).circleCrop().into(avatarImg);
+                    userController.updateProfileImg(uri, new RepositoryCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            Toast.makeText(UserProfileEditViewActivity.this, "Avatar Update", Toast.LENGTH_SHORT).show();
+
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(UserProfileEditViewActivity.this,
+                                    "Upload Fail" + e.getMessage(), Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+                }
+
+        );
 
         // Customize layout_top_bar
         TextView toolbarTitle = findViewById(R.id.toolbar_title);
@@ -95,6 +130,17 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
                             break;
                         }
                     }
+                }
+
+                String avatarUrl = (data != null && data.length > 4 && data[4] != null) ? data[4] : "";
+                if (!TextUtils.isEmpty(avatarUrl)){
+                    Glide.with(UserProfileEditViewActivity.this)
+                            .load(avatarUrl)
+                            .circleCrop()
+                            .into(avatarImg);
+                } else {
+                    avatarImg.setImageResource(R.drawable.ic_person_24);
+
                 }
 
             }

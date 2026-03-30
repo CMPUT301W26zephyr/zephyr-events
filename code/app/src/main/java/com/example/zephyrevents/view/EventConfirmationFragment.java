@@ -16,6 +16,7 @@ import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
+import com.example.zephyrevents.repository.ImageRepository;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
 import java.text.SimpleDateFormat;
@@ -23,6 +24,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
+
+
 
 public class EventConfirmationFragment extends Fragment {
 
@@ -86,6 +91,15 @@ public class EventConfirmationFragment extends Fragment {
             description.setTypeface(null, Typeface.ITALIC);
         } else {
             description.setText(viewModel.description);
+        }
+        ImageView confirmImage = view.findViewById(R.id.confirm_event_image);
+        if (viewModel.pendingEventImageUri != null){
+            Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(confirmImage);
+
+        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()) {
+            Glide.with(this).load(viewModel.existingImgUrl).centerCrop().into(confirmImage);
+        } else{
+            Glide.with(this).load(R.drawable.ic_image_placeholder2).centerCrop().into(confirmImage);
         }
 
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
@@ -153,21 +167,27 @@ public class EventConfirmationFragment extends Fragment {
                     newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
 
                     // 2. Save to Firebase
-                    EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
+                    EventController.getInstance().saveEventWithOptionalImage(newEvent, viewModel.pendingEventImageUri, viewModel.existingImgUrl, new RepositoryCallback<Void>() {
                         @Override
                         public void onSuccess(Void result) {
-                            Toast.makeText(requireContext(), "Event Created Successfully!", Toast.LENGTH_SHORT).show();
+                            viewModel.pendingEventImageUri = null;
+                            Toast.makeText(requireContext(),
+                                    viewModel.isEditMode ? "Event updated" : "Event created",
+                                    Toast.LENGTH_SHORT).show();
+                            requireActivity().finish();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            Toast.makeText(requireContext(), "Failed to create event", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(),
+                                    "Failed to save:" + e.getMessage(),
+                                     Toast.LENGTH_SHORT).show();
                         }
                     });
 
                     // 3. CLOSE IMMEDIATELY (Optimistic UI)
                     // We don't wait for the network. We close the form instantly so the user isn't stuck waiting.
-                    requireActivity().finish();
+                    //requireActivity().finish();
                 }
         );
     }

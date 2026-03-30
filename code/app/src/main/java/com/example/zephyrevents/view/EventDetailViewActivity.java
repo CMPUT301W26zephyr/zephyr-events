@@ -38,6 +38,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
+
 public class EventDetailViewActivity extends AppCompatActivity {
     public static final String EXTRA_EVENT = "extra_event";
     public static final String EXTRA_INVITED = "extra_invited";
@@ -83,6 +86,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private EventCommentAdapter commentAdapter;
     private ListenerRegistration commentsRegistration;
+
+    private ImageView eventPoster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,6 +177,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         waitlistApplicants = findViewById(R.id.waitlist_applicants);
         waitlistRegistrationEnds = findViewById(R.id.waitlist_registration_ends);
         eventImageContainer = findViewById(R.id.event_image_container);
+        eventPoster = findViewById(R.id.event_image);
 
         attendeeButtonsContainer = findViewById(R.id.event_detail_buttons);
 
@@ -437,6 +443,18 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private void populateUI() {
         if (event == null) return;
 
+        if (eventPoster != null){
+            eventPoster.setImageTintList(null);
+            eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            String url = event.getImageUrl();
+            if (url != null && !url.isEmpty()){
+                Glide.with(this).load(url).centerCrop().into(eventPoster);
+            } else{
+                eventPoster.setImageResource(R.drawable.ic_image_placeholder2);
+                eventPoster.setImageTintList(ContextCompat.getColorStateList(this, android.R.color.darker_gray));
+            }
+        }
+
         eventTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
         eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
 
@@ -471,7 +489,6 @@ public class EventDetailViewActivity extends AppCompatActivity {
             waitlistRegistrationEnds.setText("N/A");
         }
 
-        eventImageContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.event_placeholder_swimming));
 
         boolean isOrganizer = currentUserId != null && currentUserId.equals(event.getOrganizerId());
         boolean isCoOrganizer = event.getCoOrganizerUserIds() != null
