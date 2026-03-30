@@ -68,6 +68,12 @@ public class MyEventsActivity extends AppCompatActivity {
         showLotteries();
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        fetchUserEvents();
+    }
+
     private void fetchUserEvents() {
         String currentUserId = new UserController(this).getCurrentUserId();
         if (currentUserId == null) return;

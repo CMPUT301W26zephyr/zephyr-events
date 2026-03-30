@@ -70,6 +70,45 @@ public class ImageRepository {
 
     }
 
+    /**
+     * Remove profile image from the Firebase Storage
+     */
+
+    public void deleteProfileAvatar(String userId, RepositoryCallback<Void> callback){
+        if (userId == null || userId.trim().isEmpty()){
+            callback.onFailure(new IllegalArgumentException("Invalid user id"));
+            return;
+        }
+        StorageReference ref = storage.getReference()
+                .child("users")
+                .child(userId)
+                .child("avatar.jpg");
+        ref.delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(e -> {
+                    callback.onSuccess(null);
+                });
+
+    }
+
+    /**
+     * Remove event poster from Firebase
+     */
+
+    public void deleteEventPoster(String eventId, RepositoryCallback<Void> callback){
+        if (eventId == null || eventId.trim().isEmpty()){
+            callback.onFailure(new IllegalArgumentException("Invalid event id"));
+            return;
+        }
+        StorageReference ref = storage.getReference()
+                .child("events")
+                .child(eventId)
+                .child("poster.jpg");
+        ref.delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onSuccess(null));
+    }
+
 
 
 

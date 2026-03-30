@@ -178,7 +178,7 @@ public class EventConfirmationFragment extends Fragment {
 
                     // 3. CLOSE IMMEDIATELY (Optimistic UI)
                     // We don't wait for the network. We close the form instantly so the user isn't stuck waiting.
-                    requireActivity().finish();
+                    //requireActivity().finish();
                 }
         );
     }

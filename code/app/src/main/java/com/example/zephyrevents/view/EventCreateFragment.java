@@ -39,6 +39,9 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import com.bumptech.glide.Glide;
 
+import androidx.appcompat.app.AlertDialog;
+
+
 public class EventCreateFragment extends Fragment {
 
     private EventViewModel viewModel;
@@ -50,6 +53,65 @@ public class EventCreateFragment extends Fragment {
 
     private ActivityResultLauncher<PickVisualMediaRequest> pickEventImg;
     private ImageView eventImgPreview;
+
+    private boolean eventHasPoster(){
+        return viewModel != null
+                && (viewModel.pendingEventImageUri != null
+                || (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()));
+
+
+    }
+    private void launchPickEventPoster(){
+        pickEventImg.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
+    }
+
+    private void clearEventPoster(){
+        viewModel.pendingEventImageUri = null;
+        viewModel.existingImgUrl = "";
+        if(eventImgPreview != null){
+            Glide.with(this).clear(eventImgPreview);
+            eventImgPreview.setImageResource(R.drawable.ic_image_placeholder2);
+        }
+    }
+
+    private void showConfirmRemovePoster(){
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_remove_poster, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            clearEventPoster();
+            Toast.makeText(requireContext(), "Poster removed", Toast.LENGTH_SHORT).show();
+
+        });
+        dialog.show();
+    }
+
+    private void showPosterOptionDialog(){
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_event_poster, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> {
+                dialog.dismiss();
+                launchPickEventPoster();
+    });
+
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            showConfirmRemovePoster();
+
+        });
+        dialog.show();
+
+    }
+
 
 
     @Override
@@ -76,6 +138,8 @@ public class EventCreateFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event_create, container, false);
     }
+
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -107,10 +171,13 @@ public class EventCreateFragment extends Fragment {
         eventImgPreview = view.findViewById(R.id.event_image_preview);
         View eventImgContainer = view.findViewById(R.id.event_image_container);
 
-        eventImgContainer.setOnClickListener(v ->
-                pickEventImg.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build()));
+        eventImgContainer.setOnClickListener(v -> {
+            if(eventHasPoster()){
+                showPosterOptionDialog();
+            } else{
+                launchPickEventPoster();
+            }
+        });
 
         if (viewModel.pendingEventImageUri != null){
             Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(eventImgPreview);

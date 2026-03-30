@@ -39,8 +39,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_person_24"/>
+                android:src="@drawable/ic_person_24" />
         </androidx.cardview.widget.CardView>
+
 
         <ImageButton
             android:id="@+id/btnEditAvatar"
@@ -48,11 +49,12 @@
             android:layout_height="32dp"
             android:layout_gravity="bottom|end"
             android:background="@drawable/bg_edit_avatar_badge"
+            android:contentDescription="Edit profile"
+            android:elevation="4dp"
             android:padding="6dp"
             android:scaleType="centerInside"
-            android:contentDescription="Edit profile"
             android:src="@drawable/ic_edit_24"
-            app:tint="@color/black"/>
+            app:tint="@color/black" />
     </FrameLayout>
 
     <TextView

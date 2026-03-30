@@ -111,10 +111,42 @@ public class EventController {
                 }
             });
         } else{
+            final String eventId = event.getEventId();
             if (existingImageUrl != null && !existingImageUrl.isEmpty()){
                 event.setImageUrl(existingImageUrl);
+            } else{
+                event.setImageUrl(null);
             }
-            eventRepository.saveEvent(event, callback);
+
+            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.isEmpty();
+
+            eventRepository.saveEvent(event, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    if (deletePosterInStorage && eventId != null && !eventId.trim().isEmpty()){
+                        imageRepository.deleteEventPoster(eventId, new RepositoryCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                callback.onSuccess(null);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                callback.onSuccess(null);
+
+                            }
+                        });
+                    } else {
+                        callback.onSuccess(null);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+
+                }
+            });
         }
     }
 

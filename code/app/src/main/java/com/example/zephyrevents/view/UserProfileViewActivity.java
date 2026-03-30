@@ -41,6 +41,9 @@ public class UserProfileViewActivity extends AppCompatActivity {
     private ActivityResultLauncher<PickVisualMediaRequest> pickProfileImage;
 
 
+
+    private boolean profileHasAvatar = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +54,7 @@ public class UserProfileViewActivity extends AppCompatActivity {
         txtName = findViewById(R.id.txtName);
         txtContact = findViewById(R.id.txtContact);
         avatarImg = findViewById(R.id.avatar_img);
+
 
         pickProfileImage = registerForActivityResult(
                 new ActivityResultContracts.PickVisualMedia(),
@@ -105,15 +109,20 @@ public class UserProfileViewActivity extends AppCompatActivity {
                 txtContact.setText(contactinfo);
 
                 String avatarUrl = (data != null && data.length > 4 && data[4] != null) ? data[4] : "";
-                if (!TextUtils.isEmpty(avatarUrl)){
+                boolean hasAvatar = !TextUtils.isEmpty(avatarUrl);
+                profileHasAvatar = hasAvatar;
+
+                if (hasAvatar){
                     Glide.with(UserProfileViewActivity.this)
                             .load(avatarUrl)
                             .circleCrop()
                             .into(avatarImg);
-                } else {
+                } else{
+                    Glide.with(UserProfileViewActivity.this).clear(avatarImg);
                     avatarImg.setImageResource(R.drawable.ic_person_24);
-
                 }
+
+
 
             }
 
@@ -136,12 +145,13 @@ public class UserProfileViewActivity extends AppCompatActivity {
     }
 
     private void setUpClickListener(){
-        findViewById(R.id.btnEditAvatar).setOnClickListener(v ->
-                pickProfileImage.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build()
-                ));
-
+        findViewById(R.id.btnEditAvatar).setOnClickListener(v -> {
+            if(profileHasAvatar) {
+                showAvatarOptionDialog();
+            } else{
+                launchOptionProfileAvatar();
+            }
+        });
 
         findViewById(R.id.rowEditProfile).setOnClickListener(v -> openEditProfile());
 
@@ -158,6 +168,68 @@ public class UserProfileViewActivity extends AppCompatActivity {
 
         BottomNavHelper.setupBottomNav(this);
     }
+
+    private void launchOptionProfileAvatar(){
+        pickProfileImage.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
+    }
+
+    private void showConfirmRemoveAvatarDialog(){
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirm_remove_avatar, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            userController.clearProfileAvatar(new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(UserProfileViewActivity.this, "Avatar removed", Toast.LENGTH_SHORT).show();
+                    refreshProfile();
+
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(UserProfileViewActivity.this,
+                            "Could not remove profile: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+
+                }
+            });
+        });
+
+
+        dialog.show();
+    }
+
+    private void showAvatarOptionDialog(){
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_avatar, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> {
+            dialog.dismiss();
+            launchOptionProfileAvatar();
+        });
+
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            showConfirmRemoveAvatarDialog();
+        });
+        dialog.show();
+    }
+
+
+
 
     private void openEditProfile(){
         startActivity(new Intent(this, UserProfileEditViewActivity.class));

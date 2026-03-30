@@ -2,6 +2,8 @@ package com.example.zephyrevents.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.ContactInfo;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
@@ -302,6 +304,63 @@ public class UserController {
                 callback.onFailure(e);
             }
 
+        });
+    }
+
+    /**
+     * Clear avatar in Firestore
+     */
+
+    public void clearProfileAvatar(RepositoryCallback<Void> callback){
+        String userId = getCurrentUserId();
+        if (userId == null){
+            callback.onFailure(new Exception("No user found"));
+            return;
+        }
+
+        fetchCurrentUser(new RepositoryCallback<User>() {
+            @Override
+            public void onSuccess(User result) {
+                if (result == null){
+                    callback.onFailure(new Exception("User is not loaded"));
+                    return;
+                }
+
+                result.setAvatarUrl(null);
+                userRepository.saveUser(result, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        if (imageRepository != null){
+                            imageRepository.deleteProfileAvatar(userId, new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    callback.onSuccess(null);
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    callback.onSuccess(null);
+
+                                }
+                            });
+                        } else{
+                            callback.onSuccess(null);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+
+            }
         });
     }
 }

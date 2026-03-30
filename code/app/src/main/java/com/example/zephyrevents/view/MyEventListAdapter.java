@@ -44,14 +44,24 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
             row = inflater.inflate(R.layout.item_my_event_card, parent, false);
         }
 
+        final View rowFinal = row;
+
         WaitlistEntry entry = getItem(position);
-        if (entry == null) return row;
+        if (entry == null) return rowFinal;
+
+
+        final String rowEventId = entry.getEventId();
+        rowFinal.setTag(rowEventId);
 
         TextView titleView = row.findViewById(R.id.item_event_title);
         TextView dateLocationView = row.findViewById(R.id.item_event_date_location);
         TextView priceView = row.findViewById(R.id.item_event_price);
         TextView statusView = row.findViewById(R.id.item_event_status);
         ImageView eventPoster = row.findViewById(R.id.item_event_image);
+        if (eventPoster != null){
+            Glide.with(getContext()).clear(eventPoster);
+            eventPoster.setImageResource(R.drawable.event_card_placeholder);
+        }
 
         // Clear out old text while Firebase loads the actual event
         titleView.setText("Loading...");
@@ -64,12 +74,23 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
                 @Override
                 public void onSuccess(Event result) {
                     if (result != null) {
+                        if (rowEventId == null || result.getEventId() == null || !rowEventId.equals(result.getEventId())){
+                            return;
+                        }
+                        Object tag = rowFinal.getTag();
+                        if (tag == null || !tag.equals(result.getEventId())){
+                            return;
+                        }
                         titleView.setText(result.getName() != null ? result.getName() : "Unknown Event");
 
                         if(eventPoster != null){
                             String url = result.getImageUrl();
                             if(url != null && !url.isEmpty()){
-                                Glide.with(getContext()).load(url).centerCrop().into(eventPoster);
+                                Glide.with(getContext())
+                                        .load(url)
+                                        .centerCrop()
+                                        .error(R.drawable.event_card_placeholder)
+                                        .into(eventPoster);
 
                             } else {
                                 eventPoster.setImageResource(R.drawable.event_card_placeholder);
@@ -155,5 +176,5 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
             });
         }
 
-        return row;
+        return rowFinal;
     }}
