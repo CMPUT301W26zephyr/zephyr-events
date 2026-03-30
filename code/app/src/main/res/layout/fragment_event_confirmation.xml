@@ -31,9 +31,11 @@
                 android:layout_height="200dp"
                 android:background="#E0E0E0">
                 <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
+                    android:id = "@+id/confirm_event_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Event poster"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_image_placeholder2"/>
             </FrameLayout>
 

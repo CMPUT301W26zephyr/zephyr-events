@@ -14,6 +14,7 @@ public class User {
     private String name;
     private boolean notificationsOptOut; // Opt out of all notifications account wide?
     private String userTimeZone; // Should be something like America/Edmonton
+    private String avatarUrl; // Firebase Storage store URL for profile image
 
     /**
      * Firebase no arg constructor
@@ -28,14 +29,16 @@ public class User {
      * @param notificationsOptOut
      * @param userTimeZone
      * @param location
+     * @param avatarUrl
      */
-    public User(String name, String email, String phone, boolean notificationsOptOut, String userTimeZone, String location){
+    public User(String name, String email, String phone, boolean notificationsOptOut, String userTimeZone, String location, String avatarUrl){
         this.contactInfo = new ContactInfo(email, phone);
         this.id = GenerateId.getUniqueId();
         this.location = location;
         this.name = name;
         this.notificationsOptOut = notificationsOptOut;
         this.userTimeZone = userTimeZone;
+        this.avatarUrl = avatarUrl;
     }
 
     /**
@@ -45,9 +48,10 @@ public class User {
      * @param phone
      * @param notificationsOptOut
      * @param location
+     * @param avatarUrl
      */
-    public User(String name, String email, String phone, boolean notificationsOptOut, String location ){
-        this(name, email, phone, notificationsOptOut, TimeZone.getDefault().getID(), location);
+    public User(String name, String email, String phone, boolean notificationsOptOut, String location, String avatarUrl ){
+        this(name, email, phone, notificationsOptOut, TimeZone.getDefault().getID(), location, avatarUrl);
     }
     /**
      * constructor with default notificationsOptOut setting (false)
@@ -56,9 +60,10 @@ public class User {
      * @param phone
      * @param userTimeZone
      * @param location
+     * @param avatarUrl
      */
-    public User(String name, String email, String phone,  String userTimeZone, String location ){
-        this(name, email, phone, false, userTimeZone, location);
+    public User(String name, String email, String phone,  String userTimeZone, String location, String avatarUrl ){
+        this(name, email, phone, false, userTimeZone, location, avatarUrl);
     }
     /**
      * constructor with default notificationsOptOut setting (false) AND default timezone
@@ -66,9 +71,10 @@ public class User {
      * @param email
      * @param phone
      * @param location
+     * @param avatarUrl
      */
-    public User(String name, String email, String phone, String location){
-        this(name, email, phone, false, TimeZone.getDefault().getID(), location);
+    public User(String name, String email, String phone, String location, String avatarUrl){
+        this(name, email, phone, false, TimeZone.getDefault().getID(), location, avatarUrl);
     }
 
     public String getId() {
@@ -119,5 +125,13 @@ public class User {
 
     public void setContactInfo(ContactInfo contactInfo) {
         this.contactInfo = contactInfo;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

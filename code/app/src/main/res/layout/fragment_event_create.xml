@@ -179,14 +179,21 @@
                 android:hint="e.g. 1234 State Avenue" />
 
             <FrameLayout
+                android:id = "@+id/event_image_container"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="16dp"
-                android:background="#E0E0E0">
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
+                android:background="#E0E0E0"
+                android:clickable = "true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+
+            <ImageView
+                    android:id = "@+id/event_image_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_image_placeholder2"/>
             </FrameLayout>
 

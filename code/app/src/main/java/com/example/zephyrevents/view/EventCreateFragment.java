@@ -36,6 +36,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import android.net.Uri;
+import android.widget.ImageView;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
+import com.bumptech.glide.Glide;
+
+import androidx.appcompat.app.AlertDialog;
+
+
 public class EventCreateFragment extends Fragment {
 
     private EventViewModel viewModel;
@@ -66,6 +76,88 @@ public class EventCreateFragment extends Fragment {
     // Class-level variables so validateDates() can access them
     private TextView textRegPeriod;
     private TextView textEvent;
+
+    private ActivityResultLauncher<PickVisualMediaRequest> pickEventImg;
+    private ImageView eventImgPreview;
+
+    private boolean eventHasPoster() {
+        return viewModel != null
+                && (viewModel.pendingEventImageUri != null
+                || (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()));
+
+
+    }
+
+    private void launchPickEventPoster() {
+        pickEventImg.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
+    }
+
+    private void clearEventPoster() {
+        viewModel.pendingEventImageUri = null;
+        viewModel.existingImgUrl = "";
+        if (eventImgPreview != null) {
+            Glide.with(this).clear(eventImgPreview);
+            eventImgPreview.setImageResource(R.drawable.ic_image_placeholder2);
+        }
+    }
+
+    private void showConfirmRemovePoster() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_remove_poster, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            clearEventPoster();
+            Toast.makeText(requireContext(), "Poster removed", Toast.LENGTH_SHORT).show();
+
+        });
+        dialog.show();
+    }
+
+    private void showPosterOptionDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_event_poster, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> {
+            dialog.dismiss();
+            launchPickEventPoster();
+        });
+
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            showConfirmRemovePoster();
+
+        });
+        dialog.show();
+
+    }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle saveInstanceState) {
+        super.onCreate(saveInstanceState);
+        pickEventImg = registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(),
+                uri -> {
+                    if (uri == null) return;
+                    EventViewModel vm = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+                    vm.pendingEventImageUri = uri;
+                    vm.existingImgUrl = "";
+                    if (eventImgPreview != null) {
+                        Glide.with(this).load(uri).centerCrop().into(eventImgPreview);
+                    }
+                }
+        );
+
+
+    }
 
     @Nullable
     @Override
@@ -143,6 +235,24 @@ public class EventCreateFragment extends Fragment {
         });
         setupInvites.run();
 
+        eventImgPreview = view.findViewById(R.id.event_image_preview);
+        View eventImgContainer = view.findViewById(R.id.event_image_container);
+
+        eventImgContainer.setOnClickListener(v -> {
+            if (eventHasPoster()) {
+                showPosterOptionDialog();
+            } else {
+                launchPickEventPoster();
+            }
+        });
+
+        if (viewModel.pendingEventImageUri != null) {
+            Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(eventImgPreview);
+
+        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()) {
+            Glide.with(this).load(viewModel.existingImgUrl).centerCrop().into(eventImgPreview);
+        }
+
         // Setup Dropdown
         String[] eventTypes = new String[]{"Educational", "Workshop", "Corporate", "Social", "Recreation", "Entertainment", "Networking", "Other"};
         dropdownType.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes));
@@ -157,6 +267,7 @@ public class EventCreateFragment extends Fragment {
                         Toast.makeText(requireContext(), "Event Deleted", Toast.LENGTH_SHORT).show();
                         requireActivity().finish();
                     }
+
                     @Override
                     public void onFailure(Exception e) {
                         Toast.makeText(requireContext(), "Failed to delete event", Toast.LENGTH_SHORT).show();
@@ -192,11 +303,16 @@ public class EventCreateFragment extends Fragment {
                             long regEnd = e.getRegistrationEndTime();
                             long eventTime = e.getTime() != null ? e.getTime().getStartTime() : 0;
 
-                            if (regStart > 0 && regEnd > 0 && eventTime > 0) {
-                                viewModel.registrationPeriod = sdfFull.format(new Date(regStart)) + " - " + sdfFull.format(new Date(regEnd));
-                                viewModel.eventDate = sdfFull.format(new Date(eventTime));
-                                restoreCalendarState(calStart, timeStart, calEnd, timeEnd, calEvent, timeEvent);
+                            if (regEnd > 0) {
+                                long actualStart = regStart > 0 ? regStart : System.currentTimeMillis();
+                                viewModel.registrationPeriod = sdfFull.format(new Date(actualStart)) + " - " + sdfFull.format(new Date(regEnd));
                             }
+
+                            if (eventTime > 0) {
+                                viewModel.eventDate = sdfFull.format(new Date(eventTime));
+                            }
+
+                            restoreCalendarState(calStart, timeStart, calEnd, timeEnd, calEvent, timeEvent);
 
                             viewModel.isDataLoaded = true;
                             viewModel.privateEvent = e.isPrivateEvent();
@@ -213,8 +329,15 @@ public class EventCreateFragment extends Fragment {
                             toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
                             privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
                             updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
+
+                            if (e.getImageUrl() != null && !e.getImageUrl().isEmpty()) {
+                                viewModel.existingImgUrl = e.getImageUrl();
+                                viewModel.pendingEventImageUri = null;
+                                Glide.with(EventCreateFragment.this).load(e.getImageUrl()).centerCrop().into(eventImgPreview);
+                            }
                         }
                     }
+
                     @Override
                     public void onFailure(Exception e) {
                         Toast.makeText(requireContext(), "Failed to load event data for editing", Toast.LENGTH_SHORT).show();
@@ -261,7 +384,8 @@ public class EventCreateFragment extends Fragment {
                     if (inputTitle.getText().toString().trim().isEmpty() || inputAttendeeCount.getText().toString().trim().isEmpty() ||
                             inputLocation.getText().toString().trim().isEmpty() || !startSelected || !endSelected || regStartCal.getTimeInMillis()
                             >= regEndCal.getTimeInMillis() || !eventSelected || (endSelected && regEndCal.getTimeInMillis() >= eventCal.getTimeInMillis())) {
-                        isValid = false; }
+                        isValid = false;
+                    }
 
                     if (isValid) {
                         viewModel.title = inputTitle.getText().toString().trim();
@@ -300,7 +424,8 @@ public class EventCreateFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(Exception e) {}
+                public void onFailure(Exception e) {
+                }
             });
         }
     }
@@ -320,12 +445,13 @@ public class EventCreateFragment extends Fragment {
     }
 
     private void setupDateAndTime(CalendarView calView, TimePicker timePicker, Calendar tracker, int type) {
-        timePicker.setHour(0);
-        timePicker.setMinute(0);
+        Calendar now = Calendar.getInstance();
+        timePicker.setHour(now.get(Calendar.HOUR_OF_DAY));
+        timePicker.setMinute(now.get(Calendar.MINUTE));
 
         tracker.setTimeInMillis(calView.getDate());
-        tracker.set(Calendar.HOUR_OF_DAY, 0);
-        tracker.set(Calendar.MINUTE, 0);
+        tracker.set(Calendar.HOUR_OF_DAY, now.get(Calendar.HOUR_OF_DAY));
+        tracker.set(Calendar.MINUTE, now.get(Calendar.MINUTE));
         tracker.set(Calendar.SECOND, 0);
 
         calView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
@@ -415,8 +541,8 @@ public class EventCreateFragment extends Fragment {
             if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
                 String[] parts = viewModel.registrationPeriod.split(" - ");
 
-                Date startDate = parseDateLenient(parts[0]);
-                Date endDate = parseDateLenient(parts[1]);
+                Date startDate = parseDateLenient(parts[0].trim());
+                Date endDate = parseDateLenient(parts[1].trim());
 
                 if (startDate != null) {
                     regStartCal.setTime(startDate);
@@ -434,7 +560,7 @@ public class EventCreateFragment extends Fragment {
                 }
             }
             if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
-                Date eventD = parseDateLenient(viewModel.eventDate);
+                Date eventD = parseDateLenient(viewModel.eventDate.trim());
                 if (eventD != null) {
                     eventCal.setTime(eventD);
                     calEvent.setDate(eventD.getTime(), false, true);
@@ -444,15 +570,17 @@ public class EventCreateFragment extends Fragment {
                 }
             }
             validateDates();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private Date parseDateLenient(String dateStr) {
         try {
-            return sdfFull.parse(dateStr);
+            return sdfFull.parse(dateStr.trim());
         } catch (ParseException e) {
             try {
-                return sdfDateOnly.parse(dateStr);
+                return sdfDateOnly.parse(dateStr.trim());
             } catch (ParseException ex) {
                 return null;
             }
