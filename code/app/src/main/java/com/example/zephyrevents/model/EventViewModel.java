@@ -1,4 +1,8 @@
 package com.example.zephyrevents.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.lifecycle.ViewModel;
 import android.net.Uri;
 
@@ -26,6 +30,12 @@ public class EventViewModel extends ViewModel {
     public boolean requireGeolocation = true;
     public String registrationPeriod = "";
     public String eventDate = "";
+
+    /** False = public listing; true = private (hidden from browse, no promo QR). */
+    public boolean privateEvent = false;
+
+    public List<String> coOrganizerUserIds = new ArrayList<>();
+    public List<String> pendingPrivateWaitlistInviteUserIds = new ArrayList<>();
 
     public Uri pendingEventImageUri = null;
 

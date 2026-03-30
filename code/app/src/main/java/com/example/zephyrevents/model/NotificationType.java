@@ -21,6 +21,9 @@ public enum NotificationType {
     EVENT_END,
     WON_EVENT,
     LOST_EVENT,
-    MANUAL
-    // Add more later if needed.
+    MANUAL,
+    /** Invited to join the waitlist of a private event. */
+    PRIVATE_EVENT_INVITE,
+    /** Invited to co-organize an event. */
+    CO_ORGANIZER_INVITE
 }

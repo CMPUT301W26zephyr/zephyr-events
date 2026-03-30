@@ -2,8 +2,6 @@ package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -62,7 +60,7 @@ public class EventStatusActivity extends AppCompatActivity {
         findViewById(R.id.button_back).setOnClickListener(v -> finish());
 
         findViewById(R.id.button_view_events).setOnClickListener(v -> {
-            startActivity(new Intent(this, MyEventsActivity.class));
+            startActivity(new Intent(this, MyEventsFragment.class));
             finish();
         });
     }

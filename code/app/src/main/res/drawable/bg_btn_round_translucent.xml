@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- Translucent White Color -->
+    <solid android:color="#AAFFFFFF" />
+</shape>

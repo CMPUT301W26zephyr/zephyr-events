@@ -1,5 +1,6 @@
 package com.example.zephyrevents.view;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,10 +25,12 @@ import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.RepositoryCallback;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -139,8 +142,6 @@ public class EventCreateFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_event_create, container, false);
     }
 
-
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -167,6 +168,39 @@ public class EventCreateFragment extends Fragment {
         TextView textEvent = view.findViewById(R.id.text_event_date);
 
         Button btnDelete = view.findViewById(R.id.btn_delete_event);
+        MaterialButtonToggleGroup toggleVisibility = view.findViewById(R.id.toggle_event_visibility);
+        View privateWarning = view.findViewById(R.id.private_event_warning);
+        Button btnInviteEntrants = view.findViewById(R.id.btn_invite_entrants_private);
+        Button btnInviteCoorg = view.findViewById(R.id.btn_invite_coorganizer);
+        View dividerInvites = view.findViewById(R.id.divider_event_invites);
+        View rowInviteButtons = view.findViewById(R.id.row_invite_buttons);
+        TextView labelInvites = view.findViewById(R.id.label_event_form_invites);
+
+        toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
+        privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
+        toggleVisibility.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            viewModel.privateEvent = checkedId == R.id.btn_visibility_private;
+            privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
+            updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
+        });
+
+        Runnable setupInvites = () -> updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
+        btnInviteEntrants.setOnClickListener(v -> {
+            if (viewModel.eventId == null) return;
+            Intent i = new Intent(requireContext(), InviteUsersActivity.class);
+            i.putExtra(InviteUsersActivity.EXTRA_EVENT_ID, viewModel.eventId);
+            i.putExtra(InviteUsersActivity.EXTRA_MODE, InviteUsersActivity.MODE_PRIVATE_WAITLIST);
+            startActivity(i);
+        });
+        btnInviteCoorg.setOnClickListener(v -> {
+            if (viewModel.eventId == null) return;
+            Intent i = new Intent(requireContext(), InviteUsersActivity.class);
+            i.putExtra(InviteUsersActivity.EXTRA_EVENT_ID, viewModel.eventId);
+            i.putExtra(InviteUsersActivity.EXTRA_MODE, InviteUsersActivity.MODE_CO_ORG);
+            startActivity(i);
+        });
+        setupInvites.run();
 
         eventImgPreview = view.findViewById(R.id.event_image_preview);
         View eventImgContainer = view.findViewById(R.id.event_image_container);
@@ -234,6 +268,9 @@ public class EventCreateFragment extends Fragment {
                             }
 
                             viewModel.isDataLoaded = true;
+                            viewModel.privateEvent = e.isPrivateEvent();
+                            viewModel.coOrganizerUserIds = new ArrayList<>(e.getCoOrganizerUserIds());
+                            viewModel.pendingPrivateWaitlistInviteUserIds = new ArrayList<>(e.getPendingPrivateWaitlistInviteUserIds());
 
                             // Push downloaded data directly to UI
                             inputTitle.setText(viewModel.title);
@@ -242,6 +279,10 @@ public class EventCreateFragment extends Fragment {
                             inputAttendeeCount.setText(viewModel.attendeeCount);
                             inputLocation.setText(viewModel.location);
                             inputAddress.setText(viewModel.address);
+
+                            toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
+                            privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
+                            updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
 
                             if (e.getImageUrl() != null && !e.getImageUrl().isEmpty()) {
                                 viewModel.existingImgUrl = e.getImageUrl();
@@ -363,6 +404,40 @@ public class EventCreateFragment extends Fragment {
                     }
                 }
         );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (viewModel.isEditMode && viewModel.eventId != null) {
+            EventController.getInstance().getEventById(viewModel.eventId, new RepositoryCallback<Event>() {
+                @Override
+                public void onSuccess(Event e) {
+                    if (e == null || getView() == null) return;
+                    viewModel.privateEvent = e.isPrivateEvent();
+                    viewModel.coOrganizerUserIds = new ArrayList<>(e.getCoOrganizerUserIds());
+                    viewModel.pendingPrivateWaitlistInviteUserIds = new ArrayList<>(e.getPendingPrivateWaitlistInviteUserIds());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                }
+            });
+        }
+    }
+
+    private void updateInviteButtons(View dividerInvites, TextView labelInvites, View rowInviteButtons,
+                                   Button btnInviteEntrants, Button btnInviteCoorg) {
+        boolean edit = viewModel.isEditMode && viewModel.eventId != null;
+        boolean showCoorg = edit;
+        boolean showEntrants = edit && viewModel.privateEvent;
+        btnInviteCoorg.setVisibility(showCoorg ? View.VISIBLE : View.GONE);
+        btnInviteEntrants.setVisibility(showEntrants ? View.VISIBLE : View.GONE);
+        boolean showSection = showCoorg || showEntrants;
+        int sectionVis = showSection ? View.VISIBLE : View.GONE;
+        if (dividerInvites != null) dividerInvites.setVisibility(sectionVis);
+        if (labelInvites != null) labelInvites.setVisibility(sectionVis);
+        if (rowInviteButtons != null) rowInviteButtons.setVisibility(sectionVis);
     }
 
     private void updateRegistrationText(TextView textView) {

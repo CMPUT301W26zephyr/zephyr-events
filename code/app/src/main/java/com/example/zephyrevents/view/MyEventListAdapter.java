@@ -118,8 +118,11 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
                         // Evaluate Organizer vs Status
                         String currentUserId = new UserController(getContext()).getCurrentUserId();
                         boolean isOrganizer = currentUserId != null && result.getOrganizerId() != null && result.getOrganizerId().equals(currentUserId);
+                        boolean isCoOrganizer = currentUserId != null
+                                && result.getCoOrganizerUserIds() != null
+                                && result.getCoOrganizerUserIds().contains(currentUserId);
 
-                        if (isOrganizer) {
+                        if (isOrganizer || isCoOrganizer) {
                             statusView.setText("ORGANIZER");
                             statusView.setBackgroundResource(R.drawable.bg_badge_selected);
                             // Keep the rounded corners but tint it blue
