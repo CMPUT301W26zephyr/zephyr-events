@@ -70,22 +70,22 @@ public class UserRepository {
             return; // exit before network call.
         }
         db.collection(Collections.USERS)
-            .document(user.getId())
-            .set(user)
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "firestore event added object id: " + user.getId());
-                    callback.onSuccess(null);
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "Error writing document", e);
-                    callback.onFailure(e);
-                }
-            });
+                .document(user.getId())
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "firestore event added object id: " + user.getId());
+                        callback.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                        callback.onFailure(e);
+                    }
+                });
 
     }
 
@@ -248,5 +248,23 @@ public class UserRepository {
         if (user.isNotificationsOptOut() == optOut){ return;}
         user.setNotificationsOptOut(optOut);
         saveUser(user, callback);
+    }
+
+    public void getAllUsers(RepositoryCallback<List<User>> callback) {
+
+        db.collection(Collections.USERS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+
+                    List<User> users = new ArrayList<>();
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        User user = doc.toObject(User.class);
+                        users.add(user);
+                    }
+
+                    callback.onSuccess(users);
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 }

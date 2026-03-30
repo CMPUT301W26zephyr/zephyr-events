@@ -74,6 +74,15 @@
             android:name=".view.InviteUsersActivity"
             android:exported="false" />
 
+        <activity android:name=".view.AdminHomeActivity" />
+        <activity android:name=".view.AdminBrowseProfilesActivity" />
+        <activity android:name=".view.AdminBrowseImageActivity" />
+        <activity android:name=".view.AdminBrowseEventActivity" />
+        <activity android:name=".view.AdminSystemNotificationActivity" />
+        <activity android:name=".view.AdminStatisticsActivity" />
+        <activity android:name=".view.AdminSystemLogActivity" />
+        <activity android:name=".view.AdminTermsConditionsActivity" />
+
     </application>
 
 </manifest>
