@@ -48,9 +48,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         } else if (type == NotificationType.LOTTERY_COMPLETED) {
             title = "Lottery Complete";
         } else if (type == NotificationType.PRIVATE_EVENT_INVITE) {
-            title = "Second Chance!";
+            title = "You've been Invited";
         } else if (type == NotificationType.CO_ORGANIZER_INVITE) {
             title = "Co-Organizer Invite";
+        } else if (type == NotificationType.MANUAL) {
+            title = "Organizer Update";
         } else {
             title = "Notification";
         }
@@ -67,14 +69,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.timeText.setText(timeAgo.toString().replace(" ago", ""));
 
         // 4. Mock the Avatar Initials (e.g. "AB" as requested, or dynamically generated)
-        holder.avatarText.setText("AB");
+        holder.avatarText.setText("ZE");
 
         // 5. Button Visibility logic (Losers don't get a button)
-        if (type == NotificationType.LOST_EVENT || type == NotificationType.LOTTERY_COMPLETED) {
-            holder.btnGoto.setVisibility(View.GONE);
-        } else {
-            holder.btnGoto.setVisibility(View.VISIBLE);
-        }
+        holder.btnGoto.setVisibility(View.VISIBLE);
+        holder.btnGoto.setText("View Event");
 
         // Button Action
         holder.btnGoto.setOnClickListener(v -> {
@@ -111,7 +110,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             titleText = itemView.findViewById(R.id.notification_title);
             descText = itemView.findViewById(R.id.notification_desc);
             timeText = itemView.findViewById(R.id.notification_time);
-            moreIcon = itemView.findViewById(R.id.notification_more);
             btnGoto = itemView.findViewById(R.id.btn_goto_event);
         }
     }

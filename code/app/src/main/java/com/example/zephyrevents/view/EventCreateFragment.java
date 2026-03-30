@@ -188,14 +188,13 @@ public class EventCreateFragment extends Fragment {
                                 }
                             }
 
+                            long regStart = e.getRegistrationStartTime();
                             long regEnd = e.getRegistrationEndTime();
                             long eventTime = e.getTime() != null ? e.getTime().getStartTime() : 0;
 
-                            if (regEnd > 0 && eventTime > 0) {
-                                // Mocking regStart for old data safety
-                                viewModel.registrationPeriod = sdfFull.format(new Date(System.currentTimeMillis())) + " - " + sdfFull.format(new Date(regEnd));
+                            if (regStart > 0 && regEnd > 0 && eventTime > 0) {
+                                viewModel.registrationPeriod = sdfFull.format(new Date(regStart)) + " - " + sdfFull.format(new Date(regEnd));
                                 viewModel.eventDate = sdfFull.format(new Date(eventTime));
-
                                 restoreCalendarState(calStart, timeStart, calEnd, timeEnd, calEvent, timeEvent);
                             }
 

@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Cancelled Entrants: (#)"
+            android:text="Fill Open Spots"
             android:textColor="#000000"
             android:textSize="16sp" />
 
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Entrants will be randomly drawn from the waitlist to fill cancelled."
+            android:text="Entrants will be randomly drawn from the second-chance waitlist to fill any cancelled or unassigned slots."
             android:textAlignment="center"
             android:textColor="#333333"
             android:textSize="16sp" />

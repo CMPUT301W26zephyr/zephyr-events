@@ -139,11 +139,7 @@ public class EventConfirmationFragment extends Fragment {
                     try {
                         if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
                             Date eDate = null;
-                            try {
-                                eDate = sdfFull.parse(viewModel.eventDate);
-                            } catch (ParseException e) {
-                                eDate = sdfDateOnly.parse(viewModel.eventDate); // Fallback for old data
-                            }
+                            try { eDate = sdfFull.parse(viewModel.eventDate); } catch (ParseException e) { eDate = sdfDateOnly.parse(viewModel.eventDate); }
                             if (eDate != null) {
                                 com.example.zephyrevents.model.EventTime time = new com.example.zephyrevents.model.EventTime(eDate.getTime(), eDate.getTime() + 7200000);
                                 newEvent.setTime(time);
@@ -151,12 +147,11 @@ public class EventConfirmationFragment extends Fragment {
                         }
                         if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
                             String[] parts = viewModel.registrationPeriod.split(" - ");
-                            Date regEnd = null;
-                            try {
-                                regEnd = sdfFull.parse(parts[1]);
-                            } catch (ParseException e) {
-                                regEnd = sdfDateOnly.parse(parts[1]); // Fallback for old data
-                            }
+                            Date regStart = null, regEnd = null;
+                            try { regStart = sdfFull.parse(parts[0]); } catch (ParseException e) { regStart = sdfDateOnly.parse(parts[0]); }
+                            try { regEnd = sdfFull.parse(parts[1]); } catch (ParseException e) { regEnd = sdfDateOnly.parse(parts[1]); }
+
+                            if (regStart != null) newEvent.setRegistrationStartTime(regStart.getTime());
                             if (regEnd != null) newEvent.setRegistrationEndTime(regEnd.getTime());
                         }
                     } catch (Exception e) { e.printStackTrace(); }
@@ -165,21 +160,21 @@ public class EventConfirmationFragment extends Fragment {
                     newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
                     newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
 
-                    // 2. Save to Firebase
                     EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
                         @Override
                         public void onSuccess(Void result) {
-                            Toast.makeText(requireContext(), "Event Created Successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
                         }
-
                         @Override
                         public void onFailure(Exception e) {
-                            Toast.makeText(requireContext(), "Failed to create event", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
                         }
                     });
 
-                    // 3. CLOSE IMMEDIATELY (Optimistic UI)
-                    // We don't wait for the network. We close the form instantly so the user isn't stuck waiting.
+                    // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
+                    if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
+                        new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
+                    }
                     requireActivity().finish();
                 }
         );

@@ -1,103 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="16dp"
-    android:paddingHorizontal="16dp"
-    android:background="#FFFFFF">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="1dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardUseCompatPadding="true">
 
-    <!-- Circular Avatar -->
-    <TextView
-        android:id="@+id/notification_avatar"
-        android:layout_width="54dp"
-        android:layout_height="54dp"
-        android:backgroundTint="#F5B7B1"
-        android:background="@color/secondary_red"
-        android:gravity="center"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="AB" />
-
-    <!-- Title -->
-    <TextView
-        android:id="@+id/notification_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:textColor="#34495E"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/notification_time"
-        app:layout_constraintStart_toEndOf="@id/notification_avatar"
-        app:layout_constraintTop_toTopOf="@id/notification_avatar"
-        tools:text="You've been Selected!" />
-
-    <!-- Description -->
-    <TextView
-        android:id="@+id/notification_desc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="#7F8C8D"
-        android:textSize="14sp"
-        android:lineSpacingExtra="2dp"
-        app:layout_constraintEnd_toStartOf="@id/notification_more"
-        app:layout_constraintStart_toStartOf="@id/notification_title"
-        app:layout_constraintTop_toBottomOf="@id/notification_title"
-        tools:text="Congrats! You've been chosen for Swimming Lessons. Confirm your spot today." />
-
-    <!-- Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_goto_event"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginTop="8dp"
-        android:text="Go to Event"
-        android:textColor="#FFFFFF"
-        android:textAllCaps="false"
-        android:textSize="14sp"
-        app:backgroundTint="#FF3B5C"
-        app:cornerRadius="6dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        app:layout_constraintStart_toStartOf="@id/notification_title"
-        app:layout_constraintTop_toBottomOf="@id/notification_desc" />
-
-    <!-- Time -->
-    <TextView
-        android:id="@+id/notification_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#95A5A6"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/notification_title"
-        tools:text="4 days" />
-
-    <!-- More Icon -->
-    <ImageView
-        android:id="@+id/notification_more"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="4dp"
-        android:src="@drawable/ic_more_horiz"
-        app:tint="#7F8C8D"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/notification_time" />
-
-    <!-- List Divider -->
-    <View
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="#F2F3F4"
-        app:layout_constraintTop_toBottomOf="@id/btn_goto_event" />
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Circular Avatar -->
+        <TextView
+            android:id="@+id/notification_avatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_badge_private"
+            android:backgroundTint="@color/secondary_red"
+            android:gravity="center"
+            android:textColor="@color/primary_red"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="ZE" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/notification_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/notification_time"
+            app:layout_constraintStart_toEndOf="@id/notification_avatar"
+            app:layout_constraintTop_toTopOf="@id/notification_avatar"
+            tools:text="You've been Selected!" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/notification_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#616161"
+            android:textSize="13sp"
+            android:lineSpacingExtra="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/notification_title"
+            app:layout_constraintTop_toBottomOf="@id/notification_title"
+            tools:text="Congrats! You've been chosen for Swimming Lessons." />
+
+        <!-- Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_goto_event"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="View Event"
+            android:textColor="@color/primary_red"
+            android:textAllCaps="true"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="0dp"
+            app:rippleColor="#20FF3B5C"
+            app:layout_constraintStart_toStartOf="@id/notification_title"
+            app:layout_constraintTop_toBottomOf="@id/notification_desc" />
+
+        <!-- Time -->
+        <TextView
+            android:id="@+id/notification_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#9E9E9E"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/notification_title"
+            tools:text="4 days" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
