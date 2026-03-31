@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -54,7 +55,6 @@ dependencies {
 
     testImplementation("org.mockito:mockito-core:5.23.0")  // Mockito framework
     testImplementation("org.mockito:mockito-inline:5.2.0")  // Allows mocking final classes
-    implementation("com.google.firebase:firebase-messaging")  // Cloud messaging
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
@@ -64,6 +64,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-messaging")
 
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
@@ -74,6 +75,9 @@ dependencies {
 
     // Splash screen api
     implementation("androidx.core:core-splashscreen:1.2.0")
+
+    // Background Lottery Run
+    implementation("androidx.work:work-runtime:2.9.0")
 
     // QR Codes
     implementation("com.google.zxing:core:3.5.4")

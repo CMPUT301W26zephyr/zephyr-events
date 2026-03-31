@@ -16,6 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
 
+        <service
+            android:name=".controller.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".view.QrScannerActivity"
             android:exported="false" />

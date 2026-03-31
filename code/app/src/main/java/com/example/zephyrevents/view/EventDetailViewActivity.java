@@ -33,6 +33,8 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import androidx.work.WorkManager;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -899,6 +901,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void res) {
+                        WorkManager.getInstance(EventDetailViewActivity.this)
+                                .cancelUniqueWork("lottery_" + event.getEventId());
                         Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
                         populateUI();
                     }
