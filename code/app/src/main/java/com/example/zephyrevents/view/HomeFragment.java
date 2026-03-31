@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
@@ -31,10 +32,13 @@ import java.util.List;
  * Checks if User account still exists upon creation; returns to WelcomeActivity if not exist.
  */
 public class HomeFragment extends Fragment {
-    UserController userController;
-    private FeaturedEventListAdapter adapter;
-    private List<Event> featuredEvents = new ArrayList<>();
+    private UserController userController;
     private EventController eventController;
+
+    private FeaturedEventPagerAdapter adapter;
+    private List<Event> featuredEvents = new ArrayList<>();
+
+    private ViewPager2 carousel;
 
     @Nullable
     @Override
@@ -47,21 +51,46 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         eventController = EventController.getInstance();
+        userController = new UserController(requireContext());
 
-        // Initially the ListView and Adapter are EMPTY (to add later)
-        adapter = new FeaturedEventListAdapter(requireContext(), featuredEvents);
-        ListView listView = view.findViewById(R.id.event_list);
-        listView.setAdapter(adapter);
+        carousel = view.findViewById(R.id.carousel_featured);
 
-        // ListView Click Listener to open Event Details
-        listView.setOnItemClickListener((parent, v, position, id) -> {
-            Event event = (Event) parent.getItemAtPosition(position);
-            if (event != null && event.getEventId() != null) {
-                boolean invited = eventController.isInvitedEvent(event.getEventId());
-                openEventDetail(event.getEventId(), invited);
+        setupCarousel();
+
+        setupClickListeners(view);
+
+        verifyUserSession();
+
+    }
+
+    /**
+     * Sets up carousel adapter and click listener
+     */
+    private void setupCarousel() {
+        adapter = new FeaturedEventPagerAdapter(featuredEvents,
+            event -> {
+                if (event.getEventId() != null) {
+                    boolean invited = eventController.isInvitedEvent(event.getEventId());
+                    openEventDetail(event.getEventId(), invited);
+                }
             }
+            );
+        carousel.setAdapter(adapter);
+
+        // Styling
+        carousel.setOffscreenPageLimit(3);
+        carousel.setPageTransformer((page, position) -> {
+            float r = 1 - Math.abs(position);
+            page.setScaleY(0.85f + r * 0.15f);
         });
 
+    }
+
+    /**
+     * Sets up click listeners for the search icon and "view all events" icon.
+     * @param view The view context requried
+     */
+    private void setupClickListeners(View view) {
         TextView tvViewAll = view.findViewById(R.id.view_all);
         if (tvViewAll != null) {
             tvViewAll.setOnClickListener(v -> {
@@ -88,9 +117,10 @@ public class HomeFragment extends Fragment {
                         .commit();
             });
         }
+    }
 
+    private void verifyUserSession() {
         // Fetch user data in the background to verify that account still exists
-        userController = new UserController(requireContext());
         userController.fetchCurrentUser(new RepositoryCallback<User>() {
             @Override
             public void onSuccess(User result) {
@@ -132,22 +162,17 @@ public class HomeFragment extends Fragment {
                 featuredEvents.clear();
 
                 if (result != null && !result.isEmpty()) {
-                    List<Event> publicOnly = new ArrayList<>();
+                    List<Event> publicEvents = new ArrayList<>();
                     for (Event e : result) {
                         if (e != null && !e.isPrivateEvent()) {
-                            publicOnly.add(e);
+                            publicEvents.add(e);
                         }
                     }
-                    if (publicOnly.isEmpty()) {
-                        adapter.notifyDataSetChanged();
-                        return;
-                    }
-                    // Create a copy of the list, shuffle, select up to 3 events
-                    List<Event> shuffledList = new ArrayList<>(publicOnly);
-                    Collections.shuffle(shuffledList);
-                    int limit = Math.min(3, shuffledList.size());
-                    for (int i = 0; i < limit; i++) {
-                        featuredEvents.add(shuffledList.get(i));
+                    // Select top 3 events based on score
+                    publicEvents.sort((e1, e2) -> Double.compare(eventScore(e2), eventScore(e1)));
+                    int max = Math.min(3, publicEvents.size());
+                    for (int i = 0; i < max; i++) {
+                        featuredEvents.add(publicEvents.get(i));
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -159,6 +184,21 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * Scores an event based on image availability, used for carousel selection
+     * @param event The event
+     */
+    private double eventScore(Event event) {
+        double score = Math.random() * 30;
+
+        if (event.getImageUrl() != null && !event.getImageUrl().trim().isEmpty()) {
+            score += 50;  // favor images
+        }
+        // TODO: add more heuristics for featured events
+        return score;
+    }
+
 
     private void openEventDetail(String eventKey, boolean invited) {
         Intent intent = new Intent(requireContext(), EventDetailViewActivity.class);
