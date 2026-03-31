@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="6dp"
-            android:text="This image will be permanently deleted."
+            android:text="This profile will be permanently deleted by Admin."
             android:textColor="#9E9E9E"
             android:textSize="10sp" />
 

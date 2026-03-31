@@ -260,6 +260,7 @@ public class UserRepository {
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         User user = doc.toObject(User.class);
+                        user.setId(doc.getId());
                         users.add(user);
                     }
 
