@@ -78,7 +78,7 @@ public class HomeFragment extends Fragment {
         carousel.setAdapter(adapter);
 
         // Styling
-        carousel.setOffscreenPageLimit(3);
+        carousel.setOffscreenPageLimit(5);
         carousel.setPageTransformer((page, position) -> {
             float r = 1 - Math.abs(position);
             page.setScaleY(0.85f + r * 0.15f);
