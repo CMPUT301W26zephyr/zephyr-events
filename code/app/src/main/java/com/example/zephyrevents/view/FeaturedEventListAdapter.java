@@ -19,13 +19,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.text.TextUtils;
+import com.bumptech.glide.Glide;
+
+import org.w3c.dom.Text;
+
+
 /**
  * Adapter that fills the "Featured Events" list with event cards.
  * Each row shows the event image, title, date and location.
  */
 public class FeaturedEventListAdapter extends ArrayAdapter<Event> {
     private final LayoutInflater inflater;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault());
 
     public FeaturedEventListAdapter(@NonNull Context context, @NonNull List<Event> events) {
         super(context, R.layout.item_event_card_featured, events);
@@ -45,7 +51,19 @@ public class FeaturedEventListAdapter extends ArrayAdapter<Event> {
             return row;
         }
 
-//        ImageView image = row.findViewById(R.id.item_event_image);
+       ImageView image = row.findViewById(R.id.item_event_image_large);
+        String imageUrl = event.getImageUrl();
+        if (!TextUtils.isEmpty(imageUrl)){
+            Glide.with(getContext())
+                    .load(imageUrl)
+                    .centerCrop()
+                    .placeholder(R.drawable.event_card_placeholder)
+                    .error(R.drawable.event_card_placeholder)
+                    .into(image);
+        } else{
+            Glide.with(getContext()).clear(image);
+            image.setImageResource(R.drawable.event_card_placeholder);
+        }
         TextView title = row.findViewById(R.id.item_event_title);
         TextView dateLocation = row.findViewById(R.id.item_event_date_location);
 //        TextView price = row.findViewById(R.id.item_event_price);
@@ -57,7 +75,7 @@ public class FeaturedEventListAdapter extends ArrayAdapter<Event> {
         if (dateStr.isEmpty() && locationStr.isEmpty()) {
             dateLocationStr = getContext().getString(R.string.date_location);
         } else {
-            dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : ", " + locationStr);
+            dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : "\n" + locationStr);
         }
         dateLocation.setText(dateLocationStr);
 //        price.setText(String.valueOf(event.getPrice()));

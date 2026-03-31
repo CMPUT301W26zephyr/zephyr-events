@@ -1,69 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
+    android:background="@color/white">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/img_container"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_comment_avatar">
+
+        <TextView
+            android:id="@+id/text_entrant_initial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="#616161"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="J" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <FrameLayout
-            android:id="@+id/img_container"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:background="#F0F0F0">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:src="@android:drawable/ic_menu_gallery"
-                app:tint="#CCCCCC" />
-        </FrameLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/text_entrant_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/img_container"
-            android:orientation="vertical">
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="John Doe" />
 
-            <TextView
-                android:id="@+id/text_entrant_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="John Doe"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/text_entrant_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Location"
-                android:textColor="#888888"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_cancel_entrant"
+        <TextView
+            android:id="@+id/text_entrant_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:text="CANCEL"
-            android:textColor="@color/primary_red"
-            android:visibility="gone"
-            app:backgroundTint="#FFFFFF"
-            app:strokeColor="@color/primary_red"
-            app:strokeWidth="1dp" />
+            android:layout_marginTop="2dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            tools:text="Status: WAITLISTED" />
+    </LinearLayout>
 
-    </RelativeLayout>
-</androidx.cardview.widget.CardView>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_cancel_entrant"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Cancel"
+        android:textAllCaps="false"
+        android:textColor="@color/primary_red"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:cornerRadius="8dp"
+        app:strokeColor="@color/primary_red"
+        app:strokeWidth="1dp"
+        tools:visibility="visible" />
+</LinearLayout>

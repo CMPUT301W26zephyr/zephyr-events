@@ -18,10 +18,18 @@ import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
+import android.widget.Button;
+
+
+
 
 public class EventConfirmationFragment extends Fragment {
 
@@ -44,6 +52,10 @@ public class EventConfirmationFragment extends Fragment {
         TextView location = view.findViewById(R.id.text_confirm_location);
         TextView geo = view.findViewById(R.id.text_confirm_geo);
         TextView capacity = view.findViewById(R.id.text_confirm_capacity);
+        TextView visibility = view.findViewById(R.id.text_confirm_visibility);
+        visibility.setText(viewModel.privateEvent
+                ? getString(R.string.visibility_private_label)
+                : getString(R.string.visibility_public_label));
 
         title.setText(viewModel.title);
         date.setText(viewModel.eventDate);
@@ -82,9 +94,24 @@ public class EventConfirmationFragment extends Fragment {
         } else {
             description.setText(viewModel.description);
         }
+        ImageView confirmImage = view.findViewById(R.id.confirm_event_image);
+        if (viewModel.pendingEventImageUri != null){
+            Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(confirmImage);
+
+        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()) {
+            Glide.with(this).load(viewModel.existingImgUrl).centerCrop().into(confirmImage);
+        } else{
+            Glide.with(this).load(R.drawable.ic_image_placeholder2).centerCrop().into(confirmImage);
+        }
 
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
                 "Review Event Details", "CONFIRM & CREATE", v -> {
+
+                    Button nextBtn = requireActivity().findViewById(R.id.next_button);
+                    if(nextBtn != null){
+                        nextBtn.setText("LOADING...");
+                        nextBtn.setEnabled(false);
+                    }
 
                     // 1. Build the Event Object
                     Event newEvent = new Event();
@@ -126,11 +153,14 @@ public class EventConfirmationFragment extends Fragment {
                     eventLoc.setLocationString(displayLocation);
                     newEvent.setLocation(eventLoc);
 
-                    // Parse the dates into EventTime format
-                    SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault());
+                    // Parse the dates into EventTime format using the FULL formatter including time
+                    SimpleDateFormat sdfFull = new SimpleDateFormat("MMM d, yyyy, h:mm a", java.util.Locale.getDefault());
+                    SimpleDateFormat sdfDateOnly = new SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault());
+
                     try {
                         if (viewModel.eventDate != null && !viewModel.eventDate.isEmpty()) {
-                            Date eDate = sdf.parse(viewModel.eventDate);
+                            Date eDate = null;
+                            try { eDate = sdfFull.parse(viewModel.eventDate); } catch (ParseException e) { eDate = sdfDateOnly.parse(viewModel.eventDate); }
                             if (eDate != null) {
                                 com.example.zephyrevents.model.EventTime time = new com.example.zephyrevents.model.EventTime(eDate.getTime(), eDate.getTime() + 7200000);
                                 newEvent.setTime(time);
@@ -138,27 +168,78 @@ public class EventConfirmationFragment extends Fragment {
                         }
                         if (viewModel.registrationPeriod != null && viewModel.registrationPeriod.contains(" - ")) {
                             String[] parts = viewModel.registrationPeriod.split(" - ");
-                            Date regEnd = sdf.parse(parts[1]);
+                            Date regStart = null, regEnd = null;
+                            try { regStart = sdfFull.parse(parts[0]); } catch (ParseException e) { regStart = sdfDateOnly.parse(parts[0]); }
+                            try { regEnd = sdfFull.parse(parts[1]); } catch (ParseException e) { regEnd = sdfDateOnly.parse(parts[1]); }
+
+                            if (regStart != null) newEvent.setRegistrationStartTime(regStart.getTime());
                             if (regEnd != null) newEvent.setRegistrationEndTime(regEnd.getTime());
                         }
                     } catch (Exception e) { e.printStackTrace(); }
 
-                    // 2. Save to Firebase
+                    newEvent.setPrivateEvent(viewModel.privateEvent);
+                    newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
+                    newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
+
+
+
+                    /*
+                    Note: using this won't save the event poster
                     EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
                         @Override
                         public void onSuccess(Void result) {
-                            Toast.makeText(requireContext(), "Event Created Successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            Toast.makeText(requireContext(), "Failed to create event", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
                         }
                     });
 
-                    // 3. CLOSE IMMEDIATELY (Optimistic UI)
-                    // We don't wait for the network. We close the form instantly so the user isn't stuck waiting.
+                     */
+
+                    // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
+                    /*
+                    Moved to below
+                    if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
+                        new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
+                    }
                     requireActivity().finish();
+
+                     */
+
+                    String existingUrl = viewModel.existingImgUrl != null ? viewModel.existingImgUrl : "";
+                    EventController.getInstance().saveEventWithOptionalImage(
+                            newEvent,
+                            viewModel.pendingEventImageUri,
+                            existingUrl,
+                            new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
+                                    if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
+                                        new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
+                                    }
+                                    Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
+                                    requireActivity().finish();
+
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    Button nextBtn = requireActivity().findViewById(R.id.next_button);
+                                    if(nextBtn != null){
+                                        nextBtn.setText("CONFIRM & CREATE");
+                                        nextBtn.setEnabled(false);
+                                    }
+
+                                    Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
+
+
+                                }
+                            }
+                    );
                 }
         );
     }

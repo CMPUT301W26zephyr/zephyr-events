@@ -1,7 +1,9 @@
 package com.example.zephyrevents.view;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,7 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Notification;
+import com.example.zephyrevents.repository.NotificationRepository;
+import com.example.zephyrevents.repository.RepositoryCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,41 +37,33 @@ public class UserNotificationListView extends AppCompatActivity {
         });
 
         TextView title = findViewById(R.id.toolbar_title);
-        title.setText("Notifications");
+        title.setText(R.string.notifications);
 
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_notifications);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<Notification> mockList = new ArrayList<>();
+        String uid = new UserController(this).getCurrentUserId();
+        if (uid == null) {
+            Toast.makeText(this, "Sign in to see notifications.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-        long now = System.currentTimeMillis();
+        new NotificationRepository().getUserNotifications(uid, new RepositoryCallback<List<Notification>>() {
+            @Override
+            public void onSuccess(List<Notification> result) {
+                List<Notification> list = result != null ? result : new ArrayList<>();
+                NotificationAdapter adapter = new NotificationAdapter(list);
+                recyclerView.setAdapter(adapter);
+            }
 
-        Notification n1 = new Notification(
-                "user_123",
-                "event_abc",
-                null,
-                "You have been selected in the lottery for event_abc",
-                true,
-                false
-        );
-        n1.setTime(now - (2 * 60 * 60 * 1000));
-
-        Notification n2 = new Notification(
-                "user_123",
-                "event_xyz",
-                null,
-                "You have been selected in the lottery for event_xyz",
-                true,
-                true
-        );
-        n2.setTime(now - (24 * 60 * 60 * 1000));
-
-        mockList.add(n1);
-        mockList.add(n2);
-
-        NotificationAdapter adapter = new NotificationAdapter(mockList);
-        recyclerView.setAdapter(adapter);
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(UserNotificationListView.this, R.string.notifications_load_failed, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

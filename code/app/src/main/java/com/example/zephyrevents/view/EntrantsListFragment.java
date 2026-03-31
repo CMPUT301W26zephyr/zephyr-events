@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.LotteryController;
+import com.example.zephyrevents.controller.NotificationController;
 import com.example.zephyrevents.model.Entrant;
 import com.example.zephyrevents.model.Status;
 import com.example.zephyrevents.model.User;
@@ -34,6 +35,8 @@ public class EntrantsListFragment extends Fragment {
     private String eventId;
     private WaitlistRepository waitlistRepository;
     private UserRepository userRepository;
+    private NotificationController notificationController;
+    private List<WaitlistEntry> currentFilteredList = new ArrayList<>();
 
     public static EntrantsListFragment newInstance(int tabIndex, String eventId) {
         EntrantsListFragment fragment = new EntrantsListFragment();
@@ -61,6 +64,7 @@ public class EntrantsListFragment extends Fragment {
 
         waitlistRepository = new WaitlistRepository();
         userRepository = new UserRepository();
+        notificationController = new NotificationController(); // Initialize the controller
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_entrants);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -70,19 +74,14 @@ public class EntrantsListFragment extends Fragment {
         Button btnRunLottery = view.findViewById(R.id.btn_run_lottery);
         Button btnExportCsv = view.findViewById(R.id.btn_export_csv);
 
-        btnNotify.setText("Notify");
-        btnDrawReplacements.setText("Draw Replacements");
-        btnRunLottery.setText("Run Lottery");
-        btnExportCsv.setText("Export CSV");
-
         if (tabIndex == 0) {
             btnNotify.setVisibility(View.VISIBLE);
             btnRunLottery.setVisibility(View.VISIBLE);
-
             btnDrawReplacements.setVisibility(View.GONE);
 
+            // Pass the eventId to the dialog so it knows which event to draw for
             btnDrawReplacements.setOnClickListener(v -> {
-                new DrawReplacementsDialog().show(getParentFragmentManager(), "DRAW_DIALOG");
+                DrawReplacementsDialog.newInstance(eventId).show(getParentFragmentManager(), "DRAW_DIALOG");
             });
 
             btnRunLottery.setOnClickListener(v -> {
@@ -104,23 +103,58 @@ public class EntrantsListFragment extends Fragment {
                 });
             });
 
-            btnNotify.setOnClickListener(v -> Toast.makeText(requireContext(), "Notify Waitlist Clicked", Toast.LENGTH_SHORT).show());
-
         } else if (tabIndex == 1) {
             btnNotify.setVisibility(View.VISIBLE);
-            btnNotify.setOnClickListener(v -> Toast.makeText(requireContext(), "Notify Winners Clicked", Toast.LENGTH_SHORT).show());
-
         } else if (tabIndex == 2) {
             btnNotify.setVisibility(View.VISIBLE);
-            btnNotify.setOnClickListener(v -> Toast.makeText(requireContext(), "Notify Unregistered Clicked", Toast.LENGTH_SHORT).show());
-
         } else if (tabIndex == 3) {
             btnNotify.setVisibility(View.VISIBLE);
             btnExportCsv.setVisibility(View.VISIBLE);
-
-            btnNotify.setOnClickListener(v -> Toast.makeText(requireContext(), "Notify Final List Clicked", Toast.LENGTH_SHORT).show());
             btnExportCsv.setOnClickListener(v -> Toast.makeText(requireContext(), "Exporting CSV...", Toast.LENGTH_SHORT).show());
         }
+
+        btnNotify.setOnClickListener(v -> {
+            if (currentFilteredList == null || currentFilteredList.isEmpty()) {
+                Toast.makeText(requireContext(), "No users in this list to notify.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Inflate the custom themed XML layout
+            View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_notify_message, null);
+            com.google.android.material.textfield.TextInputEditText input = dialogView.findViewById(R.id.et_notify_message);
+
+            // Build the dialog
+            androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Send Notification")
+                    .setView(dialogView)
+                    .setPositiveButton("Send", (d, which) -> {
+                        String msg = input.getText() != null ? input.getText().toString().trim() : "";
+                        if (msg.isEmpty()) {
+                            Toast.makeText(requireContext(), "Message cannot be empty", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Get all user IDs currently visible in this tab
+                        java.util.List<String> targetIds = new java.util.ArrayList<>();
+                        for (WaitlistEntry entry : currentFilteredList) {
+                            targetIds.add(entry.getUserId());
+                        }
+
+                        // Send the manual notification
+                        notificationController.notifyUsersWithCustomMessage(targetIds, eventId, msg);
+                        Toast.makeText(requireContext(), "Notifications successfully sent!", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();
+
+            dialog.show();
+
+            // Color the dialog buttons to match the app's red theme
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                    .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
+                    .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
+        });
 
         loadData(recyclerView);
     }
@@ -143,6 +177,9 @@ public class EntrantsListFragment extends Fragment {
                     if (tabIndex == 2 && e.getStatus() == Status.SELECTED) filtered.add(e);
                     if (tabIndex == 3 && e.getStatus() == Status.ACCEPTED) filtered.add(e);
                 }
+
+                currentFilteredList.clear();
+                currentFilteredList.addAll(filtered);
 
                 if (tabIndex == 0 && getView() != null) {
                     Button btnRunLottery = getView().findViewById(R.id.btn_run_lottery);

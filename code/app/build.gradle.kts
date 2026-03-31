@@ -45,12 +45,16 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
 
     testImplementation("org.mockito:mockito-core:5.23.0")  // Mockito framework
     testImplementation("org.mockito:mockito-inline:5.2.0")  // Allows mocking final classes
+    implementation("com.google.firebase:firebase-messaging")  // Cloud messaging
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
@@ -59,6 +63,8 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
 
@@ -69,6 +75,9 @@ dependencies {
     // Splash screen api
     implementation("androidx.core:core-splashscreen:1.2.0")
 
+    // QR Codes
+    implementation("com.google.zxing:core:3.5.4")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
 
 // Gemini 3.1 Pro Preview, Google AiStudio, "What is the best way to fix this issue? Adding:

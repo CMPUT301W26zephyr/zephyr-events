@@ -154,4 +154,14 @@ public class NotificationController {
         });
     }
 
+    /**
+     * Sends a custom manual notification text to a specific list of user IDs.
+     */
+    public void notifyUsersWithCustomMessage(List<String> userIds, String eventId, String message) {
+        if (userIds == null || userIds.isEmpty()) return;
+        for (String userId : userIds) {
+            sendManualNotification(userId, eventId, message);
+        }
+    }
+
 }

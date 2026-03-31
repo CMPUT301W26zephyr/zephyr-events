@@ -8,8 +8,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_button_container">
+        app:layout_constraintTop_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,9 +31,11 @@
                 android:layout_height="200dp"
                 android:background="#E0E0E0">
                 <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
+                    android:id = "@+id/confirm_event_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Event poster"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_image_placeholder2"/>
             </FrameLayout>
 
@@ -43,7 +44,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="4dp">
+                android:paddingVertical="4dp"
+                android:layout_marginTop="20dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -53,6 +55,26 @@
                     android:textColor="@color/primary_red" />
                 <TextView
                     android:id="@+id/text_confirm_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#555555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_visibility_review"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_red" />
+                <TextView
+                    android:id="@+id/text_confirm_visibility"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
@@ -87,7 +109,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Registration Period: "
+                    android:text="Registration: "
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:textColor="@color/primary_red" />
@@ -148,7 +170,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Geolocation Requirement: "
+                    android:text="Geolocation: "
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:textColor="@color/primary_red" />
