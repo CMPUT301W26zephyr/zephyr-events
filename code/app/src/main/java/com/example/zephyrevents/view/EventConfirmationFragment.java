@@ -26,6 +26,8 @@ import java.util.Locale;
 import java.util.UUID;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import android.widget.Button;
+
 
 
 
@@ -104,6 +106,12 @@ public class EventConfirmationFragment extends Fragment {
 
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
                 "Review Event Details", "CONFIRM & CREATE", v -> {
+
+                    Button nextBtn = requireActivity().findViewById(R.id.next_button);
+                    if(nextBtn != null){
+                        nextBtn.setText("LOADING...");
+                        nextBtn.setEnabled(false);
+                    }
 
                     // 1. Build the Event Object
                     Event newEvent = new Event();
@@ -193,6 +201,7 @@ public class EventConfirmationFragment extends Fragment {
 
                     // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
                     /*
+                    Moved to below
                     if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
                         new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
                     }
@@ -219,6 +228,12 @@ public class EventConfirmationFragment extends Fragment {
 
                                 @Override
                                 public void onFailure(Exception e) {
+                                    Button nextBtn = requireActivity().findViewById(R.id.next_button);
+                                    if(nextBtn != null){
+                                        nextBtn.setText("CONFIRM & CREATE");
+                                        nextBtn.setEnabled(false);
+                                    }
+
                                     Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
 
 
