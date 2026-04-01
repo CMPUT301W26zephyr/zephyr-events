@@ -22,7 +22,8 @@ public class AdminHomeActivity extends AppCompatActivity {
         TextView statistics = findViewById(R.id.statistics);
         TextView systemLogs = findViewById(R.id.systemLogs);
         TextView termsConditions = findViewById(R.id.termsConditions);
-
+        //go back to user profile
+        findViewById(R.id.button_back2).setOnClickListener(v -> finish());
 
         userProfiles.setOnClickListener(v ->
                 startActivity(new Intent(this, AdminBrowseProfilesActivity.class)));

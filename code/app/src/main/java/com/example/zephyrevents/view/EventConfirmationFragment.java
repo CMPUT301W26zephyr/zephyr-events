@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
+import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
@@ -24,6 +25,8 @@ import java.util.Date;
 
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import android.widget.Button;
+
 
 
 
@@ -103,6 +106,12 @@ public class EventConfirmationFragment extends Fragment {
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
                 "Review Event Details", "CONFIRM & CREATE", v -> {
 
+                    Button nextBtn = requireActivity().findViewById(R.id.next_button);
+                    if(nextBtn != null){
+                        nextBtn.setText("LOADING...");
+                        nextBtn.setEnabled(false);
+                    }
+
                     // 1. Build the Event Object
                     Event newEvent = new Event();
 
@@ -178,23 +187,36 @@ public class EventConfirmationFragment extends Fragment {
                     // Default status to OPEN so the Cloud Function knows it is active
                     newEvent.setStatus(com.example.zephyrevents.model.EventStatus.OPEN);
 
-                    EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
-                        @Override
-                        public void onSuccess(Void result) {
-                            Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
-                        }
+                    String existingUrl = viewModel.existingImgUrl != null ? viewModel.existingImgUrl : "";
+                    EventController.getInstance().saveEventWithOptionalImage(
+                            newEvent,
+                            viewModel.pendingEventImageUri,
+                            existingUrl,
+                            new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
+                                    if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
+                                        new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
+                                    }
+                                    Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
+                                    requireActivity().finish();
 
-                        @Override
-                        public void onFailure(Exception e) {
-                            Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                }
 
-                    // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
-                    if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
-                        new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
-                    }
-                    requireActivity().finish();
+                                @Override
+                                public void onFailure(Exception e) {
+                                    Button nextBtn = requireActivity().findViewById(R.id.next_button);
+                                    if(nextBtn != null){
+                                        nextBtn.setText("CONFIRM & CREATE");
+                                        nextBtn.setEnabled(false);
+                                    }
+
+                                    Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+                    );
                 }
         );
     }
