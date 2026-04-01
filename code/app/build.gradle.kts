@@ -76,9 +76,6 @@ dependencies {
     // Splash screen api
     implementation("androidx.core:core-splashscreen:1.2.0")
 
-    // Background Lottery Run
-    implementation("androidx.work:work-runtime:2.9.0")
-
     // QR Codes
     implementation("com.google.zxing:core:3.5.4")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")

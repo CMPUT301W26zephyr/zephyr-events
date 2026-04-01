@@ -33,8 +33,6 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.ListenerRegistration;
 
-import androidx.work.WorkManager;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -637,12 +635,17 @@ public class EventDetailViewActivity extends AppCompatActivity {
                         buttonSecondary.setVisibility(View.GONE);
                     }
                 } else {
-                    boolean pendingInvite = !"unknown_user".equals(currentUserId)
+                    boolean pendingPrivateInvite = !"unknown_user".equals(currentUserId)
                             && event.getPendingPrivateWaitlistInviteUserIds().contains(currentUserId);
 
-                    if (myEntry == null && pendingInvite) {
+                    boolean pendingCoOrgInvite = !"unknown_user".equals(currentUserId)
+                            && event.getPendingCoOrganizerUserIds().contains(currentUserId);
+
+                    if (pendingCoOrgInvite) {
+                        showCoOrganizerInviteButtons();
+                    } else if (myEntry == null && pendingPrivateInvite) {
                         showPrivateWaitlistInviteButtons();
-                    } else if (myEntry == null && event.isPrivateEvent() && !pendingInvite) {
+                    } else if (myEntry == null && event.isPrivateEvent() && !pendingPrivateInvite) {
                         showPrivateEventNotInvited();
                     } else if (myEntry == null) {
                         if (beforeRegistration) {
@@ -896,13 +899,13 @@ public class EventDetailViewActivity extends AppCompatActivity {
         new com.example.zephyrevents.controller.LotteryController().runLottery(event.getEventId(), new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                // Force deadline to NOW to officially lock out new entrants
+                // Force deadline to NOW and set CLOSED so Cloud Function skips it
                 event.setRegistrationEndTime(System.currentTimeMillis());
+                event.setStatus(com.example.zephyrevents.model.EventStatus.CLOSED);
+
                 EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void res) {
-                        WorkManager.getInstance(EventDetailViewActivity.this)
-                                .cancelUniqueWork("lottery_" + event.getEventId());
                         Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
                         populateUI();
                     }
@@ -916,6 +919,40 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 buttonPrimary.setText("RUN LOTTERY");
                 Toast.makeText(EventDetailViewActivity.this, "Failed to run lottery.", Toast.LENGTH_SHORT).show();
             }
+        });
+    }
+
+    private void showCoOrganizerInviteButtons() {
+        buttonPrimary.setVisibility(View.VISIBLE);
+        buttonPrimary.setEnabled(true);
+        buttonPrimary.setText("ACCEPT CO-ORGANIZER");
+        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
+        buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
+        buttonPrimary.setOnClickListener(v -> {
+            event.getPendingCoOrganizerUserIds().remove(currentUserId);
+            event.getCoOrganizerUserIds().add(currentUserId);
+            EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(EventDetailViewActivity.this, "You are now a Co-Organizer!", Toast.LENGTH_SHORT).show();
+                    populateUI(); // Refresh to show Admin tabs!
+                }
+                @Override public void onFailure(Exception e) {}
+            });
+        });
+
+        buttonSecondary.setVisibility(View.VISIBLE);
+        buttonSecondary.setText(R.string.decline_invite);
+        buttonSecondary.setOnClickListener(v -> {
+            event.getPendingCoOrganizerUserIds().remove(currentUserId);
+            EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(EventDetailViewActivity.this, "Invite Declined", Toast.LENGTH_SHORT).show();
+                    populateUI();
+                }
+                @Override public void onFailure(Exception e) {}
+            });
         });
     }
 

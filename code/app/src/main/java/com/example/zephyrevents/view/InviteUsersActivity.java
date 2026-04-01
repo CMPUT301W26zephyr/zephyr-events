@@ -186,20 +186,22 @@ public class InviteUsersActivity extends AppCompatActivity {
             h.action.setEnabled(true);
 
             boolean isCo = event.getCoOrganizerUserIds().contains(u.getId());
-            boolean isPending = event.getPendingPrivateWaitlistInviteUserIds().contains(u.getId());
+            boolean isPendingCo = event.getPendingCoOrganizerUserIds().contains(u.getId());
+            boolean isPendingWaitlist = event.getPendingPrivateWaitlistInviteUserIds().contains(u.getId());
 
             if (MODE_CO_ORG.equals(mode)) {
-                if (isCo) {
+                if (isCo || isPendingCo) {
                     h.action.setText(R.string.remove_action);
                     h.action.setOnClickListener(v -> {
                         event.getCoOrganizerUserIds().remove(u.getId());
+                        event.getPendingCoOrganizerUserIds().remove(u.getId());
                         persistEvent(null);
                     });
                 } else {
                     h.action.setText(R.string.invite_action);
                     h.action.setOnClickListener(v -> {
-                        if (!event.getCoOrganizerUserIds().contains(u.getId())) {
-                            event.getCoOrganizerUserIds().add(u.getId());
+                        if (!event.getPendingCoOrganizerUserIds().contains(u.getId())) {
+                            event.getPendingCoOrganizerUserIds().add(u.getId());
                         }
                         String body = getString(R.string.notif_coorganizer_body,
                                 event.getName() != null ? event.getName() : "event");
@@ -207,7 +209,7 @@ public class InviteUsersActivity extends AppCompatActivity {
                     });
                 }
             } else {
-                if (isPending) {
+                if (isPendingWaitlist) {
                     h.action.setText(R.string.remove_action);
                     h.action.setOnClickListener(v -> {
                         event.getPendingPrivateWaitlistInviteUserIds().remove(u.getId());

@@ -14,24 +14,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
-import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
-import com.example.zephyrevents.repository.ImageRepository;
 import com.example.zephyrevents.repository.RepositoryCallback;
-
-import androidx.work.Data;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import com.example.zephyrevents.controller.LotteryWorker;
-import java.util.concurrent.TimeUnit;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
+
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
@@ -181,33 +171,17 @@ public class EventConfirmationFragment extends Fragment {
                     newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
                     newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
 
+                    newEvent.setPrivateEvent(viewModel.privateEvent);
+                    newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
+                    newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
+
+                    // Default status to OPEN so the Cloud Function knows it is active
+                    newEvent.setStatus(com.example.zephyrevents.model.EventStatus.OPEN);
+
                     EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
                         @Override
                         public void onSuccess(Void result) {
                             Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
-
-                            // === NEW: SCHEDULE THE LOTTERY WORKER ===
-                            long delayInMillis = newEvent.getRegistrationEndTime() - System.currentTimeMillis();
-
-                            // If the deadline is in the future, schedule it!
-                            if (delayInMillis > 0) {
-                                Data inputData = new Data.Builder()
-                                        .putString("eventId", newEvent.getEventId())
-                                        .build();
-
-                                OneTimeWorkRequest lotteryRequest = new OneTimeWorkRequest.Builder(LotteryWorker.class)
-                                        .setInitialDelay(delayInMillis, TimeUnit.MILLISECONDS)
-                                        .setInputData(inputData)
-                                        .build();
-
-                                // We use REPLACE so if the organizer edits the event and changes the date,
-                                // the old timer is cancelled and replaced by the new one.
-                                WorkManager.getInstance(requireContext()).enqueueUniqueWork(
-                                        "lottery_" + newEvent.getEventId(),
-                                        ExistingWorkPolicy.REPLACE,
-                                        lotteryRequest
-                                );
-                            }
                         }
 
                         @Override
