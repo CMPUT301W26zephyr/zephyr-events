@@ -22,8 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
+
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import android.widget.Button;
@@ -181,33 +180,12 @@ public class EventConfirmationFragment extends Fragment {
                     newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
                     newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
 
+                    newEvent.setPrivateEvent(viewModel.privateEvent);
+                    newEvent.setCoOrganizerUserIds(new ArrayList<>(viewModel.coOrganizerUserIds));
+                    newEvent.setPendingPrivateWaitlistInviteUserIds(new ArrayList<>(viewModel.pendingPrivateWaitlistInviteUserIds));
 
-
-                    /*
-                    Note: using this won't save the event poster
-                    EventController.getInstance().createEvent(newEvent, new RepositoryCallback<Void>() {
-                        @Override
-                        public void onSuccess(Void result) {
-                            Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                     */
-
-                    // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
-                    /*
-                    Moved to below
-                    if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
-                        new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
-                    }
-                    requireActivity().finish();
-
-                     */
+                    // Default status to OPEN so the Cloud Function knows it is active
+                    newEvent.setStatus(com.example.zephyrevents.model.EventStatus.OPEN);
 
                     String existingUrl = viewModel.existingImgUrl != null ? viewModel.existingImgUrl : "";
                     EventController.getInstance().saveEventWithOptionalImage(
@@ -235,7 +213,6 @@ public class EventConfirmationFragment extends Fragment {
                                     }
 
                                     Toast.makeText(requireContext(), "Failed to save event", Toast.LENGTH_SHORT).show();
-
 
                                 }
                             }

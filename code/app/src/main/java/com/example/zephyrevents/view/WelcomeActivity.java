@@ -26,7 +26,12 @@ public class WelcomeActivity extends AppCompatActivity {
         UserController userController = new UserController(this);
 
         if (userController.isUserLoggedIn()) {
-            startActivity(new Intent(this, MainActivity.class));
+            Intent mainIntent = new Intent(this, MainActivity.class);
+            // Forward the notification click data to MainActivity
+            if (getIntent().getExtras() != null) {
+                mainIntent.putExtras(getIntent().getExtras());
+            }
+            startActivity(mainIntent);
             finish();
             return;
         }

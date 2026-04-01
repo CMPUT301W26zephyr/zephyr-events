@@ -34,6 +34,8 @@ public class Event {
     private List<String> coOrganizerUserIds;
     /** Entrants invited to the private waitlist but who have not accepted yet. */
     private List<String> pendingPrivateWaitlistInviteUserIds;
+    private List<String> pendingCoOrganizerUserIds;
+
 
     public Event() {
     }
@@ -274,5 +276,16 @@ public class Event {
 
     public void setPendingPrivateWaitlistInviteUserIds(List<String> pendingPrivateWaitlistInviteUserIds) {
         this.pendingPrivateWaitlistInviteUserIds = pendingPrivateWaitlistInviteUserIds;
+    }
+
+    public List<String> getPendingCoOrganizerUserIds() {
+        if (pendingCoOrganizerUserIds == null) {
+            pendingCoOrganizerUserIds = new ArrayList<>();
+        }
+        return pendingCoOrganizerUserIds;
+    }
+
+    public void setPendingCoOrganizerUserIds(List<String> pendingCoOrganizerUserIds) {
+        this.pendingCoOrganizerUserIds = pendingCoOrganizerUserIds;
     }
 }

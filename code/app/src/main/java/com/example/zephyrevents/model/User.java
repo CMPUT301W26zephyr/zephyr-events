@@ -15,6 +15,7 @@ public class User {
     private boolean notificationsOptOut; // Opt out of all notifications account wide?
     private String userTimeZone; // Should be something like America/Edmonton
     private String avatarUrl; // Firebase Storage store URL for profile image
+    private String fcmToken;
 
     /**
      * Firebase no arg constructor
@@ -133,5 +134,13 @@ public class User {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }
