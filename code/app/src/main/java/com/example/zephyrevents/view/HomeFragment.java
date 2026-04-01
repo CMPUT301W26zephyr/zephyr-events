@@ -2,11 +2,14 @@ package com.example.zephyrevents.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +24,8 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.model.User;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +44,20 @@ public class HomeFragment extends Fragment {
     private List<Event> featuredEvents = new ArrayList<>();
 
     private ViewPager2 carousel;
+    private TabLayout tabLayoutDots;
+    private ProgressBar progressBar;
+
+    // Auto scroll
+    private final Handler sliderHandler = new Handler(Looper.getMainLooper());
+    private final Runnable sliderRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (adapter != null && adapter.getItemCount() > 0) {
+                int nextItem = (carousel.getCurrentItem() + 1) % adapter.getItemCount();
+                carousel.setCurrentItem(nextItem, true);
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -54,13 +73,15 @@ public class HomeFragment extends Fragment {
         userController = new UserController(requireContext());
 
         carousel = view.findViewById(R.id.carousel_featured);
+        tabLayoutDots = view.findViewById(R.id.tab_layout_dots);
+        progressBar = view.findViewById(R.id.progress_bar_featured);
 
         setupCarousel();
 
+        progressBar.setVisibility(View.VISIBLE);
         setupClickListeners(view);
-
         verifyUserSession();
-
+        loadFeaturedEvents();
     }
 
     /**
@@ -78,12 +99,60 @@ public class HomeFragment extends Fragment {
         carousel.setAdapter(adapter);
 
         // Styling
-        carousel.setOffscreenPageLimit(5);
+        carousel.setOffscreenPageLimit(3);
+
+        int overlapPx = (int) (80 * getResources().getDisplayMetrics().density);  // makes 30 dp
+
         carousel.setPageTransformer((page, position) -> {
-            float r = 1 - Math.abs(position);
-            page.setScaleY(0.85f + r * 0.15f);
+            float absPosition = Math.abs(position);
+
+            // Scale down side cards
+            float scale = 0.85f + (1 - absPosition) * 0.15f;
+            scale = Math.max(0.85f, scale); // clamp
+            page.setScaleY(scale);
+            page.setScaleX(scale);
+
+            // Fade out side cards
+            float alpha = 0.2f + (1 - absPosition) * 0.8f;
+            page.setAlpha(Math.max(0.4f, alpha));
+
+            // Overlap cards horizontally
+            // If position is positive, card is on right, we translate it left (negative)
+            page.setTranslationX(-position * overlapPx);
+
+            // Center card on top
+            page.setTranslationZ(1 - absPosition);
         });
 
+        // https://developer.android.com/reference/com/google/android/material/tabs/TabLayoutMediator
+        // mediator syncs selection state
+        new TabLayoutMediator(tabLayoutDots, carousel, (tab, position) -> {}).attach();
+
+        // Control the auto-scroll behavior when user interacts
+        carousel.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                startAutoScroll(); // Reset timer so it doesn't jump immediately after manual swipe
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+                if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
+                    stopAutoScroll(); // Pause scrolling while user is dragging
+                }
+            }
+        });
+    }
+
+    private void startAutoScroll() {
+        sliderHandler.removeCallbacks(sliderRunnable);
+        sliderHandler.postDelayed(sliderRunnable, 5000); // 5 seconds
+    }
+
+    private void stopAutoScroll() {
+        sliderHandler.removeCallbacks(sliderRunnable);
     }
 
     /**
@@ -151,6 +220,10 @@ public class HomeFragment extends Fragment {
         loadFeaturedEvents();
     }
 
+    private void finishLoading() {
+        progressBar.setVisibility(View.GONE);
+    }
+
     /**
      * Loads featured events
      * NOTE: Placeholder logic currently just picks three random events.
@@ -170,17 +243,20 @@ public class HomeFragment extends Fragment {
                     }
                     // Select top 3 events based on score
                     publicEvents.sort((e1, e2) -> Double.compare(eventScore(e2), eventScore(e1)));
-                    int max = Math.min(3, publicEvents.size());
+                    int max = Math.min(5, publicEvents.size());
                     for (int i = 0; i < max; i++) {
                         featuredEvents.add(publicEvents.get(i));
                     }
                 }
                 adapter.notifyDataSetChanged();
+                finishLoading();
+
             }
 
             @Override
             public void onFailure(Exception e) {
                 Toast.makeText(requireContext(), "Failed to load featured events.", Toast.LENGTH_SHORT).show();
+                finishLoading();
             }
         });
     }
