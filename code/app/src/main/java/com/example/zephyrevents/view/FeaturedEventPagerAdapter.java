@@ -56,13 +56,16 @@ public class FeaturedEventPagerAdapter extends RecyclerView.Adapter<FeaturedEven
 
     static class EventViewHolder extends RecyclerView.ViewHolder {
         ImageView imageLarge;
-        TextView textTitle, textDateLocation;
+        TextView textTitle, textDate, textLocation, textPrice, textDescription;
 
         EventViewHolder(@NonNull View itemView) {
             super(itemView);
             imageLarge = itemView.findViewById(R.id.item_event_image_large);
             textTitle = itemView.findViewById(R.id.item_event_title);
-            textDateLocation = itemView.findViewById(R.id.item_event_date_location);
+            textDate = itemView.findViewById(R.id.event_date);
+            textLocation = itemView.findViewById(R.id.event_location);
+            textPrice = itemView.findViewById(R.id.event_price);
+            textDescription = itemView.findViewById(R.id.event_description);
         }
 
         /**
@@ -72,10 +75,25 @@ public class FeaturedEventPagerAdapter extends RecyclerView.Adapter<FeaturedEven
          */
         void bind(Event event, OnEventClickListener listener) {
             textTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
-            String dateStr = event.getTime().getStartTime() > 0 ? dateFormat.format(new Date(event.getTime().getStartTime())) : "Unknown Date";
-            String locationStr = event.getLocation() != null ? event.getLocation().getLocationString() : "Unknown Location";
-            String dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : "\n" + locationStr);
-            textDateLocation.setText(dateLocationStr);
+
+            String dateStr = event.getTime().getStartTime() > 0 ? dateFormat.format(new Date(event.getTime().getStartTime())) : "Date TBD";
+            textDate.setText(dateStr);
+
+            String locationStr = event.getLocation() != null ? event.getLocation().getLocationString() : "Location TBD";
+            textLocation.setText(locationStr);
+
+            if (event.getPrice() <= 0) {
+                textPrice.setText("Free");
+                textPrice.setTextColor(itemView.getContext().getResources().getColor(R.color.green));
+            } else {
+                textPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
+            }
+
+            if (event.getDescription() != null && !event.getDescription().trim().isEmpty()) {
+                textDescription.setText(event.getDescription());
+            } else {
+                textDescription.setText("No Description...\nClick for details!");
+            }
 
             if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
                 Glide.with(itemView.getContext())
