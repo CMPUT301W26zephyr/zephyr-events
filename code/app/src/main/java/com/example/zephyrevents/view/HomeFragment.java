@@ -1,5 +1,8 @@
 package com.example.zephyrevents.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +10,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -16,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.zephyrevents.R;
@@ -46,6 +51,10 @@ public class HomeFragment extends Fragment {
     private ViewPager2 carousel;
     private TabLayout tabLayoutDots;
     private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    private ValueAnimator scrollAnimator;
+    private final int numMaxCarousel = 5;
 
     // Auto scroll
     private final Handler sliderHandler = new Handler(Looper.getMainLooper());
@@ -53,8 +62,7 @@ public class HomeFragment extends Fragment {
         @Override
         public void run() {
             if (adapter != null && adapter.getItemCount() > 0) {
-                int nextItem = (carousel.getCurrentItem() + 1) % adapter.getItemCount();
-                carousel.setCurrentItem(nextItem, true);
+                slowScrollToNextItem();
             }
         }
     };
@@ -75,12 +83,15 @@ public class HomeFragment extends Fragment {
         carousel = view.findViewById(R.id.carousel_featured);
         tabLayoutDots = view.findViewById(R.id.tab_layout_dots);
         progressBar = view.findViewById(R.id.progress_bar_featured);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
 
         setupCarousel();
 
         progressBar.setVisibility(View.VISIBLE);
         setupClickListeners(view);
         verifyUserSession();
+
+        swipeRefreshLayout.setOnRefreshListener(this::loadFeaturedEvents);
         loadFeaturedEvents();
     }
 
@@ -113,7 +124,7 @@ public class HomeFragment extends Fragment {
             page.setScaleX(scale);
 
             // Fade out side cards
-            float alpha = 0.2f + (1 - absPosition) * 0.8f;
+            float alpha = 0.3f + (1 - absPosition) * 0.7f;
             page.setAlpha(Math.max(0.4f, alpha));
 
             // Overlap cards horizontally
@@ -153,6 +164,64 @@ public class HomeFragment extends Fragment {
 
     private void stopAutoScroll() {
         sliderHandler.removeCallbacks(sliderRunnable);
+    }
+
+    private void slowScrollToNextItem() {
+        if (adapter == null || adapter.getItemCount() == 0) return;
+
+        int currentItem = carousel.getCurrentItem();
+        int nextItem = (currentItem + 1) % adapter.getItemCount();
+
+        if (carousel.beginFakeDrag()) {
+
+            int cardWidth = carousel.getWidth()
+                    - carousel.getPaddingLeft()
+                    - carousel.getPaddingRight();
+
+            int totalDragDistance;
+            long duration;
+
+            if (nextItem == 0) {
+                totalDragDistance = cardWidth * currentItem;
+                duration = 1200L; // more time since it travels further
+            } else {
+                totalDragDistance = -cardWidth;
+                duration = 800L;
+            }
+            scrollAnimator = ValueAnimator.ofInt(0, totalDragDistance);
+            scrollAnimator.setDuration(duration);
+            scrollAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+            // Keep track of the last value to calculate the delta
+            final int[] previousValue = {0};
+
+            scrollAnimator.addUpdateListener(valueAnimator -> {
+                int currentValue = (int) valueAnimator.getAnimatedValue();
+                float currentPxToDrag = (float) (currentValue - previousValue[0]);
+
+                carousel.fakeDragBy(currentPxToDrag);
+                previousValue[0] = currentValue;
+            });
+
+            scrollAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (carousel.isFakeDragging()) {
+                        carousel.endFakeDrag();
+                    }
+                }
+            });
+            scrollAnimator.start();
+        }
+    }
+
+    private void cancelSlowScroll() {
+        if (scrollAnimator != null && scrollAnimator.isRunning()) {
+            scrollAnimator.cancel();
+        }
+        if (carousel != null && carousel.isFakeDragging()) {
+            carousel.endFakeDrag();
+        }
     }
 
     /**
@@ -213,15 +282,25 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Refresh featured events every time the screen becomes visible
+    // start and stop scroll when coming back from other activity
     @Override
     public void onResume() {
         super.onResume();
-        loadFeaturedEvents();
+        if (carousel != null) carousel.requestTransform();
+        startAutoScroll();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopAutoScroll();
     }
 
     private void finishLoading() {
         progressBar.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(false);
+        carousel.setCurrentItem(0);
+        carousel.requestTransform();
     }
 
     /**
@@ -229,6 +308,8 @@ public class HomeFragment extends Fragment {
      * NOTE: Placeholder logic currently just picks three random events.
      */
     private void loadFeaturedEvents() {
+        progressBar.setVisibility(View.VISIBLE);
+
         eventController.getAllEvents(new RepositoryCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> result) {
@@ -243,14 +324,14 @@ public class HomeFragment extends Fragment {
                     }
                     // Select top 3 events based on score
                     publicEvents.sort((e1, e2) -> Double.compare(eventScore(e2), eventScore(e1)));
-                    int max = Math.min(5, publicEvents.size());
-                    for (int i = 0; i < max; i++) {
+                    int numCarousel = Math.min(numMaxCarousel, publicEvents.size());
+                    for (int i = 0; i < numCarousel; i++) {
                         featuredEvents.add(publicEvents.get(i));
                     }
                 }
+                cancelSlowScroll();
                 adapter.notifyDataSetChanged();
                 finishLoading();
-
             }
 
             @Override
