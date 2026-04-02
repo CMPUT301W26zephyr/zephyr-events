@@ -116,14 +116,27 @@ public class EventConfirmationFragment extends Fragment {
                         newEvent.setWaitlistCapacity(null);
                     }
 
-                    // --- NEW: Combine Location & Address and attach it to the Event ---
                     com.example.zephyrevents.model.Location eventLoc = new com.example.zephyrevents.model.Location();
                     String displayLocation = viewModel.location;
+
                     if (viewModel.address != null && !viewModel.address.trim().isEmpty()) {
                         displayLocation += " (" + viewModel.address.trim() + ")";
                     }
-                    // Assuming your Location model has a standard setter
+
                     eventLoc.setLocationString(displayLocation);
+                    eventLoc.setRequiresGeolocation(viewModel.requireGeolocation);
+                    eventLoc.setGeolocationRadiusKm(viewModel.geolocationRadiusKm);
+
+
+                    if (viewModel.eventLat != 0 || viewModel.eventLng != 0) {
+                        eventLoc.setCoordinate(
+                                new com.example.zephyrevents.model.Coordinate(
+                                        viewModel.eventLat,
+                                        viewModel.eventLng
+                                )
+                        );
+                    }
+
                     newEvent.setLocation(eventLoc);
 
                     // Parse the dates into EventTime format

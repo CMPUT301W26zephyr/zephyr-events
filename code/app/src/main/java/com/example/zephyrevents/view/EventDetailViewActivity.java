@@ -27,6 +27,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
 
 public class EventDetailViewActivity extends AppCompatActivity {
     public static final String EXTRA_EVENT = "extra_event";
@@ -38,6 +41,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private String currentUserId;
     private UserController userController;
     private UserRepository userRepository;
+    private WaitlistRepository pendingRepo; // store repo while waiting for permission
 
     private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation;
     private TextView organizerName, eventAbout, totalCapacity, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
@@ -76,6 +80,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
         if (btnViewEntrants != null) {
             btnViewEntrants.setOnClickListener(v -> {
                 Intent intent = new Intent(this, OrganizerEntrantsListView.class);
+                intent.putExtra(EXTRA_EVENT, event.getEventId());
+                startActivity(intent);
+            });
+        }
+        LinearLayout btnViewMap = findViewById(R.id.btn_view_map);
+        if (btnViewMap != null) {
+            btnViewMap.setOnClickListener(v -> {
+                Intent intent = new Intent(this, EntrantsMapActivity.class);
                 intent.putExtra(EXTRA_EVENT, event.getEventId());
                 startActivity(intent);
             });
@@ -279,7 +291,6 @@ public class EventDetailViewActivity extends AppCompatActivity {
             }
         });
     }
-
     private void showJoinWaitlistButton(WaitlistRepository repo) {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(true);
@@ -287,20 +298,81 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> {
-            WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
-            repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    Toast.makeText(EventDetailViewActivity.this, "Joined Waitlist!", Toast.LENGTH_SHORT).show();
-                    populateUI();
+            if (event.getLocation() != null && event.getLocation().isRequiresGeolocation()) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    pendingRepo = repo;
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+                } else {
+                    doLocationJoin(repo);
                 }
-                @Override
-                public void onFailure(Exception e) {}
-            });
+            } else {
+                WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
+                repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                    @Override public void onSuccess(Void result) {
+                        Toast.makeText(EventDetailViewActivity.this, "Joined Waitlist!", Toast.LENGTH_SHORT).show();
+                        populateUI();
+                    }
+                    @Override public void onFailure(Exception e) {}
+                });
+            }
         });
         buttonSecondary.setVisibility(View.GONE);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (pendingRepo != null) doLocationJoin(pendingRepo);
+            } else {
+                Toast.makeText(this, "Location permission is required to join this event.", Toast.LENGTH_LONG).show();
+            }
+            pendingRepo = null;
+        }
+    }
+
+    private void doLocationJoin(WaitlistRepository repo) {
+        com.example.zephyrevents.util.DistanceHelper.getUserLocation(this,
+                new com.example.zephyrevents.util.DistanceHelper.LocationCallback() {
+                    @Override
+                    public void onLocation(double userLat, double userLng) {
+                        com.example.zephyrevents.model.Coordinate userCoord =
+                                new com.example.zephyrevents.model.Coordinate(userLat, userLng);
+                        com.example.zephyrevents.model.Coordinate eventCoord =
+                                event.getLocation().getCoordinate();
+                        double radiusKm = event.getLocation().getGeolocationRadiusKm();
+
+                        if (!com.example.zephyrevents.util.DistanceHelper.isWithinDistance(
+                                userCoord, eventCoord, radiusKm)) {
+                            Toast.makeText(EventDetailViewActivity.this,
+                                    "You must be within " + (int)(radiusKm * 1000) + "m of the event.",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        WaitlistEntry newEntry = new WaitlistEntry(
+                                currentUserId, event.getEventId(), userLat, userLng, Status.WAITLISTED);
+                        repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                            @Override public void onSuccess(Void result) {
+                                Toast.makeText(EventDetailViewActivity.this, "Joined Waitlist!", Toast.LENGTH_SHORT).show();
+                                populateUI();
+                            }
+                            @Override public void onFailure(Exception e) {}
+                        });
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Toast.makeText(EventDetailViewActivity.this,
+                                "Could not get your location. Please enable location services.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
     private void showLeaveWaitlistButton(WaitlistRepository repo) {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(true);

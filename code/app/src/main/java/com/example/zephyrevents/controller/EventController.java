@@ -105,12 +105,10 @@ public class EventController {
      */
     public void addToWaitlist(String eventKey, String userId) {
         if (!isOnWaitlist(eventKey, userId)) {
-            // TODO: Passing 0.0 for lat/lng for now until map integration is ready
             WaitlistEntry entry = new WaitlistEntry(userId, eventKey, 0.0, 0.0, Status.WAITLISTED);
             mockLotteries.add(entry);
         }
     }
-
     /**
      * Removes a user from mock waitlist based on ID.
      * @param eventKey  event ID

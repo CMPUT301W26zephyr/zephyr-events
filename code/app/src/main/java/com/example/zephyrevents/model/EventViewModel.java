@@ -22,6 +22,9 @@ public class EventViewModel extends ViewModel {
     public String location = "";
     public String address = "";
     public boolean requireGeolocation = true;
+    public double geolocationRadiusKm = 0.5; // default 500m
+    public double eventLat;
+    public double eventLng;
     public String registrationPeriod = "";
     public String eventDate = "";
 }

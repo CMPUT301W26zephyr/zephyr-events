@@ -123,18 +123,39 @@
                 android:id="@+id/input_address"
                 style="@style/FormInput"
                 android:hint="e.g. 1234 State Avenue" />
-
-            <FrameLayout
+            <Button
+                android:id="@+id/btn_find_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Find Address"
+                android:layout_marginTop="8dp" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="16dp"
-                android:background="#E0E0E0">
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_image_placeholder2"/>
-            </FrameLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/radiusDropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:inputType="none"
+                    android:hint="Select Radius"
+                    android:paddingHorizontal="12dp"
+                    android:popupBackground="#FFFFFF"
+                    android:textColor="#333333"
+                    android:textSize="16sp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <org.osmdroid.views.MapView
+                android:id="@+id/map_view"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginTop="16dp" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_geolocation"
@@ -264,14 +285,6 @@
                     android:layout_height="wrap_content"
                     android:theme="@style/CustomInlineCalendar" />
             </androidx.cardview.widget.CardView>
-            <TimePicker
-                android:id="@+id/timePicker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="24dp"
-                android:timePickerMode="spinner"
-                android:layout_gravity="center" />
-
 
             <TextView
                 android:id="@+id/text_event_date"
