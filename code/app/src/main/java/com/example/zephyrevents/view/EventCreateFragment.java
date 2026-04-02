@@ -172,7 +172,6 @@ public class EventCreateFragment extends Fragment {
 
         // 1. DEFINE ALL UI ELEMENTS
         EditText inputTitle = view.findViewById(R.id.input_event_title);
-        AutoCompleteTextView dropdownType = view.findViewById(R.id.eventTypeDropdown);
         EditText inputPrice = view.findViewById(R.id.input_event_price);
         EditText inputDesc = view.findViewById(R.id.input_event_desc);
         EditText inputWaitlist = view.findViewById(R.id.input_waitlist);
@@ -252,10 +251,6 @@ public class EventCreateFragment extends Fragment {
         } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()) {
             Glide.with(this).load(viewModel.existingImgUrl).centerCrop().into(eventImgPreview);
         }
-
-        // Setup Dropdown
-        String[] eventTypes = new String[]{"Educational", "Workshop", "Corporate", "Social", "Recreation", "Entertainment", "Networking", "Other"};
-        dropdownType.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes));
 
         // 2. CHECK EDIT MODE AND FETCH DATA
         if (viewModel.isEditMode) {
@@ -350,7 +345,6 @@ public class EventCreateFragment extends Fragment {
 
         // 3. RESTORE EXISTING VIEWMODEL DATA
         inputTitle.setText(viewModel.title);
-        dropdownType.setText(viewModel.type, false);
         inputPrice.setText(viewModel.price);
         inputDesc.setText(viewModel.description);
         inputWaitlist.setText(viewModel.waitlistCapacity);
@@ -389,7 +383,6 @@ public class EventCreateFragment extends Fragment {
 
                     if (isValid) {
                         viewModel.title = inputTitle.getText().toString().trim();
-                        viewModel.type = dropdownType.getText().toString().trim();
                         viewModel.price = inputPrice.getText().toString().trim();
                         viewModel.description = inputDesc.getText().toString().trim();
                         viewModel.waitlistCapacity = inputWaitlist.getText().toString().trim();

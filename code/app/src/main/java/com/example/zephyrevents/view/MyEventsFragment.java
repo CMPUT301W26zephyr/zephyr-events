@@ -80,6 +80,14 @@ public class MyEventsFragment extends Fragment {
         fetchUserEvents();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            onResume();
+        }
+    }
+
     private void fetchUserEvents() {
         String currentUserId = new UserController(requireContext()).getCurrentUserId();
         if (currentUserId == null) return;

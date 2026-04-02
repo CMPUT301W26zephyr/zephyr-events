@@ -26,12 +26,18 @@ public class WelcomeActivity extends AppCompatActivity {
         UserController userController = new UserController(this);
 
         if (userController.isUserLoggedIn()) {
-            Intent mainIntent = new Intent(this, MainActivity.class);
-            // Forward the notification click data to MainActivity
-            if (getIntent().getExtras() != null) {
-                mainIntent.putExtras(getIntent().getExtras());
+            Intent nextIntent;
+            // If the notification passed an eventId, open EventDetail directly
+            if (getIntent().getExtras() != null && getIntent().hasExtra("eventId")) {
+                nextIntent = new Intent(this, EventDetailViewActivity.class);
+                nextIntent.putExtra(EventDetailViewActivity.EXTRA_EVENT, getIntent().getStringExtra("eventId"));
+            } else {
+                nextIntent = new Intent(this, MainActivity.class);
+                if (getIntent().getExtras() != null) {
+                    nextIntent.putExtras(getIntent().getExtras());
+                }
             }
-            startActivity(mainIntent);
+            startActivity(nextIntent);
             finish();
             return;
         }

@@ -91,29 +91,6 @@
                 android:hint="e.g. Beginner Swimming Lessons" />
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormLabel" android:text="Event Type" />
-            </LinearLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp">
-                <AutoCompleteTextView
-                    android:id="@+id/eventTypeDropdown"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:inputType="text"
-                    android:paddingHorizontal="12dp"
-                    android:popupBackground="#FFFFFF"
-                    android:textColor="#333333"
-                    android:textSize="16sp"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout style="@style/FormLabelRow">
                 <TextView style="@style/FormLabel" android:text="Event Price" />
             </LinearLayout>
             <EditText
@@ -132,22 +109,22 @@
                 android:inputType="textCapSentences" />
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormLabel" android:text="Waiting List Capacity" android:layout_marginStart="0dp" />
-            </LinearLayout>
-            <EditText
-                android:id="@+id/input_waitlist"
-                style="@style/FormInput"
-                android:hint="e.g. 67 (Leave blank for unlimited)"
-                android:inputType="number" />
-
-            <LinearLayout style="@style/FormLabelRow">
                 <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Attendee Capacity" />
+                <TextView style="@style/FormLabel" android:text="Event Capacity" />
             </LinearLayout>
             <EditText
                 android:id="@+id/input_attendee_count"
                 style="@style/FormInput"
-                android:hint="e.g. 15"
+                android:hint="e.g. 30"
+                android:inputType="number" />
+
+            <LinearLayout style="@style/FormLabelRow">
+                <TextView style="@style/FormLabel" android:text="Waitlist Capacity" android:layout_marginStart="0dp" />
+            </LinearLayout>
+            <EditText
+                android:id="@+id/input_waitlist"
+                style="@style/FormInput"
+                android:hint="e.g. 150 (Leave blank for unlimited)"
                 android:inputType="number" />
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>

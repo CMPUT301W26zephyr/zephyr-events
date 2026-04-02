@@ -11,14 +11,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        // This triggers only when the app is actively in the FOREGROUND
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle();
             String body = remoteMessage.getNotification().getBody();
             if (title == null) title = "Zephyr Events";
 
+            String eventId = "";
+            if (remoteMessage.getData().containsKey("eventId")) {
+                eventId = remoteMessage.getData().get("eventId");
+            }
+
             int uniqueId = (int) System.currentTimeMillis();
-            LocalNotificationHelper.showNotification(this, title, body, uniqueId);
+            LocalNotificationHelper.showNotification(this, title, body, uniqueId, eventId);
         }
     }
 

@@ -88,6 +88,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private ListenerRegistration commentsRegistration;
 
     private ImageView eventPoster;
+    private TextView inviteContextText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +180,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventImageContainer = findViewById(R.id.event_image_container);
         eventPoster = findViewById(R.id.event_image);
 
-        attendeeButtonsContainer = findViewById(R.id.event_detail_buttons);
+        attendeeButtonsContainer = findViewById(R.id.bottom_action_container);
 
         buttonPrimary = findViewById(R.id.button_primary);
         buttonSecondary = findViewById(R.id.button_secondary);
@@ -206,6 +207,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
         commentsSectionTitle = findViewById(R.id.comments_section_title);
         addCommentAction = findViewById(R.id.add_comment_action);
         commentsRecycler = findViewById(R.id.comments_recycler);
+
+        inviteContextText = findViewById(R.id.invite_context_text);
     }
 
     private void setupCommentsUi() {
@@ -840,6 +843,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
     }
 
     private void showPrivateWaitlistInviteButtons() {
+        inviteContextText.setVisibility(View.VISIBLE);
+        inviteContextText.setText("You have been invited to join the waitlist for a private event.");
+
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(true);
         buttonPrimary.setText(R.string.accept_invite);
@@ -927,9 +933,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
     }
 
     private void showCoOrganizerInviteButtons() {
+        inviteContextText.setVisibility(View.VISIBLE);
+        inviteContextText.setText("You have been invited to Co-Organize this event.");
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(true);
-        buttonPrimary.setText("ACCEPT CO-ORGANIZER");
+        buttonPrimary.setText(R.string.accept_invite);
         buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> {

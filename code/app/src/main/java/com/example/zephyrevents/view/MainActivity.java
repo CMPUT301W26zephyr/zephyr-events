@@ -20,15 +20,6 @@ import androidx.fragment.app.FragmentManager;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.QRController;
 import com.example.zephyrevents.controller.UserController;
-import com.example.zephyrevents.model.Notification;
-import com.example.zephyrevents.repository.NotificationRepository;
-import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.util.LocalNotificationHelper;
-import com.google.android.material.transition.MaterialSharedAxis;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.journeyapps.barcodescanner.CaptureActivity;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -189,12 +180,4 @@ public class MainActivity extends AppCompatActivity {
         else if (profileFragment != null && !profileFragment.isHidden()) activeFragment = profileFragment;
     }
 
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-    }
 }
