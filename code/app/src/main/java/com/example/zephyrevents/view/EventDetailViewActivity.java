@@ -268,7 +268,6 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, OrganizerEventAddEditView.class);
                 intent.putExtra("EXTRA_EDIT_EVENT_ID", event.getEventId());
                 startActivity(intent);
-                finish();
             });
         }
         if (rowQr != null) {

@@ -356,7 +356,6 @@ public class HomeFragment extends Fragment {
         return score;
     }
 
-
     private void openEventDetail(String eventKey, boolean invited) {
         Intent intent = new Intent(requireContext(), EventDetailViewActivity.class);
         intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, eventKey);
