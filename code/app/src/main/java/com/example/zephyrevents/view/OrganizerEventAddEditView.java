@@ -22,7 +22,7 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);  // Makes it do weird stuff with hole punch camera
         setContentView(R.layout.activity_organizer_event);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fragment_container), (v, insets) -> {

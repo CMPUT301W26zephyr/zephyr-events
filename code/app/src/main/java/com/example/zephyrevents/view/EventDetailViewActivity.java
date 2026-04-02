@@ -268,7 +268,6 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, OrganizerEventAddEditView.class);
                 intent.putExtra("EXTRA_EDIT_EVENT_ID", event.getEventId());
                 startActivity(intent);
-                finish();
             });
         }
         if (rowQr != null) {
@@ -449,9 +448,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
             String url = event.getImageUrl();
             if (url != null && !url.isEmpty()){
                 Glide.with(this).load(url).centerCrop().into(eventPoster);
+                eventPoster.setOnClickListener(v -> {
+                    EventPosterFragment posterFragment = EventPosterFragment.newInstance(url);
+                    posterFragment.show(getSupportFragmentManager(), "EventPosterFragment");
+                });
             } else{
                 eventPoster.setImageResource(R.drawable.ic_image_placeholder2);
                 eventPoster.setImageTintList(ContextCompat.getColorStateList(this, android.R.color.darker_gray));
+                eventPoster.setOnClickListener(null);
             }
         }
 
