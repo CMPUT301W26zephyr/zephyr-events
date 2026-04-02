@@ -114,11 +114,18 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Refresh featured events every time the screen becomes visible
     @Override
     public void onResume() {
         super.onResume();
         loadFeaturedEvents();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            onResume();
+        }
     }
 
     /**

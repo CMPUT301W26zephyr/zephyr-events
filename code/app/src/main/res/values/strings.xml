@@ -28,7 +28,7 @@
     <string name="event_organizer">Event Organizer</string>
     <string name="about">About</string>
     <string name="waitlist_information">Waitlist Information</string>
-    <string name="total_capacity">Total Capacity</string>
+    <string name="total_capacity">Event Capacity</string>
     <string name="applicants">Applicants</string>
     <string name="registration_ends">Registration Ends</string>
     <string name="date">Date</string>

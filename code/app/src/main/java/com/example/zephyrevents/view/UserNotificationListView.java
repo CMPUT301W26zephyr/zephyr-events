@@ -27,25 +27,35 @@ public class UserNotificationListView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_notifications);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.top_bar), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), v.getPaddingBottom());
-            return insets;
-        });
 
         TextView title = findViewById(R.id.toolbar_title);
         title.setText(R.string.notifications);
 
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
-        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_notifications);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         String uid = new UserController(this).getCurrentUserId();
+
+        android.widget.ImageButton btnClear = findViewById(R.id.btn_cancel);
+        btnClear.setImageResource(R.drawable.ic_delete_24);
+        btnClear.setVisibility(View.VISIBLE);
+        btnClear.setOnClickListener(v -> {
+            if (uid != null) {
+                new NotificationRepository().deleteAllUserNotifications(uid, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Toast.makeText(UserNotificationListView.this, "All notifications cleared", Toast.LENGTH_SHORT).show();
+                        recyclerView.setAdapter(new NotificationAdapter(new ArrayList<>()));
+                    }
+                    @Override
+                    public void onFailure(Exception e) {}
+                });
+            }
+        });
+
         if (uid == null) {
             Toast.makeText(this, "Sign in to see notifications.", Toast.LENGTH_SHORT).show();
             finish();

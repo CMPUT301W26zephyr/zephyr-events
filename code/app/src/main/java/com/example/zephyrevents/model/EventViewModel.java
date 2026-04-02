@@ -20,7 +20,6 @@ public class EventViewModel extends ViewModel {
 
     // Form Data
     public String title = "";
-    public String type = "";
     public String price = "";
     public String description = "";
     public String waitlistCapacity = "";

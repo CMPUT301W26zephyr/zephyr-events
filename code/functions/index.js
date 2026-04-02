@@ -13,6 +13,7 @@ exports.sendPushNotification = onDocumentCreated("notifications/{notificationId}
     const notificationData = snap.data();
     const userId = notificationData.userId;
     const text = notificationData.text;
+    const eventId = notificationData.eventId || "";
 
     const userDoc = await admin.firestore().collection("users").doc(userId).get();
     if (!userDoc.exists) return null;
@@ -30,7 +31,14 @@ exports.sendPushNotification = onDocumentCreated("notifications/{notificationId}
             body: text,
         },
         data: {
-            TARGET_TAB: "MyEvents"
+            TARGET_TAB: "MyEvents",
+            eventId: eventId
+        },
+        android: {
+            priority: "high",
+            notification: {
+                channelId: "zephyr_events_channel"
+            }
         },
         token: token
     };
