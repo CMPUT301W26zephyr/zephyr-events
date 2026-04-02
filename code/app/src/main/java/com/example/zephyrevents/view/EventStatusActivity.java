@@ -60,7 +60,10 @@ public class EventStatusActivity extends AppCompatActivity {
         findViewById(R.id.button_back).setOnClickListener(v -> finish());
 
         findViewById(R.id.button_view_events).setOnClickListener(v -> {
-            startActivity(new Intent(this, MyEventsFragment.class));
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("TARGET_TAB", "MyEvents");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
             finish();
         });
     }

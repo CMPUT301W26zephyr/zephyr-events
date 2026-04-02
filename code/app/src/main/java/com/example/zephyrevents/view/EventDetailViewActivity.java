@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -106,6 +107,13 @@ public class EventDetailViewActivity extends AppCompatActivity {
         setupTabsAndScroll();
         setupCommentsUi();
         setupManageActions();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navigateBack();
+            }
+        });
 
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
@@ -440,6 +448,16 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private void setupBackButton() {
         ImageButton back = findViewById(R.id.button_back);
         if (back != null) back.setOnClickListener(v -> finish());
+    }
+
+    private void navigateBack() {
+        boolean fromNotif = getIntent().getBooleanExtra("FROM_NOTIFICATION", false);
+        if (isTaskRoot() || fromNotif) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+        finish();
     }
 
     private void populateUI() {

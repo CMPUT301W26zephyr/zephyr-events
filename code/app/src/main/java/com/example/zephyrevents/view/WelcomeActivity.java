@@ -27,10 +27,14 @@ public class WelcomeActivity extends AppCompatActivity {
 
         if (userController.isUserLoggedIn()) {
             Intent nextIntent;
-            // If the notification passed an eventId, open EventDetail directly
+            // Intercept FCM notification clicks to route to Event Details
             if (getIntent().getExtras() != null && getIntent().hasExtra("eventId")) {
                 nextIntent = new Intent(this, EventDetailViewActivity.class);
                 nextIntent.putExtra(EventDetailViewActivity.EXTRA_EVENT, getIntent().getStringExtra("eventId"));
+
+                if (getIntent().getBooleanExtra("FROM_NOTIFICATION", false)) {
+                    nextIntent.putExtra("FROM_NOTIFICATION", true);
+                }
             } else {
                 nextIntent = new Intent(this, MainActivity.class);
                 if (getIntent().getExtras() != null) {

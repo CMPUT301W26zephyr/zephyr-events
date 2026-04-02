@@ -33,6 +33,8 @@ public class LocalNotificationHelper {
         } else {
             intent.putExtra("TARGET_TAB", "MyEvents");
         }
+        intent.putExtra("FROM_NOTIFICATION", true);
+
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
