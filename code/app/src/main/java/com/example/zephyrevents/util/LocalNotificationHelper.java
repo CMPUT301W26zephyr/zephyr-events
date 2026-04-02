@@ -10,13 +10,13 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.example.zephyrevents.R;
-import com.example.zephyrevents.view.UserNotificationListView;
+import com.example.zephyrevents.view.MainActivity;
 
 public class LocalNotificationHelper {
 
     private static final String CHANNEL_ID = "zephyr_events_channel";
 
-    public static void showNotification(Context context, String title, String message) {
+    public static void showNotification(Context context, String title, String message, int notificationId) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Android 8.0+ requires a Notification Channel
@@ -30,13 +30,14 @@ public class LocalNotificationHelper {
             notificationManager.createNotificationChannel(channel);
         }
 
-        // Create the Intent to open the Notifications Screen when clicked
-        Intent intent = new Intent(context, UserNotificationListView.class);
+        // Create the Intent to route to the My Events/Notifications Screen when clicked
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("TARGET_TAB", "MyEvents");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
-                0,
+                notificationId, // Use the unique ID here
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
@@ -50,8 +51,7 @@ public class LocalNotificationHelper {
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // Make it pop up on screen
                 .setContentIntent(pendingIntent);
 
-        // Show the notification using a unique ID so they don't overwrite each other
-        int uniqueId = (int) System.currentTimeMillis();
-        notificationManager.notify(uniqueId, builder.build());
+        // Show the notification
+        notificationManager.notify(notificationId, builder.build());
     }
 }
