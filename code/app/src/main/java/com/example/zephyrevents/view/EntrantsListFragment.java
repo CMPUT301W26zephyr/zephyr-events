@@ -1,6 +1,13 @@
 package com.example.zephyrevents.view;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +24,17 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.LotteryController;
 import com.example.zephyrevents.controller.NotificationController;
 import com.example.zephyrevents.model.Entrant;
+import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.Status;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.model.WaitlistEntry;
+import com.example.zephyrevents.repository.EventRepository;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.repository.WaitlistRepository;
 
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +44,12 @@ public class EntrantsListFragment extends Fragment {
 
     private int tabIndex;
     private String eventId;
+    private String eventName;
     private WaitlistRepository waitlistRepository;
     private UserRepository userRepository;
     private NotificationController notificationController;
     private List<WaitlistEntry> currentFilteredList = new ArrayList<>();
+    private Map<String, User> userCache = new HashMap<>();
 
     public static EntrantsListFragment newInstance(int tabIndex, String eventId) {
         EntrantsListFragment fragment = new EntrantsListFragment();
@@ -110,7 +123,10 @@ public class EntrantsListFragment extends Fragment {
         } else if (tabIndex == 3) {
             btnNotify.setVisibility(View.VISIBLE);
             btnExportCsv.setVisibility(View.VISIBLE);
-            btnExportCsv.setOnClickListener(v -> Toast.makeText(requireContext(), "Exporting CSV...", Toast.LENGTH_SHORT).show());
+            btnExportCsv.setOnClickListener(v -> {
+                Toast.makeText(requireContext(), "Exporting CSV...", Toast.LENGTH_SHORT).show();
+                saveEntrantsToCsv(requireContext(), currentFilteredList, eventId, userCache);
+            });
         }
 
         btnNotify.setOnClickListener(v -> {
@@ -220,6 +236,7 @@ public class EntrantsListFragment extends Fragment {
                     userRepository.getUserById(entry.getUserId(), new RepositoryCallback<User>() {
                         @Override
                         public void onSuccess(User user) {
+                            userCache.put(entry.getUserId(), user);
                             String name = (user != null && user.getName() != null) ? user.getName() : "Unknown User";
                             boolean showCancel = (tabIndex == 2);
                             Entrant entrant = new Entrant(name, "Status: " + entry.getStatus().name(), showCancel);
@@ -244,5 +261,92 @@ public class EntrantsListFragment extends Fragment {
                 Toast.makeText(requireContext(), "Error loading waitlist", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private static void saveEntrantsToCsv(Context context, List<WaitlistEntry> entrants, String eventId, Map<String, User> userCache) {
+        EventRepository eventRepository = new EventRepository();
+
+        eventRepository.getEventById(eventId, new RepositoryCallback<Event>() {
+            @Override
+            public void onSuccess(Event result) {
+                String eventName = result.getName() != null ? result.getName().strip() : "Unnamed Event";
+
+                String filename = "Entrants_" + eventName + "_" + eventId + "_" + System.currentTimeMillis() + ".csv";
+                OutputStream fos;
+
+                try {
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Downloads.DISPLAY_NAME, filename);
+                    values.put(MediaStore.Downloads.MIME_TYPE, "text/csv");
+
+                    // Folder path
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        values.put(MediaStore.Downloads.RELATIVE_PATH, "Download/ZephyrEvents");
+                        values.put(MediaStore.Downloads.IS_PENDING, 1);
+                    }
+
+                    Uri uri = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        uri = context.getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+                    }
+
+                    if (uri != null) {
+                        fos = context.getContentResolver().openOutputStream(uri);
+                        if (fos != null) {
+
+                            // build the file
+                            String header = "User ID,Name,Email,Phone,Status\n";  // header
+                            fos.write(header.getBytes(StandardCharsets.UTF_8));
+                            for (WaitlistEntry entry : entrants) {
+
+                                User user = userCache.get(entry.getUserId());
+
+                                String name = "";
+                                String email = "";
+                                String phone = "";
+
+                                if (user != null) {
+                                    name = user.getName() != null ? user.getName() : "";
+                                    if (user.getContactInfo() != null) {
+                                        email = user.getContactInfo().getEmail() != null ? user.getContactInfo().getEmail() : "";
+                                        phone = user.getContactInfo().getPhone() != null ? user.getContactInfo().getPhone() : "";
+                                    }
+                                }
+
+                                String row = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n",  // Format
+                                        entry.getUserId(),
+                                        name.replace("\"", "\"\""),
+                                        email.replace("\"", "\"\""),
+                                        phone.replace("\"", "\"\""),
+                                        entry.getStatus().name()
+                                );
+
+                                fos.write(row.getBytes(StandardCharsets.UTF_8));
+                            }
+                            fos.flush();
+                            fos.close();
+                        }
+
+                        values.clear();
+                        values.put(MediaStore.Downloads.IS_PENDING, 0);  // mark as complete download
+                        context.getContentResolver().update(uri, values, null, null);
+
+                        new Handler(Looper.getMainLooper()).post(() ->  // needs to go back to view thread
+                                Toast.makeText(context, "CSV saved to Downloads/ZephyrEvents", Toast.LENGTH_SHORT).show());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    new Handler(Looper.getMainLooper()).post(() ->  // needs to go back to view thread
+                            Toast.makeText(context, "Failed to save CSV", Toast.LENGTH_SHORT).show());
+                }
+
+            }
+            @Override
+            public void onFailure(Exception e) {
+                new Handler(Looper.getMainLooper()).post(() ->  // needs to go back to view thread
+                        Toast.makeText(context, "Retrieve Event", Toast.LENGTH_SHORT).show());
+            }
+        });
+
     }
 }

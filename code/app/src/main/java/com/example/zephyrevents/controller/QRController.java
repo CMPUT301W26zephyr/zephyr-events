@@ -124,7 +124,7 @@ public class QRController {
                     context.getContentResolver().update(imageUri, values, null, null);
                 }
 
-                Toast.makeText(context, "QR Code saved to Gallery in Pictures/ZephyrEvents", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "QR Code saved to Pictures/ZephyrEvents", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
