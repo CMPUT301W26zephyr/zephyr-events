@@ -268,7 +268,6 @@ public class UserProfileViewFragment extends Fragment {
                 public void onSuccess(Void result) {
                     Toast.makeText(requireContext(), "Avatar removed", Toast.LENGTH_SHORT).show();
                     refreshProfile();
-
                 }
 
                 @Override
