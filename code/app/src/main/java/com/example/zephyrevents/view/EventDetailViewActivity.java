@@ -96,7 +96,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private EventCommentAdapter commentAdapter;
     private ListenerRegistration commentsRegistration;
     private ListenerRegistration eventRegistration;
+    private ListenerRegistration eventResumeRegistration;
+
     private ListenerRegistration waitlistRegistration;
+
 
     private ImageView eventPoster;
     private TextView inviteContextText;
@@ -177,6 +180,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
         overlayHandler.removeCallbacksAndMessages(null);
         if (eventRegistration != null) eventRegistration.remove();
         if (waitlistRegistration != null) waitlistRegistration.remove();
+        if(eventResumeRegistration != null){
+            eventResumeRegistration.remove();
+            eventResumeRegistration = null;
+        }
         super.onDestroy();
     }
 
@@ -186,7 +193,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
         super.onResume();
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         if (eventId != null) {
-            EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
+            if(eventResumeRegistration != null){
+                eventResumeRegistration.remove();
+                eventResumeRegistration = null;
+            }
+            eventResumeRegistration = EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
                 @Override
                 public void onSuccess(Event result) {
                     event = result;
@@ -586,6 +597,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private void populateUI() {
         if (event == null) return;
+
+        if(isFinishing() || isDestroyed()) return;
 
         if (eventPoster != null){
             eventPoster.setImageTintList(null);
