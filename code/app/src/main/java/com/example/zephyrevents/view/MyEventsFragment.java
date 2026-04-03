@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +29,10 @@ import java.util.List;
 public class MyEventsFragment extends Fragment {
 
     private ListView listView;
+    private View myEventsEmpty;
+    private ImageView myEventsEmptyIcon;
+    private TextView myEventsEmptyTitle;
+    private TextView myEventsEmptyHint;
     private Button tabLotteries;
     private Button tabHistory;
 
@@ -46,6 +52,10 @@ public class MyEventsFragment extends Fragment {
         view.findViewById(R.id.toolbar_back).setVisibility(View.INVISIBLE);
 
         listView = view.findViewById(R.id.my_events_list);
+        myEventsEmpty = view.findViewById(R.id.my_events_empty);
+        myEventsEmptyIcon = view.findViewById(R.id.my_events_empty_icon);
+        myEventsEmptyTitle = view.findViewById(R.id.my_events_empty_title);
+        myEventsEmptyHint = view.findViewById(R.id.my_events_empty_hint);
         tabLotteries = view.findViewById(R.id.tab_lotteries);
         tabHistory = view.findViewById(R.id.tab_history);
 
@@ -170,6 +180,7 @@ public class MyEventsFragment extends Fragment {
 
                         if (showingLotteries) listView.setAdapter(lotteryAdapter);
                         else listView.setAdapter(historyAdapter);
+                        refreshEmptyState();
                     }
                     @Override public void onFailure(Exception e) {}
                 });
@@ -185,6 +196,7 @@ public class MyEventsFragment extends Fragment {
         tabHistory.setBackgroundResource(R.drawable.bg_tab_unselected);
         tabHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         listView.setAdapter(lotteryAdapter);
+        refreshEmptyState();
     }
 
     private void showHistory() {
@@ -194,5 +206,24 @@ public class MyEventsFragment extends Fragment {
         tabLotteries.setBackgroundResource(R.drawable.bg_tab_unselected);
         tabLotteries.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         listView.setAdapter(historyAdapter);
+        refreshEmptyState();
+    }
+
+    private void refreshEmptyState() {
+        if (myEventsEmpty == null || listView == null) return;
+        MyEventListAdapter adapter = (MyEventListAdapter) listView.getAdapter();
+        boolean empty = adapter == null || adapter.getCount() == 0;
+        myEventsEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
+        listView.setVisibility(empty ? View.GONE : View.VISIBLE);
+        if (!empty || myEventsEmptyTitle == null || myEventsEmptyHint == null || myEventsEmptyIcon == null) return;
+        if (showingLotteries) {
+            myEventsEmptyTitle.setText(R.string.my_events_empty_lotteries);
+            myEventsEmptyHint.setText(R.string.my_events_empty_lotteries_hint);
+            myEventsEmptyIcon.setImageResource(R.drawable.ic_confirmation_number);
+        } else {
+            myEventsEmptyTitle.setText(R.string.my_events_empty_history);
+            myEventsEmptyHint.setText(R.string.my_events_empty_history_hint);
+            myEventsEmptyIcon.setImageResource(R.drawable.ic_calendar);
+        }
     }
 }

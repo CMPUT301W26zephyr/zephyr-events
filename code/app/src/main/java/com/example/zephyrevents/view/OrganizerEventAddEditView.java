@@ -13,9 +13,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.EventViewModel;
+
+import java.util.UUID;
 
 public class OrganizerEventAddEditView extends AppCompatActivity {
 
@@ -41,12 +44,13 @@ public class OrganizerEventAddEditView extends AppCompatActivity {
         });
         findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
 
-        //  Check if we are editing an existing event
+        EventViewModel viewModel = new ViewModelProvider(this).get(EventViewModel.class);
         String editEventId = getIntent().getStringExtra("EXTRA_EDIT_EVENT_ID");
         if (editEventId != null) {
-            EventViewModel viewModel = new androidx.lifecycle.ViewModelProvider(this).get(EventViewModel.class);
             viewModel.isEditMode = true;
             viewModel.eventId = editEventId;
+        } else if (viewModel.eventId == null) {
+            viewModel.eventId = UUID.randomUUID().toString();
         }
 
         if (savedInstanceState == null) {

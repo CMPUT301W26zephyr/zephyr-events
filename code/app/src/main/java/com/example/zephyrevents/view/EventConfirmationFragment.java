@@ -115,7 +115,10 @@ public class EventConfirmationFragment extends Fragment {
                         newEvent.setOrganizerId(viewModel.organizerId); // Preserve owner
                         newEvent.setCurrentApplicants(viewModel.originalApplicants); // Preserve users
                     } else {
-                        newEvent.setEventId(java.util.UUID.randomUUID().toString());
+                        if (viewModel.eventId == null || viewModel.eventId.isEmpty()) {
+                            viewModel.eventId = java.util.UUID.randomUUID().toString();
+                        }
+                        newEvent.setEventId(viewModel.eventId);
                         newEvent.setOrganizerId(new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId());
                     }
 

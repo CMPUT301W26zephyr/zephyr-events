@@ -202,24 +202,31 @@ public class EventCreateFragment extends Fragment {
         Button btnDelete = view.findViewById(R.id.btn_delete_event);
         MaterialButtonToggleGroup toggleVisibility = view.findViewById(R.id.toggle_event_visibility);
         View privateWarning = view.findViewById(R.id.private_event_warning);
+        View eventFormBottom = view.findViewById(R.id.event_form_bottom_actions);
         Button btnInviteEntrants = view.findViewById(R.id.btn_invite_entrants_private);
         Button btnInviteCoorg = view.findViewById(R.id.btn_invite_coorganizer);
         View dividerInvites = view.findViewById(R.id.divider_event_invites);
         View rowInviteButtons = view.findViewById(R.id.row_invite_buttons);
         TextView labelInvites = view.findViewById(R.id.label_event_form_invites);
+        TextView textInviteHint = view.findViewById(R.id.text_invite_create_hint);
 
         toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
         privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
+        Runnable setupInvites = () -> updateInviteButtons(eventFormBottom, dividerInvites, labelInvites, rowInviteButtons,
+                btnInviteEntrants, btnInviteCoorg, textInviteHint, btnDelete);
         toggleVisibility.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) return;
             viewModel.privateEvent = checkedId == R.id.btn_visibility_private;
             privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
-            updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
+            setupInvites.run();
         });
 
-        Runnable setupInvites = () -> updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
         btnInviteEntrants.setOnClickListener(v -> {
             if (viewModel.eventId == null) return;
+            if (!viewModel.isEditMode) {
+                Toast.makeText(requireContext(), R.string.invite_after_publish_hint, Toast.LENGTH_LONG).show();
+                return;
+            }
             Intent i = new Intent(requireContext(), InviteUsersActivity.class);
             i.putExtra(InviteUsersActivity.EXTRA_EVENT_ID, viewModel.eventId);
             i.putExtra(InviteUsersActivity.EXTRA_MODE, InviteUsersActivity.MODE_PRIVATE_WAITLIST);
@@ -227,12 +234,15 @@ public class EventCreateFragment extends Fragment {
         });
         btnInviteCoorg.setOnClickListener(v -> {
             if (viewModel.eventId == null) return;
+            if (!viewModel.isEditMode) {
+                Toast.makeText(requireContext(), R.string.invite_after_publish_hint, Toast.LENGTH_LONG).show();
+                return;
+            }
             Intent i = new Intent(requireContext(), InviteUsersActivity.class);
             i.putExtra(InviteUsersActivity.EXTRA_EVENT_ID, viewModel.eventId);
             i.putExtra(InviteUsersActivity.EXTRA_MODE, InviteUsersActivity.MODE_CO_ORG);
             startActivity(i);
         });
-        setupInvites.run();
 
         eventImgPreview = view.findViewById(R.id.event_image_preview);
         View eventImgContainer = view.findViewById(R.id.event_image_container);
@@ -323,7 +333,7 @@ public class EventCreateFragment extends Fragment {
 
                             toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
                             privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
-                            updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
+                            setupInvites.run();
 
                             if (e.getImageUrl() != null && !e.getImageUrl().isEmpty()) {
                                 viewModel.existingImgUrl = e.getImageUrl();
@@ -342,6 +352,8 @@ public class EventCreateFragment extends Fragment {
         } else {
             btnDelete.setVisibility(View.GONE);
         }
+
+        setupInvites.run();
 
         // 3. RESTORE EXISTING VIEWMODEL DATA
         inputTitle.setText(viewModel.title);
@@ -414,6 +426,7 @@ public class EventCreateFragment extends Fragment {
                     viewModel.privateEvent = e.isPrivateEvent();
                     viewModel.coOrganizerUserIds = new ArrayList<>(e.getCoOrganizerUserIds());
                     viewModel.pendingPrivateWaitlistInviteUserIds = new ArrayList<>(e.getPendingPrivateWaitlistInviteUserIds());
+                    refreshInviteSectionFromView();
                 }
 
                 @Override
@@ -423,18 +436,68 @@ public class EventCreateFragment extends Fragment {
         }
     }
 
-    private void updateInviteButtons(View dividerInvites, TextView labelInvites, View rowInviteButtons,
-                                     Button btnInviteEntrants, Button btnInviteCoorg) {
-        boolean edit = viewModel.isEditMode && viewModel.eventId != null;
-        boolean showCoorg = edit;
-        boolean showEntrants = edit && viewModel.privateEvent;
-        btnInviteCoorg.setVisibility(showCoorg ? View.VISIBLE : View.GONE);
-        btnInviteEntrants.setVisibility(showEntrants ? View.VISIBLE : View.GONE);
-        boolean showSection = showCoorg || showEntrants;
-        int sectionVis = showSection ? View.VISIBLE : View.GONE;
-        if (dividerInvites != null) dividerInvites.setVisibility(sectionVis);
-        if (labelInvites != null) labelInvites.setVisibility(sectionVis);
-        if (rowInviteButtons != null) rowInviteButtons.setVisibility(sectionVis);
+    private void refreshInviteSectionFromView() {
+        View root = getView();
+        if (root == null) return;
+        updateInviteButtons(
+                root.findViewById(R.id.event_form_bottom_actions),
+                root.findViewById(R.id.divider_event_invites),
+                (TextView) root.findViewById(R.id.label_event_form_invites),
+                root.findViewById(R.id.row_invite_buttons),
+                root.findViewById(R.id.btn_invite_entrants_private),
+                root.findViewById(R.id.btn_invite_coorganizer),
+                (TextView) root.findViewById(R.id.text_invite_create_hint),
+                root.findViewById(R.id.btn_delete_event));
+    }
+
+    private void updateInviteButtons(View bottomCard, View dividerInvites, TextView labelInvites,
+                                     View rowInviteButtons, Button btnInviteEntrants, Button btnInviteCoorg,
+                                     TextView inviteCreateHint, Button btnDelete) {
+        boolean hasId = viewModel.eventId != null && !viewModel.eventId.isEmpty();
+        boolean showInviteSection;
+        if (viewModel.isEditMode) {
+            showInviteSection = hasId;
+        } else {
+            showInviteSection = hasId && viewModel.privateEvent;
+        }
+
+        boolean showCoorg = showInviteSection && (viewModel.isEditMode || viewModel.privateEvent);
+        boolean showEntrants = showInviteSection && viewModel.privateEvent;
+        boolean canInvite = viewModel.isEditMode;
+
+        if (btnInviteCoorg != null) {
+            btnInviteCoorg.setVisibility(showCoorg ? View.VISIBLE : View.GONE);
+            btnInviteCoorg.setAlpha(canInvite ? 1f : 0.52f);
+        }
+        if (btnInviteEntrants != null) {
+            btnInviteEntrants.setVisibility(showEntrants ? View.VISIBLE : View.GONE);
+            btnInviteEntrants.setAlpha(canInvite ? 1f : 0.52f);
+        }
+
+        int rowVis = (showCoorg || showEntrants) ? View.VISIBLE : View.GONE;
+        if (rowInviteButtons != null) {
+            rowInviteButtons.setVisibility(rowVis);
+        }
+
+        int sectionVis = showInviteSection ? View.VISIBLE : View.GONE;
+        if (dividerInvites != null) {
+            dividerInvites.setVisibility(sectionVis);
+        }
+        if (labelInvites != null) {
+            labelInvites.setVisibility(sectionVis);
+        }
+        if (inviteCreateHint != null) {
+            inviteCreateHint.setVisibility(showInviteSection && !viewModel.isEditMode ? View.VISIBLE : View.GONE);
+        }
+
+        boolean showDelete = viewModel.isEditMode;
+        if (btnDelete != null) {
+            btnDelete.setVisibility(showDelete ? View.VISIBLE : View.GONE);
+        }
+
+        if (bottomCard != null) {
+            bottomCard.setVisibility((showInviteSection || showDelete) ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void setupDateAndTime(CalendarView calView, TimePicker timePicker, Calendar tracker, int type) {
