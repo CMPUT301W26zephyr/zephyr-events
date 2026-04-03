@@ -2,12 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey"
-    tools:context=".view.EventsListActivity">
+    android:background="@color/light_grey">
 
     <!-- Toolbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,13 +36,12 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
                 android:src="@drawable/ic_arrow_back"
                 app:tint="@color/black" />
 
             <TextView
                 android:id="@+id/toolbar_title2"
-                android:layout_width="292dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -54,25 +51,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/etSearchBar"
-            android:layout_width="0dp"
-            android:layout_height="58dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_card_white"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
-            android:hint="Search events"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/top_bar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Scrollable Grid -->
@@ -89,37 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:columnCount="3"
-            android:padding="8dp">
-
-
-            <ImageView
-                android:id="@+id/image_view"
-                android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/_4property_1_placeholder_image"/>
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/_4property_1_placeholder_image"/>
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/_4property_1_placeholder_image"/>
-
-            <!-- 계속 동일하게 추가 가능 -->
-
-        </GridLayout>
+            android:padding="8dp" />
 
     </ScrollView>
 
@@ -142,7 +91,6 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="18dp"
-            android:scaleType="fitCenter"
             android:src="@drawable/ic_home"
             app:tint="#757575" />
 
@@ -153,7 +101,6 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="18dp"
-            android:scaleType="fitCenter"
             android:src="@drawable/ic_confirmation_number"
             app:tint="#757575" />
 
@@ -164,7 +111,6 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="18dp"
-            android:scaleType="fitCenter"
             android:src="@drawable/ic_add_box"
             app:tint="#757575" />
 
@@ -175,7 +121,6 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="18dp"
-            android:scaleType="fitCenter"
             android:src="@drawable/ic_qr_code_scanner"
             app:tint="#757575" />
 
@@ -186,7 +131,6 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="18dp"
-            android:scaleType="fitCenter"
             android:src="@drawable/ic_person"
             app:tint="#757575" />
 

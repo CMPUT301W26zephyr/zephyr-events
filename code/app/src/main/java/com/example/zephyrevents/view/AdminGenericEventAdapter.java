@@ -67,7 +67,7 @@ public class AdminGenericEventAdapter extends ArrayAdapter<Object> {
                 );
             }
 
-            // DELETE 버튼
+            // DELETE
             if (deleteBtn != null) {
                 deleteBtn.setOnClickListener(v -> {
 
@@ -130,7 +130,7 @@ public class AdminGenericEventAdapter extends ArrayAdapter<Object> {
         // =========================
         else if (item instanceof String) {
 
-            ImageView image = convertView.findViewById(R.id.image_view);
+            ImageView image = convertView.findViewById(R.id.image_grid_preview);
 
             if (image != null) {
                 image.setImageResource(R.drawable._4property_1_placeholder_image);

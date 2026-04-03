@@ -15,6 +15,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_adminhome);
 
+        // Existing menu buttons
         TextView userProfiles = findViewById(R.id.userProfiles);
         TextView browseImages = findViewById(R.id.browseImages);
         TextView browseEvents = findViewById(R.id.browseEvents);
@@ -22,9 +23,11 @@ public class AdminHomeActivity extends AppCompatActivity {
         TextView statistics = findViewById(R.id.statistics);
         TextView systemLogs = findViewById(R.id.systemLogs);
         TextView termsConditions = findViewById(R.id.termsConditions);
-        //go back to user profile
+
+        // Back button
         findViewById(R.id.button_back2).setOnClickListener(v -> finish());
 
+        // Navigation to admin features
         userProfiles.setOnClickListener(v ->
                 startActivity(new Intent(this, AdminBrowseProfilesActivity.class)));
 
@@ -45,5 +48,41 @@ public class AdminHomeActivity extends AppCompatActivity {
 
         termsConditions.setOnClickListener(v ->
                 startActivity(new Intent(this, AdminTermsConditionsActivity.class)));
+
+        // Setup bottom navbar (same behavior as MainActivity)
+        setupBottomNav();
+    }
+
+    // Handle navbar navigation
+    private void setupBottomNav() {
+
+        // Home
+        findViewById(R.id.nav_home).setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("TARGET_TAB", "Home");
+            startActivity(intent);
+        });
+
+        // My Events
+        findViewById(R.id.nav_my_events).setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("TARGET_TAB", "MyEvents");
+            startActivity(intent);
+        });
+
+        // Create Event
+        findViewById(R.id.nav_create_event).setOnClickListener(v ->
+                startActivity(new Intent(this, OrganizerEventAddEditView.class)));
+
+        // Scan QR
+        findViewById(R.id.nav_scan_qr).setOnClickListener(v ->
+                startActivity(new Intent(this, QrScannerActivity.class)));
+
+        // Profile
+        findViewById(R.id.nav_profile).setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("TARGET_TAB", "ProfileView");
+            startActivity(intent);
+        });
     }
 }

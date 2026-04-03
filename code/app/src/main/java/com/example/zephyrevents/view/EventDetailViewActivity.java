@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -50,8 +52,6 @@ import java.util.Locale;
 
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
-
-
 
 public class EventDetailViewActivity extends AppCompatActivity {
     public static final String EXTRA_EVENT = "extra_event";
@@ -114,6 +114,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private ImageView organizerAvatar;
 
+    private boolean isAdminView = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,6 +146,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
+        isAdminView = getIntent().getBooleanExtra("isAdminView", false);
+        String eventById = getIntent().getStringExtra(EXTRA_EVENT);
 
         // Handle link parameter (e.g. from qr code)
         if (eventId == null) {
@@ -486,6 +490,117 @@ public class EventDetailViewActivity extends AppCompatActivity {
         });
     }
 
+    // ADDED: admin image delete (replace only image)
+    private void showAdminImageDialog() {
+
+        View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.admin_delete_yesorno, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.button_cancel)
+                .setOnClickListener(v -> {
+                    dialog.dismiss();
+                    finish(); // go back to image list
+                });
+
+        dialogView.findViewById(R.id.button_delete)
+                .setOnClickListener(v -> {
+                    dialog.dismiss();
+
+                    if (event == null) return;
+
+                    // remove only image
+                    event.setImageUrl("");
+
+                    EventController.getInstance().createEvent(
+                            event,
+                            new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(
+                                                EventDetailViewActivity.this,
+                                                "Image removed",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+
+                                        finish(); // refresh UI
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(
+                                                    EventDetailViewActivity.this,
+                                                    "Update failed",
+                                                    Toast.LENGTH_SHORT
+                                            ).show()
+                                    );
+                                }
+                            }
+                    );
+                });
+
+        dialog.show();
+    }
+
+    private void showAdminDeleteEventDialog() {
+
+        View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.admin_delete_yesorno, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.button_cancel)
+                .setOnClickListener(v -> dialog.dismiss());
+
+        dialogView.findViewById(R.id.button_delete)
+                .setOnClickListener(v -> {
+
+                    dialog.dismiss();
+
+                    if (event == null) return;
+
+                    EventController.getInstance().deleteEvent(
+                            event.getEventId(),
+                            new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(
+                                                EventDetailViewActivity.this,
+                                                "Event deleted",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+
+                                        finish();
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(
+                                                    EventDetailViewActivity.this,
+                                                    "Delete failed",
+                                                    Toast.LENGTH_SHORT
+                                            ).show()
+                                    );
+                                }
+                            }
+                    );
+                });
+
+        dialog.show();
+    }
     private void detachCommentsListener() {
         if (commentsRegistration != null) {
             commentsRegistration.remove();
@@ -628,6 +743,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 eventPoster.setImageTintList(ContextCompat.getColorStateList(this, android.R.color.darker_gray));
                 eventPoster.setOnClickListener(null);
             }
+            if (isAdminView) {
+                eventPoster.setOnClickListener(v -> showAdminImageDialog());
+            }
         }
 
         eventTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
@@ -768,6 +886,21 @@ public class EventDetailViewActivity extends AppCompatActivity {
         waitlistRegistration = new WaitlistRepository().listenToWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
             @Override
             public void onSuccess(List<WaitlistEntry> entries) {
+                if (isAdminView) {
+
+                    buttonPrimary.setVisibility(View.VISIBLE);
+                    buttonPrimary.setEnabled(true);
+                    buttonPrimary.setText("DELETE EVENT");
+                    buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_filled));
+                    buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
+
+                    buttonPrimary.setOnClickListener(v -> showAdminDeleteEventDialog());
+
+                    buttonSecondary.setVisibility(View.GONE);
+
+                    return;
+                }
+
                 int trueCount = (entries != null) ? entries.size() : 0;
                 waitlistApplicants.setText(String.valueOf(trueCount));
 
