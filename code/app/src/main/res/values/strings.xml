@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Zephyr Events</string>
+    <string name="app_name">Lottofly</string>
     <string name="back">Back</string>
     <string name="all_events">All Events</string>
     <string name="date_location">Date, Location</string>
@@ -28,7 +28,7 @@
     <string name="event_organizer">Event Organizer</string>
     <string name="about">About</string>
     <string name="waitlist_information">Waitlist Information</string>
-    <string name="total_capacity">Total Capacity</string>
+    <string name="total_capacity">Event Capacity</string>
     <string name="applicants">Applicants</string>
     <string name="registration_ends">Registration Ends</string>
     <string name="date">Date</string>
@@ -104,6 +104,8 @@
     <string name="invite_entrants">Invite entrants</string>
     <string name="invite_coorganizer">Invite co-organizer</string>
     <string name="event_form_section_invites">Invites</string>
+    <string name="invite_create_flow_hint">After your event is published, you can send invites from here. Tap Next to review and confirm, or open Edit event later.</string>
+    <string name="invite_after_publish_hint">Publish your event first (Next, then Confirm &amp; Create). After that, use Edit event to send invites.</string>
     <string name="delete_event">Delete event</string>
     <string name="label_visibility_review">Visibility: </string>
     <string name="visibility_public_label">Public</string>
@@ -129,4 +131,21 @@
     <string name="cta_view_invite">View invite</string>
     <string name="cta_go_to_event">Go to Event</string>
     <string name="notifications_load_failed">Could not load notifications.</string>
+
+    <!-- Waitlist overlay / status copy -->
+    <string name="status_waitlist_left_title">Left the waitlist</string>
+    <string name="status_waitlist_left_body">You\'ve left the waitlist for \"%1$s\".</string>
+    <string name="status_waitlist_on_list_title">You\'re on the list!</string>
+    <string name="status_waitlist_joined_body">You\'ve joined the waitlist for \"%1$s\".</string>
+    <string name="status_waitlist_invite_accepted_body">You\'ve accepted the invite for \"%1$s\".</string>
+    <string name="status_waitlist_second_chance_title">Second-chance waitlist</string>
+    <string name="status_waitlist_second_chance_body">You\'re on the second-chance list for \"%1$s\".</string>
+    <string name="event_name_placeholder">this event</string>
+    <string name="status_done">Done</string>
+
+    <!-- Empty states -->
+    <string name="my_events_empty_lotteries">No lottery tickets yet</string>
+    <string name="my_events_empty_lotteries_hint">Upcoming events you join will show up here.</string>
+    <string name="my_events_empty_history">Nothing here yet</string>
+    <string name="my_events_empty_history_hint">Past events and results will appear here.</string>
 </resources>
