@@ -224,4 +224,15 @@ public class EventController {
      */
     public boolean isInvitedEvent(String eventKey) { return false; }
 
+    /**
+     * Returns document pertaining to a specific event with a real-time snapshot listener
+     *
+     * @param eventId
+     * @param callback
+     * @return A listener from firebase
+     */
+    public com.google.firebase.firestore.ListenerRegistration listenToEventById(String eventId, RepositoryCallback<Event> callback) {
+        return eventRepository.listenToEventById(eventId, callback);
+    }
+
 }

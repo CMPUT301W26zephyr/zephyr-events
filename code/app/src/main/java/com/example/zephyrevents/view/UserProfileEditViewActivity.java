@@ -24,6 +24,17 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+import android.text.TextUtils;
+import com.bumptech.glide.Glide;
+import android.net.Uri;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+
+import android.widget.ImageView;
+
 public class UserProfileEditViewActivity extends AppCompatActivity {
 
     private UserController userController;
@@ -43,6 +54,10 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_user);
+
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
         // Get intent data
         adminTargetUserId = getIntent().getStringExtra("userId");
@@ -295,40 +310,45 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
                 etName.setText(data[0]);
                 etEmail.setText(data[1]);
                 etPhone.setText(data[2]);
+
+                String avatarUrl = (data.length > 4) ? data[4] : "";
+
+                if (!TextUtils.isEmpty(avatarUrl)) {
+                    Glide.with(UserProfileEditViewActivity.this)
+                            .load(avatarUrl)
+                            .circleCrop()
+                            .into(avatarImg);
+                } else {
+                    avatarImg.setImageResource(R.drawable.ic_person_24);
+                }
             }
 
             @Override
             public void onFailure(Exception e) {
                 Toast.makeText(UserProfileEditViewActivity.this,
-                        "Failed to load profile", Toast.LENGTH_SHORT).show();
+                        "Failed to load profile",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Save profile
     private void saveProfile() {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
-        String country = spCountry.getSelectedItem() != null
-                ? spCountry.getSelectedItem().toString()
-                : "";
+        String country = spCountry.getSelectedItem() != null ? spCountry.getSelectedItem().toString() : "";
 
-        userController.updateCurrentUserProfile(
-                name, email, phone, country,
-                new RepositoryCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        Toast.makeText(UserProfileEditViewActivity.this,
-                                "Profile saved", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
+        userController.updateCurrentUserProfile(name, email, phone, country, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                Toast.makeText(UserProfileEditViewActivity.this, "Profile saved", Toast.LENGTH_SHORT).show();
+                finish();
+            }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(UserProfileEditViewActivity.this,
-                                "Save failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(UserProfileEditViewActivity.this, "Save failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

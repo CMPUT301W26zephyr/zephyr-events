@@ -302,4 +302,30 @@ public class EventRepository {
                     }
                 });
     }
+
+    /**
+     * Returns document pertaining to a specific event with a real-time snapshot listener
+     *
+     * @param id
+     * @param callback
+     * @return A listener from firebase
+     */
+    public com.google.firebase.firestore.ListenerRegistration listenToEventById(String id, RepositoryCallback<Event> callback) {
+        if (id == null || id.trim().isEmpty()) {
+            callback.onFailure(new IllegalArgumentException("invalid event id"));
+            return null;
+        }
+        return db.collection(Collections.EVENTS).document(id)
+                .addSnapshotListener((doc, e) -> {
+                    if (e != null) {
+                        callback.onFailure(e);
+                        return;
+                    }
+                    if (doc != null && doc.exists()) {
+                        callback.onSuccess(doc.toObject(Event.class));
+                    } else {
+                        callback.onFailure(new IllegalArgumentException("document returned doesn't exist"));
+                    }
+                });
+    }
 }

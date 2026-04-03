@@ -11,6 +11,7 @@ import com.example.zephyrevents.repository.UserRepository;
 import java.util.UUID;
 import android.net.Uri;
 import com.example.zephyrevents.repository.ImageRepository;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 
@@ -361,6 +362,40 @@ public class UserController {
                 callback.onFailure(e);
 
             }
+        });
+    }
+
+    /**
+     * Fetches the FCM token for this device and saves it to the user's Firestore document.
+     */
+    public void syncFcmToken() {
+        String userId = getCurrentUserId();
+        if (userId == null) return;
+
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (!task.isSuccessful() || task.getResult() == null) {
+                return;
+            }
+            String token = task.getResult();
+
+            fetchCurrentUser(new RepositoryCallback<User>() {
+                @Override
+                public void onSuccess(User user) {
+                    if (user != null && !token.equals(user.getFcmToken())) {
+                        user.setFcmToken(token);
+                        userRepository.saveUser(user, new RepositoryCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                System.out.println("FCM Token synced to Firestore");
+                            }
+                            @Override
+                            public void onFailure(Exception e) {}
+                        });
+                    }
+                }
+                @Override
+                public void onFailure(Exception e) {}
+            });
         });
     }
 }

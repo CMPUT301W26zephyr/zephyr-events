@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,6 +54,10 @@ public class InviteUsersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_users);
+
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
         eventId = getIntent().getStringExtra(EXTRA_EVENT_ID);
         mode = getIntent().getStringExtra(EXTRA_MODE);
@@ -186,20 +193,22 @@ public class InviteUsersActivity extends AppCompatActivity {
             h.action.setEnabled(true);
 
             boolean isCo = event.getCoOrganizerUserIds().contains(u.getId());
-            boolean isPending = event.getPendingPrivateWaitlistInviteUserIds().contains(u.getId());
+            boolean isPendingCo = event.getPendingCoOrganizerUserIds().contains(u.getId());
+            boolean isPendingWaitlist = event.getPendingPrivateWaitlistInviteUserIds().contains(u.getId());
 
             if (MODE_CO_ORG.equals(mode)) {
-                if (isCo) {
+                if (isCo || isPendingCo) {
                     h.action.setText(R.string.remove_action);
                     h.action.setOnClickListener(v -> {
                         event.getCoOrganizerUserIds().remove(u.getId());
+                        event.getPendingCoOrganizerUserIds().remove(u.getId());
                         persistEvent(null);
                     });
                 } else {
                     h.action.setText(R.string.invite_action);
                     h.action.setOnClickListener(v -> {
-                        if (!event.getCoOrganizerUserIds().contains(u.getId())) {
-                            event.getCoOrganizerUserIds().add(u.getId());
+                        if (!event.getPendingCoOrganizerUserIds().contains(u.getId())) {
+                            event.getPendingCoOrganizerUserIds().add(u.getId());
                         }
                         String body = getString(R.string.notif_coorganizer_body,
                                 event.getName() != null ? event.getName() : "event");
@@ -207,7 +216,7 @@ public class InviteUsersActivity extends AppCompatActivity {
                     });
                 }
             } else {
-                if (isPending) {
+                if (isPendingWaitlist) {
                     h.action.setText(R.string.remove_action);
                     h.action.setOnClickListener(v -> {
                         event.getPendingPrivateWaitlistInviteUserIds().remove(u.getId());

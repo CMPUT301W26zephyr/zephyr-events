@@ -1,66 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="16dp"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/white">
 
-    <androidx.cardview.widget.CardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp"
-        app:cardUseCompatPadding="true">
+        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Image -->
+        <ImageView
+            android:id="@+id/item_event_image_large"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:srcCompat="@drawable/event_card_placeholder" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/item_event_title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="16dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/item_event_image_large"
+            app:layout_constraintEnd_toStartOf="@id/event_price"
+            tools:text="Beginner Swimming Lessons" />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="@drawable/bg_event_card_image">
+        <TextView
+            android:id="@+id/event_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:textColor="#FF3B5C"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/item_event_title"
+            tools:text="$50.00" />
 
-                <ImageView
-                    android:id="@+id/item_event_image_large"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/event_card_placeholder"
-                    tools:srcCompat="@drawable/event_card_placeholder"
-                    />
-            </FrameLayout>
+        <!-- Date Icon & Text -->
+        <ImageView
+            android:id="@+id/ic_date"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_calendar"
+            app:tint="#FF3B5C"
+            app:layout_constraintStart_toStartOf="@id/item_event_title"
+            app:layout_constraintTop_toBottomOf="@id/item_event_title" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:orientation="vertical">
+        <TextView
+            android:id="@+id/event_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="#616161"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@id/ic_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ic_date"
+            app:layout_constraintBottom_toBottomOf="@id/ic_date"
+            tools:text="Apr 24, 2026, 10:00 AM" />
 
-                <TextView
-                    android:id="@+id/item_event_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    tools:text="Beginner Swimming Lessons" />
+        <!-- Location Icon & Text -->
+        <ImageView
+            android:id="@+id/ic_location"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_location"
+            app:tint="#FF3B5C"
+            app:layout_constraintStart_toStartOf="@id/item_event_title"
+            app:layout_constraintTop_toBottomOf="@id/ic_date" />
 
-                <TextView
-                    android:id="@+id/item_event_date_location"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textSize="14sp"
-                    android:textColor="#616161"
-                    tools:text="date, location" />
-            </LinearLayout>
+        <TextView
+            android:id="@+id/event_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="#616161"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/ic_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ic_location"
+            app:layout_constraintBottom_toBottomOf="@id/ic_location"
+            tools:text="Kinsman Community Center, Edmonton" />
 
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-</LinearLayout>
+        <!-- Divider -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="16dp"
+            android:background="#E0E0E0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/event_location" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/event_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Join us for a fun-filled day of beginner swimming lessons hosted by local professionals..." />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

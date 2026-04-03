@@ -76,13 +76,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         // Button Action
         holder.btnGoto.setOnClickListener(v -> {
-            if (type == NotificationType.CO_ORGANIZER_INVITE) {
-                Intent intent = new Intent(v.getContext(), MainActivity.class);
-                intent.putExtra("TARGET_TAB", "MyEvents");
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                v.getContext().startActivity(intent);
-                return;
-            }
             if (notif.getEventId() == null || notif.getEventId().isEmpty()) {
                 Toast.makeText(v.getContext(), "No event linked to this notification.", Toast.LENGTH_SHORT).show();
                 return;
@@ -90,6 +83,29 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             Intent intent = new Intent(v.getContext(), EventDetailViewActivity.class);
             intent.putExtra(EventDetailViewActivity.EXTRA_EVENT, notif.getEventId());
             v.getContext().startActivity(intent);
+        });
+
+        holder.moreIcon.setOnClickListener(v -> {
+            android.widget.PopupMenu popup = new android.widget.PopupMenu(v.getContext(), holder.moreIcon);
+            popup.getMenu().add("Delete");
+            popup.setOnMenuItemClickListener(item -> {
+                int safePosition = holder.getBindingAdapterPosition();
+                if (safePosition != RecyclerView.NO_POSITION) {
+                    new com.example.zephyrevents.repository.NotificationRepository()
+                            .deleteNotification(notif.getNotificationId(), new com.example.zephyrevents.repository.RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    notifications.remove(safePosition);
+                                    notifyItemRemoved(safePosition);
+                                    notifyItemRangeChanged(safePosition, notifications.size());
+                                }
+                                @Override
+                                public void onFailure(Exception e) { }
+                            });
+                }
+                return true;
+            });
+            popup.show();
         });
     }
 
@@ -110,6 +126,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             descText = itemView.findViewById(R.id.notification_desc);
             timeText = itemView.findViewById(R.id.notification_time);
             btnGoto = itemView.findViewById(R.id.btn_goto_event);
+            moreIcon = itemView.findViewById(R.id.notification_more);
         }
     }
 }
