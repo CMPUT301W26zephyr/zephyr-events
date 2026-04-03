@@ -76,13 +76,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         // Button Action
         holder.btnGoto.setOnClickListener(v -> {
-            if (type == NotificationType.CO_ORGANIZER_INVITE) {
-                Intent intent = new Intent(v.getContext(), MainActivity.class);
-                intent.putExtra("TARGET_TAB", "MyEvents");
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                v.getContext().startActivity(intent);
-                return;
-            }
             if (notif.getEventId() == null || notif.getEventId().isEmpty()) {
                 Toast.makeText(v.getContext(), "No event linked to this notification.", Toast.LENGTH_SHORT).show();
                 return;
