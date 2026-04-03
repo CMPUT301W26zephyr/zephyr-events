@@ -245,10 +245,45 @@ public class UserProfileViewFragment extends Fragment {
         dialog.show();
     }
 
+
+
     private void launchOptionProfileAvatar(){
         pickProfileImage.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                 .build());
+    }
+    private void showConfirmRemoveAvatarDialog(){
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_remove_avatar, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            userController.clearProfileAvatar(new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(requireContext(), "Avatar removed", Toast.LENGTH_SHORT).show();
+                    refreshProfile();
+
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(requireContext(),
+                            "Could not remove profile: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+
+                }
+            });
+        });
+
+
+        dialog.show();
     }
 
     private void showAvatarOptionDialog(){
@@ -267,6 +302,8 @@ public class UserProfileViewFragment extends Fragment {
 
         dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
             dialog.dismiss();
+            showConfirmRemoveAvatarDialog();
+
         });
 
         dialog.show();
