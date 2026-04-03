@@ -3,15 +3,21 @@ package com.example.zephyrevents.view;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
@@ -39,7 +45,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 public class EventDetailViewActivity extends AppCompatActivity {
@@ -90,6 +95,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private ImageView eventPoster;
     private TextView inviteContextText;
+
+    private FrameLayout waitlistCenterOverlay;
+    private MaterialCardView waitlistOverlayCard;
+    private ImageView waitlistOverlayIcon;
+    private TextView waitlistOverlayTitle;
+    private TextView waitlistOverlaySubtitle;
+    private final Handler overlayHandler = new Handler(Looper.getMainLooper());
+    private Runnable pendingWaitlistOverlayHide;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +165,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         detachCommentsListener();
+        overlayHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
 
@@ -217,6 +231,105 @@ public class EventDetailViewActivity extends AppCompatActivity {
         commentsRecycler = findViewById(R.id.comments_recycler);
 
         inviteContextText = findViewById(R.id.invite_context_text);
+
+        waitlistCenterOverlay = findViewById(R.id.waitlist_center_overlay);
+        waitlistOverlayCard = findViewById(R.id.waitlist_overlay_card);
+        waitlistOverlayIcon = findViewById(R.id.waitlist_overlay_icon);
+        waitlistOverlayTitle = findViewById(R.id.waitlist_overlay_title);
+        waitlistOverlaySubtitle = findViewById(R.id.waitlist_overlay_subtitle);
+        if (waitlistCenterOverlay != null) {
+            waitlistCenterOverlay.setOnClickListener(v -> dismissCenteredWaitlistOverlay());
+        }
+        if (waitlistOverlayCard != null) {
+            waitlistOverlayCard.setOnClickListener(v -> { /* keep tap on card from dismissing */ });
+        }
+    }
+
+    @NonNull
+    private String eventNameForWaitlistStatus() {
+        if (event != null && event.getName() != null && !event.getName().trim().isEmpty()) {
+            return event.getName().trim();
+        }
+        return getString(R.string.event_name_placeholder);
+    }
+
+    /**
+     * Centered card + dimmed scrim over the whole screen (not tied to waitlist section scroll).
+     * Tap outside or auto-dismiss after a short delay.
+     */
+    private void showCenteredWaitlistOverlay(@NonNull String title, @Nullable String subtitle, boolean successStyle) {
+        if (waitlistCenterOverlay == null || waitlistOverlayTitle == null) return;
+        if (pendingWaitlistOverlayHide != null) {
+            overlayHandler.removeCallbacks(pendingWaitlistOverlayHide);
+        }
+        waitlistCenterOverlay.animate().cancel();
+        if (waitlistOverlayCard != null) waitlistOverlayCard.animate().cancel();
+
+        waitlistOverlayTitle.setText(title);
+        if (subtitle != null && !subtitle.trim().isEmpty()) {
+            waitlistOverlaySubtitle.setText(subtitle);
+            waitlistOverlaySubtitle.setVisibility(View.VISIBLE);
+        } else {
+            waitlistOverlaySubtitle.setVisibility(View.GONE);
+        }
+        if (waitlistOverlayIcon != null) {
+            if (successStyle) {
+                waitlistOverlayIcon.setImageResource(R.drawable.ic_check_circle);
+                waitlistOverlayIcon.setColorFilter(ContextCompat.getColor(this, R.color.youre_in_green));
+            } else {
+                waitlistOverlayIcon.setImageResource(R.drawable.ic_cancel_circle);
+                waitlistOverlayIcon.setColorFilter(ContextCompat.getColor(this, R.color.invite_declined_red));
+            }
+        }
+
+        waitlistCenterOverlay.setVisibility(View.VISIBLE);
+        waitlistCenterOverlay.setAlpha(0f);
+        if (waitlistOverlayCard != null) {
+            waitlistOverlayCard.setAlpha(0f);
+            waitlistOverlayCard.setScaleX(0.92f);
+            waitlistOverlayCard.setScaleY(0.92f);
+        }
+        waitlistCenterOverlay.animate()
+                .alpha(1f)
+                .setDuration(220)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+        if (waitlistOverlayCard != null) {
+            waitlistOverlayCard.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(300)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+        }
+
+        pendingWaitlistOverlayHide = this::dismissCenteredWaitlistOverlay;
+        overlayHandler.postDelayed(pendingWaitlistOverlayHide, 2600);
+    }
+
+    private void dismissCenteredWaitlistOverlay() {
+        if (waitlistCenterOverlay == null || waitlistCenterOverlay.getVisibility() != View.VISIBLE) return;
+        if (pendingWaitlistOverlayHide != null) {
+            overlayHandler.removeCallbacks(pendingWaitlistOverlayHide);
+            pendingWaitlistOverlayHide = null;
+        }
+        waitlistCenterOverlay.animate().cancel();
+        if (waitlistOverlayCard != null) waitlistOverlayCard.animate().cancel();
+        waitlistCenterOverlay.animate()
+                .alpha(0f)
+                .setDuration(240)
+                .setInterpolator(new DecelerateInterpolator())
+                .withEndAction(() -> {
+                    waitlistCenterOverlay.setVisibility(View.GONE);
+                    waitlistCenterOverlay.setAlpha(1f);
+                    if (waitlistOverlayCard != null) {
+                        waitlistOverlayCard.setAlpha(1f);
+                        waitlistOverlayCard.setScaleX(1f);
+                        waitlistOverlayCard.setScaleY(1f);
+                    }
+                })
+                .start();
     }
 
     private void setupCommentsUi() {
@@ -715,8 +828,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
                                     new WaitlistRepository().updateStatus(event.getEventId(), currentUserId, Status.WAITLISTED, new RepositoryCallback<Void>() {
                                         @Override
                                         public void onSuccess(Void result) {
-                                            Toast.makeText(EventDetailViewActivity.this, "Joined Second Chance Waitlist!", Toast.LENGTH_SHORT).show();
                                             populateUI();
+                                            String name = eventNameForWaitlistStatus();
+                                            showCenteredWaitlistOverlay(
+                                                    getString(R.string.status_waitlist_second_chance_title),
+                                                    getString(R.string.status_waitlist_second_chance_body, name),
+                                                    true);
                                         }
                                         @Override
                                         public void onFailure(Exception e) {}
@@ -743,8 +860,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
             repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-                    Toast.makeText(EventDetailViewActivity.this, "Joined Waitlist!", Toast.LENGTH_SHORT).show();
                     populateUI();
+                    String name = eventNameForWaitlistStatus();
+                    showCenteredWaitlistOverlay(
+                            getString(R.string.status_waitlist_on_list_title),
+                            getString(R.string.status_waitlist_joined_body, name),
+                            true);
                 }
 
                 @Override
@@ -766,8 +887,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
             repo.removeUserFromWaitlist(event.getEventId(), currentUserId, new RepositoryCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-                    Toast.makeText(EventDetailViewActivity.this, "Left Waitlist", Toast.LENGTH_SHORT).show();
                     populateUI();
+                    String name = eventNameForWaitlistStatus();
+                    showCenteredWaitlistOverlay(
+                            getString(R.string.status_waitlist_left_title),
+                            getString(R.string.status_waitlist_left_body, name),
+                            true);
                 }
 
                 @Override
@@ -788,11 +913,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
             repo.updateStatus(event.getEventId(), currentUserId, Status.ACCEPTED, new RepositoryCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-                    Intent intent = new Intent(EventDetailViewActivity.this, EventStatusActivity.class);
-                    intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
-                    intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_ACCEPTED);
-                    startActivity(intent);
-                    finish();
+                    navigateToLotteryInviteStatus(EventStatusActivity.STATUS_ACCEPTED);
                 }
 
                 @Override
@@ -807,12 +928,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
             repo.updateStatus(event.getEventId(), currentUserId, Status.DECLINED, new RepositoryCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-                    Intent intent = new Intent(EventDetailViewActivity.this, EventStatusActivity.class);
-                    intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
-                    intent.putExtra(EventStatusActivity.EXTRA_EVENT_KEY, event.getEventId());
-                    intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, EventStatusActivity.STATUS_DECLINED);
-                    startActivity(intent);
-                    finish();
+                    navigateToLotteryInviteStatus(EventStatusActivity.STATUS_DECLINED);
                 }
 
                 @Override
@@ -820,6 +936,19 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 }
             });
         });
+    }
+
+    /** Full-screen status after lottery waitlist invite accept/decline (slide up, previous screen fades). */
+    private void navigateToLotteryInviteStatus(@NonNull String statusType) {
+        Intent intent = new Intent(EventDetailViewActivity.this, EventStatusActivity.class);
+        intent.putExtra(EventStatusActivity.EXTRA_EVENT_NAME, event.getName());
+        intent.putExtra(EventStatusActivity.EXTRA_STATUS_TYPE, statusType);
+        if (EventStatusActivity.STATUS_DECLINED.equals(statusType)) {
+            intent.putExtra(EventStatusActivity.EXTRA_EVENT_KEY, event.getEventId());
+        }
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_up, R.anim.activity_fade_out);
+        finish();
     }
 
     private void showWaitlistClosedButton(boolean capacity, boolean lottery, boolean deadline) {
@@ -886,8 +1015,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 new WaitlistRepository().addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void r) {
-                        Toast.makeText(EventDetailViewActivity.this, "Joined waitlist!", Toast.LENGTH_SHORT).show();
                         populateUI();
+                        String name = eventNameForWaitlistStatus();
+                        showCenteredWaitlistOverlay(
+                                getString(R.string.status_waitlist_on_list_title),
+                                getString(R.string.status_waitlist_invite_accepted_body, name),
+                                true);
                     }
 
                     @Override
@@ -910,8 +1043,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
         EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                Toast.makeText(EventDetailViewActivity.this, "Invitation declined", Toast.LENGTH_SHORT).show();
                 populateUI();
+                String name = event != null && event.getName() != null ? event.getName() : "";
+                showCenteredWaitlistOverlay(
+                        getString(R.string.invite_declined_title),
+                        getString(R.string.invite_declined_message, name),
+                        false);
             }
 
             @Override

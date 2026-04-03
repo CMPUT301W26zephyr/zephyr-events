@@ -1,92 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginTop="6dp"
-    android:layout_marginBottom="6dp"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp">
 
-    <androidx.cardview.widget.CardView
+    <!-- Raffle-style ticket: main body | corrugated tear | stub -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/ticket_card_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp"
-        app:cardUseCompatPadding="true">
+        android:minHeight="108dp"
+        app:cardBackgroundColor="@color/ticket_bg_loading"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:strokeColor="@android:color/transparent"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center_vertical">
+            android:baselineAligned="false"
+            android:minHeight="104dp"
+            android:orientation="horizontal">
 
-            <FrameLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_event_card_image">
-
-                <ImageView
-                    android:id="@+id/item_event_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/event_card_placeholder" />
-            </FrameLayout>
-
+            <!-- Main body: accent | image | title, details, price -->
             <LinearLayout
+                android:id="@+id/ticket_main_body"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="12dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="0dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="2dp"
+                android:paddingBottom="10dp">
 
-                <TextView
-                    android:id="@+id/item_event_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:maxLines="2"
-                    android:ellipsize="end" />
+                <View
+                    android:id="@+id/ticket_accent_stripe"
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:minHeight="72dp"
+                    android:background="@color/ticket_stripe_waiting" />
 
-                <TextView
-                    android:id="@+id/item_event_date_location"
-                    android:layout_width="wrap_content"
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:background="@drawable/bg_event_card_image">
+
+                    <ImageView
+                        android:id="@+id/item_event_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/event_card_placeholder" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textSize="13sp"
-                    android:textColor="#616161" />
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/item_event_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/item_event_date_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="#616161"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/item_event_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/primary_red"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="end"
-                android:layout_marginStart="8dp">
+            <!-- Corrugated perforation (drawn as one continuous zigzag, not separate circles) -->
+            <com.example.zephyrevents.view.TicketPerforationView
+                android:id="@+id/ticket_perforation"
+                android:layout_width="14dp"
+                android:layout_height="match_parent"
+                android:minHeight="104dp"
+                android:background="@android:color/transparent"
+                android:importantForAccessibility="no" />
 
-                <TextView
-                    android:id="@+id/item_event_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary_red" />
+            <!-- Raffle stub: waitlist / lottery status -->
+            <LinearLayout
+                android:id="@+id/ticket_stub_panel"
+                android:layout_width="86dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="8dp">
 
                 <TextView
                     android:id="@+id/item_event_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:maxLines="3"
+                    android:paddingHorizontal="5dp"
                     android:paddingVertical="4dp"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:textStyle="bold"
                     android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
-</LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>
