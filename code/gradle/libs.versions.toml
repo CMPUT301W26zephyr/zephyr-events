@@ -9,6 +9,9 @@ activity = "1.12.3"
 constraintlayout = "2.2.1"
 coreSplashscreen = "1.2.0"
 mockito = "5.14.2"
+recyclerview = "1.4.0"
+swiperefreshlayout = "1.2.0"
+firebaseMessaging = "25.0.1"
 playServicesLocation = "21.3.0"
 
 [libraries]
@@ -22,6 +25,9 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

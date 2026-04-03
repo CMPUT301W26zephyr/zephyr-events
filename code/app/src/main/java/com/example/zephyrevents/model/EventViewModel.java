@@ -1,5 +1,11 @@
 package com.example.zephyrevents.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.lifecycle.ViewModel;
+import android.net.Uri;
+
 
 /**
  * Data holder ViewModel with public fields to track state of an event while creating or editing
@@ -14,7 +20,6 @@ public class EventViewModel extends ViewModel {
 
     // Form Data
     public String title = "";
-    public String type = "";
     public String price = "";
     public String description = "";
     public String waitlistCapacity = "";
@@ -27,4 +32,14 @@ public class EventViewModel extends ViewModel {
     public double eventLng;
     public String registrationPeriod = "";
     public String eventDate = "";
+
+    /** False = public listing; true = private (hidden from browse, no promo QR). */
+    public boolean privateEvent = false;
+
+    public List<String> coOrganizerUserIds = new ArrayList<>();
+    public List<String> pendingPrivateWaitlistInviteUserIds = new ArrayList<>();
+
+    public Uri pendingEventImageUri = null;
+
+    public String existingImgUrl = "";
 }

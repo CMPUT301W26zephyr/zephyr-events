@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:clipToPadding="false"
-        android:paddingBottom="80dp">
+        android:paddingBottom="72dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,6 +28,60 @@
                 android:layout_marginBottom="12dp"/>
 
             <LinearLayout style="@style/FormLabelRow" android:layout_marginTop="0dp">
+                <TextView style="@style/FormLabel" android:text="Event visibility" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggle_event_visibility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_visibility_public"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/visibility_public" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_visibility_private"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/visibility_private" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <LinearLayout
+                android:id="@+id/private_event_warning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#FFF9E6"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_warning_24"
+                    app:tint="#B7950B" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/private_event_warning"
+                    android:textColor="#5D4037"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FormLabelRow" android:layout_marginTop="0dp">
                 <TextView style="@style/FormAsterisk" />
                 <TextView style="@style/FormLabel" android:text="Event Title" />
             </LinearLayout>
@@ -35,29 +89,6 @@
                 android:id="@+id/input_event_title"
                 style="@style/FormInput"
                 android:hint="e.g. Beginner Swimming Lessons" />
-
-            <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormLabel" android:text="Event Type" />
-            </LinearLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp">
-                <AutoCompleteTextView
-                    android:id="@+id/eventTypeDropdown"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:inputType="text"
-                    android:paddingHorizontal="12dp"
-                    android:popupBackground="#FFFFFF"
-                    android:textColor="#333333"
-                    android:textSize="16sp"/>
-            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout style="@style/FormLabelRow">
                 <TextView style="@style/FormLabel" android:text="Event Price" />
@@ -78,22 +109,22 @@
                 android:inputType="textCapSentences" />
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormLabel" android:text="Waiting List Capacity" android:layout_marginStart="0dp" />
-            </LinearLayout>
-            <EditText
-                android:id="@+id/input_waitlist"
-                style="@style/FormInput"
-                android:hint="e.g. 67 (Leave blank for unlimited)"
-                android:inputType="number" />
-
-            <LinearLayout style="@style/FormLabelRow">
                 <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Attendee Capacity" />
+                <TextView style="@style/FormLabel" android:text="Event Capacity" />
             </LinearLayout>
             <EditText
                 android:id="@+id/input_attendee_count"
                 style="@style/FormInput"
-                android:hint="e.g. 15"
+                android:hint="e.g. 30"
+                android:inputType="number" />
+
+            <LinearLayout style="@style/FormLabelRow">
+                <TextView style="@style/FormLabel" android:text="Waitlist Capacity" android:layout_marginStart="0dp" />
+            </LinearLayout>
+            <EditText
+                android:id="@+id/input_waitlist"
+                style="@style/FormInput"
+                android:hint="e.g. 150 (Leave blank for unlimited)"
                 android:inputType="number" />
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>
@@ -123,6 +154,7 @@
                 android:id="@+id/input_address"
                 style="@style/FormInput"
                 android:hint="e.g. 1234 State Avenue" />
+
             <Button
                 android:id="@+id/btn_find_address"
                 android:layout_width="wrap_content"
@@ -157,6 +189,26 @@
                 android:layout_height="220dp"
                 android:layout_marginTop="16dp" />
 
+            <FrameLayout
+                android:id = "@+id/event_image_container"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                android:background="#E0E0E0"
+                android:clickable = "true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+
+                <ImageView
+                    android:id = "@+id/event_image_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_image_placeholder2"/>
+            </FrameLayout>
+
+
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_geolocation"
                 android:layout_width="match_parent"
@@ -175,7 +227,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Registration &amp; Event Dates"
+                android:text="Registration &amp; Event Dates / Time"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary_red"
@@ -183,7 +235,7 @@
 
             <LinearLayout style="@style/FormLabelRow" android:layout_marginStart="4dp">
                 <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Registration Period" />
+                <TextView style="@style/FormLabel" android:text="Select Registration Period &amp; Official Event Time" />
             </LinearLayout>
 
             <HorizontalScrollView
@@ -193,6 +245,7 @@
                 android:layout_marginTop="8dp"
                 android:clipToPadding="false"
                 android:paddingHorizontal="4dp"
+                android:paddingVertical="4dp"
                 android:scrollbars="none">
 
                 <LinearLayout
@@ -200,56 +253,126 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <!-- REGISTRATION START -->
                     <LinearLayout
+                        android:id="@+id/column_reg_start"
                         android:layout_width="300dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginEnd="16dp">
+                        android:layout_marginEnd="1dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Start Date"
+                            android:text="Registration Start"
                             android:textColor="#888888"
                             android:textStyle="bold"
                             android:layout_marginBottom="8dp"
-                            android:layout_marginStart="4dp"/>
+                            android:layout_marginStart="12dp"/>
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
                             app:cardCornerRadius="16dp"
                             app:cardElevation="2dp">
-                            <CalendarView
-                                android:id="@+id/calendar_reg_start"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:theme="@style/CustomInlineCalendar" />
+                                android:orientation="vertical">
+                                <CalendarView
+                                    android:id="@+id/calendar_reg_start"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:theme="@style/CustomInlineCalendar" />
+                                <TimePicker
+                                    android:id="@+id/time_reg_start"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="160dp"
+                                    android:layout_marginTop="-40dp"
+                                    android:layout_gravity="center"
+                                    android:timePickerMode="spinner" />
+                            </LinearLayout>
                         </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
+                    <!-- REGISTRATION END -->
                     <LinearLayout
                         android:id="@+id/column_reg_end"
                         android:layout_width="300dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_marginEnd="1dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Registration End"
+                            android:textColor="#888888"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginStart="12dp"/>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="2dp">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <CalendarView
+                                    android:id="@+id/calendar_reg_end"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:theme="@style/CustomInlineCalendar" />
+                                <TimePicker
+                                    android:id="@+id/time_reg_end"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="160dp"
+                                    android:layout_marginTop="-40dp"
+                                    android:layout_gravity="center"
+                                    android:timePickerMode="spinner" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+
+                    <!-- OFFICIAL EVENT DATE -->
+                    <LinearLayout
+                        android:id="@+id/column_event_date"
+                        android:layout_width="300dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
                         android:layout_marginEnd="16dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="End Date"
+                            android:text="Official Event Date"
                             android:textColor="#888888"
                             android:textStyle="bold"
                             android:layout_marginBottom="8dp"
-                            android:layout_marginStart="4dp"/>
+                            android:layout_marginStart="12dp"/>
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
                             app:cardCornerRadius="16dp"
                             app:cardElevation="2dp">
-                            <CalendarView
-                                android:id="@+id/calendar_reg_end"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:theme="@style/CustomInlineCalendar" />
+                                android:orientation="vertical">
+                                <CalendarView
+                                    android:id="@+id/calendar_event"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:theme="@style/CustomInlineCalendar" />
+                                <TimePicker
+                                    android:id="@+id/time_event"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="160dp"
+                                    android:layout_marginTop="-40dp"
+                                    android:layout_gravity="center"
+                                    android:timePickerMode="spinner" />
+                            </LinearLayout>
                         </androidx.cardview.widget.CardView>
                     </LinearLayout>
                 </LinearLayout>
@@ -259,56 +382,136 @@
                 android:id="@+id/text_reg_period"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginBottom="16dp"
-                android:text="Select start and end dates above"
+                android:layout_marginBottom="4dp"
+                android:text="Registration: Select start and end dates above"
                 android:textColor="#F44336"
-                android:textSize="14sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
-
-            <LinearLayout style="@style/FormLabelRow" android:layout_marginStart="4dp">
-                <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Official Event Date" />
-            </LinearLayout>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="4dp"
-                android:layout_marginTop="8dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
-                <CalendarView
-                    android:id="@+id/calendar_event"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/CustomInlineCalendar" />
-            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/text_event_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginBottom="24dp"
-                android:text="Select an event date above"
+                android:layout_marginBottom="16dp"
+                android:text="Official Event: Select an event date above"
                 android:textColor="#F44336"
-                android:textSize="14sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/btn_delete_event"
+            <LinearLayout
+                android:id="@+id/event_form_bottom_actions"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
-                android:text="DELETE EVENT"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:visibility="gone"
-                android:backgroundTint="#D32F2F" />
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/divider_event_invites"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/light_stroke"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/label_event_form_invites"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/event_form_section_invites"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/text_invite_create_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/invite_create_flow_hint"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/row_invite_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_invite_entrants_private"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="42dp"
+                        android:paddingHorizontal="8dp"
+                        android:text="@string/invite_entrants"
+                        android:textAllCaps="false"
+                        android:textColor="#424242"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/light_stroke"
+                        app:strokeWidth="1dp" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_invite_coorganizer"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="42dp"
+                        android:paddingHorizontal="8dp"
+                        android:text="@string/invite_coorganizer"
+                        android:textAllCaps="false"
+                        android:textColor="#424242"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/light_stroke"
+                        app:strokeWidth="1dp" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_delete_event"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_button_delete_outlined"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minHeight="44dp"
+                    android:paddingVertical="10dp"
+                    android:text="@string/delete_event"
+                    android:textAllCaps="false"
+                    android:textColor="@color/danger"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:backgroundTint="@null"
+                    app:rippleColor="#33D93B3B" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

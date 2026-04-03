@@ -40,6 +40,9 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
         holder.nameText.setText(entrant.name);
         holder.detailText.setText(entrant.detail);
 
+        String initial = entrant.name.isEmpty() ? "?" : entrant.name.substring(0, 1).toUpperCase();
+        holder.initialText.setText(initial);
+
         if (entrant.showCancel) {
             holder.cancelBtn.setVisibility(View.VISIBLE);
         } else {
@@ -61,12 +64,14 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
     public static class EntrantViewHolder extends RecyclerView.ViewHolder {
         TextView nameText;
         TextView detailText;
+        TextView initialText;
         Button cancelBtn;
 
         public EntrantViewHolder(@NonNull View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.text_entrant_name);
             detailText = itemView.findViewById(R.id.text_entrant_detail);
+            initialText = itemView.findViewById(R.id.text_entrant_initial); // NEW
             cancelBtn = itemView.findViewById(R.id.btn_cancel_entrant);
         }
     }

@@ -200,4 +200,54 @@ public class WaitlistRepository {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
+    /**
+     * Resets everyone in the waitlist for this event back to Status.WAITLISTED.
+     * @param eventId    The event ID
+     * @param callback  Returns list of WaitlistEntries
+     */
+    public void resetWaitlist(String eventId, RepositoryCallback<Void> callback) {
+        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                .whereEqualTo("eventId", eventId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    com.google.firebase.firestore.WriteBatch batch = db.batch();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        batch.update(doc.getReference(), "status", Status.WAITLISTED);
+                    }
+                    batch.commit().addOnSuccessListener(v -> {
+                        if (callback != null) callback.onSuccess(null);
+                    }).addOnFailureListener(e -> {
+                        if (callback != null) callback.onFailure(e);
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
+
+    /**
+     * Returns document pertaining to a specific waitllst with a real-time snapshot listener
+     *
+     * @param eventId
+     * @param callback
+     * @return A listener from firebase
+     */
+    public com.google.firebase.firestore.ListenerRegistration listenToWaitlist(String eventId, RepositoryCallback<List<WaitlistEntry>> callback) {
+        return db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
+                .whereEqualTo("eventId", eventId)
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        callback.onFailure(e);
+                        return;
+                    }
+                    List<WaitlistEntry> entries = new ArrayList<>();
+                    if (querySnapshot != null) {
+                        for (com.google.firebase.firestore.QueryDocumentSnapshot doc : querySnapshot) {
+                            entries.add(doc.toObject(WaitlistEntry.class));
+                        }
+                    }
+                    callback.onSuccess(entries);
+                });
+    }
 }

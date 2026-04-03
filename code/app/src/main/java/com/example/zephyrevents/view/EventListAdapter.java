@@ -19,6 +19,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.bumptech.glide.Glide;
+
+
 /**
  * Adapter that fills the "All Events" list with event cards.
  * Each row shows the event image, title, date and location, and price on the right.
@@ -26,7 +29,7 @@ import java.util.Locale;
 public class EventListAdapter extends ArrayAdapter<Event> {
 
     private final LayoutInflater inflater;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault());
 
     public EventListAdapter(@NonNull Context context, @NonNull List<Event> events) {
         super(context, R.layout.item_event_card, events);
@@ -59,7 +62,7 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         if (dateStr.isEmpty() && locationStr.isEmpty()) {
             dateLocationStr = getContext().getString(R.string.date_location);
         } else {
-            dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : ", " + locationStr);
+            dateLocationStr = dateStr + (locationStr.isEmpty() ? "" : "\n" + locationStr);
         }
         dateLocation.setText(dateLocationStr);
 
@@ -67,6 +70,14 @@ public class EventListAdapter extends ArrayAdapter<Event> {
             price.setText("Free");
         } else {
             price.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
+        }
+
+        String imgUrl = event.getImageUrl();
+
+        if (imgUrl != null && !imgUrl.isEmpty()){
+            Glide.with(getContext()).load(imgUrl).centerCrop().into(image);
+        } else{
+            image.setImageResource(R.drawable.event_card_placeholder);
         }
 
         return row;

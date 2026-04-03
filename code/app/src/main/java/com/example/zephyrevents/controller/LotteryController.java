@@ -20,12 +20,12 @@ public class LotteryController {
 
     private final WaitlistRepository waitlistRepository;
     private final EventRepository eventRepository;
-    // private final NotificationController notificationController;
+    private final NotificationController notificationController;
 
     public LotteryController() {
         waitlistRepository = new WaitlistRepository();
         eventRepository = new EventRepository();
-        // notificationController = new NotificationController();
+        notificationController = new NotificationController();
     }
 
     // Constructor for unit testing
@@ -33,6 +33,7 @@ public class LotteryController {
     public LotteryController(EventRepository event, WaitlistRepository waitlist) {
         this.waitlistRepository = waitlist;
         this.eventRepository = event;
+        this.notificationController = new NotificationController();
     }
 
     // Added a callback so the UI knows when the lottery finishes saving!
@@ -62,6 +63,13 @@ public class LotteryController {
                         }
 
                         if (eligible.isEmpty()) {
+                            notificationController.sendAutomaticNotification(
+                                    event.getOrganizerId(),
+                                    eventId,
+                                    NotificationType.LOTTERY_COMPLETED,
+                                    "The lottery for \"" + event.getName() + "\" has been successfully run."
+                            );
+
                             if(callback != null) callback.onSuccess(null);
                             return;
                         }
@@ -75,7 +83,15 @@ public class LotteryController {
                         final int[] completedUpdates = {0};
 
                         for (WaitlistEntry entry : eligible) {
+                            boolean isWinner = winners.contains(entry);
                             Status newStatus = winners.contains(entry) ? Status.SELECTED : Status.LOST;
+
+                            NotificationType type = isWinner ? NotificationType.WON_EVENT : NotificationType.LOST_EVENT;
+                            String message = isWinner
+                                    ? "Congrats! You've been chosen for \"" + event.getName() + "\". Confirm your spot today."
+                                    : "The draw for \"" + event.getName() + "\" is complete. You were not selected this time.";
+
+                            notificationController.sendAutomaticNotification(entry.getUserId(), eventId, type, message);
 
                             // Pass a callback to wait for the update to actually finish saving
                             waitlistRepository.updateStatus(eventId, entry.getUserId(), newStatus, new RepositoryCallback<Void>() {
@@ -91,8 +107,13 @@ public class LotteryController {
                                 private void checkCompletion() {
                                     completedUpdates[0]++;
                                     if (completedUpdates[0] == totalUpdates) {
-                                        // ONLY tell the UI to refresh when ALL updates are done
-                                        if(callback != null) callback.onSuccess(null);
+                                        notificationController.sendAutomaticNotification(
+                                                event.getOrganizerId(),
+                                                eventId,
+                                                NotificationType.LOTTERY_COMPLETED,
+                                                "The lottery for \"" + event.getName() + "\" has been successfully run."
+                                        );
+                                        if (callback != null) callback.onSuccess(null);
                                     }
                                 }
                             });
@@ -104,6 +125,70 @@ public class LotteryController {
             }
             @Override
             public void onFailure(Exception e) { if(callback!=null) callback.onFailure(e); }
+        });
+    }
+
+    /**
+     * Draws replacements from the WAITLISTED pool for any open/declined spots.
+     * @param eventId   Unique identifier of the event for the lottery replace draw the lottery.
+     * @param callback  A RepositoryCallback to notify when the lottery replacement finishes.
+     */
+    public void drawReplacements(String eventId, RepositoryCallback<Void> callback) {
+        eventRepository.getEventById(eventId, new RepositoryCallback<Event>() {
+            @Override
+            public void onSuccess(Event event) {
+                waitlistRepository.getWaitlist(eventId, new RepositoryCallback<List<WaitlistEntry>>() {
+                    @Override
+                    public void onSuccess(List<WaitlistEntry> allEntrants) {
+                        int capacity = event.getCapacity();
+                        int taken = 0;
+                        List<WaitlistEntry> eligible = new ArrayList<>();
+
+                        for (WaitlistEntry e : allEntrants) {
+                            if (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED) {
+                                taken++;
+                            } else if (e.getStatus() == Status.WAITLISTED) {
+                                eligible.add(e);
+                            }
+                        }
+
+                        int needed = capacity - taken;
+                        if (needed <= 0 || eligible.isEmpty()) {
+                            if (callback != null) callback.onSuccess(null);
+                            return;
+                        }
+
+                        Collections.shuffle(eligible);
+                        int winnersCount = Math.min(needed, eligible.size());
+                        List<WaitlistEntry> winners = eligible.subList(0, winnersCount);
+
+                        final int[] completed = {0};
+                        for (WaitlistEntry entry : winners) {
+                            notificationController.sendAutomaticNotification(
+                                    entry.getUserId(), eventId, NotificationType.WON_EVENT,
+                                    "You've been drawn from the second chance waitlist for \"" + event.getName() + "\"!"
+                            );
+
+                            waitlistRepository.updateStatus(eventId, entry.getUserId(), Status.SELECTED, new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) { check(); }
+                                @Override
+                                public void onFailure(Exception e) { check(); }
+                                private void check() {
+                                    completed[0]++;
+                                    if (completed[0] == winners.size() && callback != null) {
+                                        callback.onSuccess(null);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onFailure(Exception e) { if (callback != null) callback.onFailure(e); }
+                });
+            }
+            @Override
+            public void onFailure(Exception e) { if (callback != null) callback.onFailure(e); }
         });
     }
 }

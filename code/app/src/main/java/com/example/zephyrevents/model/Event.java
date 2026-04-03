@@ -2,6 +2,9 @@ package com.example.zephyrevents.model;
 
 import com.example.zephyrevents.util.GenerateId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This is a class that defines an event.
  * Holds basic info (name, description, times) and optional detail fields
@@ -17,12 +20,22 @@ public class Event {
     private int capacity;
     private int applicantCount;
     private Integer waitlistCapacity;
+    private long registrationStartTime;
     private long registrationEndTime;
     private String organizerId;
     private String imageUrl;
     private EventStatus status;
     private String organizerName;
     private int currentApplicants;
+
+    /** If true, event is hidden from public listings and has no promotional QR. */
+    private boolean privateEvent;
+    /** Users who may manage the event alongside the primary organizer. */
+    private List<String> coOrganizerUserIds;
+    /** Entrants invited to the private waitlist but who have not accepted yet. */
+    private List<String> pendingPrivateWaitlistInviteUserIds;
+    private List<String> pendingCoOrganizerUserIds;
+
 
     public Event() {
     }
@@ -171,6 +184,14 @@ public class Event {
         this.applicantCount = applicantCount;
     }
 
+    public long getRegistrationStartTime() {
+        return registrationStartTime;
+    }
+
+    public void setRegistrationStartTime(long registrationStartTime) {
+        this.registrationStartTime = registrationStartTime;
+    }
+
     public long getRegistrationEndTime() {
         return registrationEndTime;
     }
@@ -225,5 +246,46 @@ public class Event {
 
     public void setWaitlistCapacity(Integer waitlistCapacity) {
         this.waitlistCapacity = waitlistCapacity;
+    }
+
+    public boolean isPrivateEvent() {
+        return privateEvent;
+    }
+
+    public void setPrivateEvent(boolean privateEvent) {
+        this.privateEvent = privateEvent;
+    }
+
+    public List<String> getCoOrganizerUserIds() {
+        if (coOrganizerUserIds == null) {
+            coOrganizerUserIds = new ArrayList<>();
+        }
+        return coOrganizerUserIds;
+    }
+
+    public void setCoOrganizerUserIds(List<String> coOrganizerUserIds) {
+        this.coOrganizerUserIds = coOrganizerUserIds;
+    }
+
+    public List<String> getPendingPrivateWaitlistInviteUserIds() {
+        if (pendingPrivateWaitlistInviteUserIds == null) {
+            pendingPrivateWaitlistInviteUserIds = new ArrayList<>();
+        }
+        return pendingPrivateWaitlistInviteUserIds;
+    }
+
+    public void setPendingPrivateWaitlistInviteUserIds(List<String> pendingPrivateWaitlistInviteUserIds) {
+        this.pendingPrivateWaitlistInviteUserIds = pendingPrivateWaitlistInviteUserIds;
+    }
+
+    public List<String> getPendingCoOrganizerUserIds() {
+        if (pendingCoOrganizerUserIds == null) {
+            pendingCoOrganizerUserIds = new ArrayList<>();
+        }
+        return pendingCoOrganizerUserIds;
+    }
+
+    public void setPendingCoOrganizerUserIds(List<String> pendingCoOrganizerUserIds) {
+        this.pendingCoOrganizerUserIds = pendingCoOrganizerUserIds;
     }
 }

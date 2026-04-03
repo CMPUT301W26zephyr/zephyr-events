@@ -6,8 +6,8 @@
         tools:ignore="CoarseFineLocation" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -18,15 +18,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZephyrEvents">
-        
+
+        <service
+            android:name=".controller.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".view.QrScannerActivity"
+            android:exported="false" />
+
         <activity
             android:name=".view.SignUpActivity"
             android:exported="false" />
-        
+
         <activity
             android:name=".view.WelcomeActivity"
-            android:theme="@style/Theme.App.Starting"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -34,19 +46,11 @@
         </activity>
 
         <activity
-            android:name=".view.HomeActivity"
+            android:name=".view.MainActivity"
             android:exported="false" />
-
-        <activity
-            android:name=".view.EventsListActivity"
-            android:exported="false"/>
 
         <activity
             android:name=".view.EventDetailViewActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".view.MyEventsActivity"
             android:exported="false" />
 
         <activity
@@ -78,12 +82,22 @@
             android:exported="true" />
 
         <activity
-            android:name=".view.UserProfileViewActivity"
+            android:name=".view.EventStatusActivity"
             android:exported="true" />
 
         <activity
-            android:name=".view.EventStatusActivity"
-            android:exported="true" />
+            android:name=".view.InviteUsersActivity"
+            android:exported="false" />
+
+        <activity android:name=".view.AdminHomeActivity" />
+        <activity android:name=".view.AdminBrowseProfilesActivity" />
+        <activity android:name=".view.AdminBrowseImageActivity" />
+        <activity android:name=".view.AdminBrowseEventActivity" />
+        <activity android:name=".view.AdminSystemNotificationActivity" />
+        <activity android:name=".view.AdminStatisticsActivity" />
+        <activity android:name=".view.AdminSystemLogActivity" />
+        <activity android:name=".view.AdminTermsConditionsActivity" />
+
     </application>
 
 </manifest>

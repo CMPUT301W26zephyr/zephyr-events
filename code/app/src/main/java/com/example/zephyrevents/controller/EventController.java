@@ -9,6 +9,11 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.media.Image;
+import android.net.Uri;
+import com.example.zephyrevents.repository.ImageRepository;
+
+
 // TODO: Once no longer mocked, I recommend to convert into non-singleton class for consistency - Jason
 /**
  * Singleton controller managing event data and waitlist.
@@ -23,11 +28,14 @@ public class EventController {
     private List<WaitlistEntry> mockLotteries = new ArrayList<>();
     private List<WaitlistEntry> mockHistory = new ArrayList<>();
 
+    private final ImageRepository imageRepository;
+
     /**
      * Private constructor to enforce the Singleton pattern.
      */
     private EventController() {
         eventRepository = new EventRepository();
+        imageRepository = new ImageRepository();
     }
 
     /**
@@ -81,6 +89,66 @@ public class EventController {
     }
 
     // --- UPDATED: WAITLIST SIMULATOR METHODS NOW USE USER ID ---
+
+    /**
+     * if pendingimageUri exist then Upload image to storage and save event with imageUrl.
+     * else set imageUrl from the existing image url
+     */
+
+    public void saveEventWithOptionalImage(Event event, Uri pendingImageUri, String existingImageUrl, RepositoryCallback<Void> callback ){
+        if (pendingImageUri != null){
+            imageRepository.uploadEventImage(pendingImageUri, event.getEventId(), new RepositoryCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    event.setImageUrl(result);
+                    eventRepository.saveEvent(event, callback);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+
+                }
+            });
+        } else{
+            final String eventId = event.getEventId();
+            if (existingImageUrl != null && !existingImageUrl.isEmpty()){
+                event.setImageUrl(existingImageUrl);
+            } else{
+                event.setImageUrl(null);
+            }
+
+            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.isEmpty();
+
+            eventRepository.saveEvent(event, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    if (deletePosterInStorage && eventId != null && !eventId.trim().isEmpty()){
+                        imageRepository.deleteEventPoster(eventId, new RepositoryCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                callback.onSuccess(null);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                callback.onSuccess(null);
+
+                            }
+                        });
+                    } else {
+                        callback.onSuccess(null);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+
+                }
+            });
+        }
+    }
 
     /**
      * Checks if user is in the mock waitlist for specific event.
@@ -153,5 +221,16 @@ public class EventController {
      * @return  Currently returns false (placeholder).
      */
     public boolean isInvitedEvent(String eventKey) { return false; }
+
+    /**
+     * Returns document pertaining to a specific event with a real-time snapshot listener
+     *
+     * @param eventId
+     * @param callback
+     * @return A listener from firebase
+     */
+    public com.google.firebase.firestore.ListenerRegistration listenToEventById(String eventId, RepositoryCallback<Event> callback) {
+        return eventRepository.listenToEventById(eventId, callback);
+    }
 
 }

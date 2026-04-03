@@ -9,35 +9,48 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.EventViewModel;
+
+import java.util.UUID;
 
 public class OrganizerEventAddEditView extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_organizer_event);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fragment_container), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            return insets;
-        });
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> {
+            FragmentManager fm = getSupportFragmentManager();
+            if (fm.getBackStackEntryCount() > 0) {
+                fm.popBackStack();
+            } else {
+                // Fallback if no fragment to pop, perhaps finish activity
+                finish();
+            }
+        });
         findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
 
-        //  Check if we are editing an existing event
+        EventViewModel viewModel = new ViewModelProvider(this).get(EventViewModel.class);
         String editEventId = getIntent().getStringExtra("EXTRA_EDIT_EVENT_ID");
         if (editEventId != null) {
-            EventViewModel viewModel = new androidx.lifecycle.ViewModelProvider(this).get(EventViewModel.class);
             viewModel.isEditMode = true;
             viewModel.eventId = editEventId;
+        } else if (viewModel.eventId == null) {
+            viewModel.eventId = UUID.randomUUID().toString();
         }
 
         if (savedInstanceState == null) {

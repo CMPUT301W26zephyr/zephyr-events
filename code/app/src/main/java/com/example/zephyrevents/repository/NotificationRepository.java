@@ -207,7 +207,6 @@ public class NotificationRepository {
 
         db.collection(Collections.NOTIFICATIONS)
                 .whereEqualTo("userId", userId)
-                .orderBy("time", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
 
@@ -218,7 +217,23 @@ public class NotificationRepository {
                         notifications.add(notification);
                     }
 
+                    notifications.sort((n1, n2) -> Long.compare(n2.getTime(), n1.getTime()));
                     callback.onSuccess(notifications);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void deleteAllUserNotifications(String userId, RepositoryCallback<Void> callback) {
+        db.collection(Collections.NOTIFICATIONS)
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    com.google.firebase.firestore.WriteBatch batch = db.batch();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        batch.delete(doc.getReference());
+                    }
+                    batch.commit().addOnSuccessListener(v -> callback.onSuccess(null))
+                            .addOnFailureListener(callback::onFailure);
                 })
                 .addOnFailureListener(callback::onFailure);
     }
