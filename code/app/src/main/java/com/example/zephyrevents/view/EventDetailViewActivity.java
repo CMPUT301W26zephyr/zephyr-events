@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
@@ -40,6 +41,8 @@ import java.util.Locale;
 
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+
+
 
 public class EventDetailViewActivity extends AppCompatActivity {
     public static final String EXTRA_EVENT = "extra_event";
@@ -88,6 +91,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private ListenerRegistration commentsRegistration;
 
     private ImageView eventPoster;
+
+    private ImageView organizerAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,6 +175,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventDate = findViewById(R.id.event_date);
         eventLocation = findViewById(R.id.event_location);
         organizerName = findViewById(R.id.organizer_name);
+        organizerAvatar = findViewById(R.id.organizer_avatar);
         eventAbout = findViewById(R.id.event_about);
         totalCapacity = findViewById(R.id.total_capacity);
         waitlistCapacity = findViewById(R.id.waitlist_capacity);
@@ -440,6 +446,27 @@ public class EventDetailViewActivity extends AppCompatActivity {
         if (back != null) back.setOnClickListener(v -> finish());
     }
 
+    private void bindOrganizerAvatar(@Nullable User user){
+        if (organizerAvatar == null) return;
+        if(user == null){
+            organizerAvatar.setImageResource(R.drawable.ic_person);
+            return;
+        }
+
+        String url = user.getAvatarUrl();
+        if (url == null || url.trim().isEmpty()){
+            organizerAvatar.setImageResource(R.drawable.ic_person);
+            return;
+        }
+        Glide.with(this)
+                .load(url)
+                .circleCrop()
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .into(organizerAvatar);
+        organizerAvatar.clearColorFilter();
+    }
+
     private void populateUI() {
         if (event == null) return;
 
@@ -514,20 +541,39 @@ public class EventDetailViewActivity extends AppCompatActivity {
         if (isManagingUser) {
             if (isOrganizer) {
                 organizerName.setText("You");
+                if(event.getOrganizerId() != null){
+                    userRepository.getUserById(event.getOrganizerId(), new RepositoryCallback<User>() {
+                        @Override
+                        public void onSuccess(User result) {
+                            bindOrganizerAvatar(result);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            bindOrganizerAvatar(null);
+
+                        }
+                    });
+                } else{
+                    bindOrganizerAvatar(null);
+                }
             } else if (event.getOrganizerId() != null) {
                 userRepository.getUserById(event.getOrganizerId(), new RepositoryCallback<User>() {
                     @Override
                     public void onSuccess(User user) {
                         organizerName.setText(user != null && user.getName() != null ? user.getName() : "Organizer");
+                        bindOrganizerAvatar(user);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         organizerName.setText("Organizer");
+                        bindOrganizerAvatar(null);
                     }
                 });
             } else {
                 organizerName.setText("Organizer");
+                bindOrganizerAvatar(null);
             }
             tabManage.setVisibility(View.VISIBLE);
             sectionManage.setVisibility(View.VISIBLE);
@@ -545,17 +591,21 @@ public class EventDetailViewActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(User user) {
                         organizerName.setText(user != null && user.getName() != null ? user.getName() : "Unknown Organizer");
+                        bindOrganizerAvatar(user);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         organizerName.setText("Unknown Organizer");
+                        bindOrganizerAvatar(null);
                     }
                 });
             } else {
                 organizerName.setText("Unknown Organizer");
+                bindOrganizerAvatar(null);
             }
         }
+
 
         attachCommentsListener();
 
