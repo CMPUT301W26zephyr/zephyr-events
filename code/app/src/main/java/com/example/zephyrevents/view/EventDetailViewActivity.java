@@ -20,6 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -92,6 +95,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private EventCommentAdapter commentAdapter;
     private ListenerRegistration commentsRegistration;
+    private ListenerRegistration eventRegistration;
+    private ListenerRegistration waitlistRegistration;
 
     private ImageView eventPoster;
     private TextView inviteContextText;
@@ -108,6 +113,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
+
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
         userController = new UserController(this);
         userRepository = new UserRepository();
@@ -145,7 +154,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
             return;
         }
 
-        EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
+        eventRegistration = EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
             @Override
             public void onSuccess(Event result) {
                 event = result;
@@ -166,6 +175,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
     protected void onDestroy() {
         detachCommentsListener();
         overlayHandler.removeCallbacksAndMessages(null);
+        if (eventRegistration != null) eventRegistration.remove();
+        if (waitlistRegistration != null) waitlistRegistration.remove();
         super.onDestroy();
     }
 
@@ -175,7 +186,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         super.onResume();
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         if (eventId != null) {
-            EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
+            EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
                 @Override
                 public void onSuccess(Event result) {
                     event = result;
@@ -704,7 +715,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
             });
         }
 
-        new WaitlistRepository().getWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
+        if (waitlistRegistration != null) waitlistRegistration.remove();
+        waitlistRegistration = new WaitlistRepository().listenToWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
             @Override
             public void onSuccess(List<WaitlistEntry> entries) {
                 int trueCount = (entries != null) ? entries.size() : 0;

@@ -50,6 +50,8 @@ public class EntrantsListFragment extends Fragment {
     private UserRepository userRepository;
     private NotificationController notificationController;
     private List<WaitlistEntry> currentFilteredList = new ArrayList<>();
+    private com.google.firebase.firestore.ListenerRegistration eventRegistration;
+    private com.google.firebase.firestore.ListenerRegistration waitlistRegistration;
     private Map<String, User> userCache = new HashMap<>();
 
     public static EntrantsListFragment newInstance(int tabIndex, String eventId) {
@@ -176,11 +178,20 @@ public class EntrantsListFragment extends Fragment {
         loadData(recyclerView);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (eventRegistration != null) eventRegistration.remove();
+        if (waitlistRegistration != null) waitlistRegistration.remove();
+    }
+
     private void loadData(RecyclerView recyclerView) {
-        EventController.getInstance().getEventById(eventId, new RepositoryCallback<Event>() {
+        if (eventRegistration != null) eventRegistration.remove();
+        eventRegistration = EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
             @Override
             public void onSuccess(Event event) {
-                waitlistRepository.getWaitlist(eventId, new RepositoryCallback<List<WaitlistEntry>>() {
+                if (waitlistRegistration != null) waitlistRegistration.remove();
+                waitlistRegistration = waitlistRepository.listenToWaitlist(eventId, new RepositoryCallback<List<WaitlistEntry>>() {
                     @Override
                     public void onSuccess(List<WaitlistEntry> result) {
                         List<WaitlistEntry> filtered = new ArrayList<>();

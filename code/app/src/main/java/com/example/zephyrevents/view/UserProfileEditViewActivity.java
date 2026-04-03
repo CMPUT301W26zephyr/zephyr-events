@@ -23,6 +23,9 @@ import com.bumptech.glide.Glide;
 import android.net.Uri;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.widget.ImageView;
 
@@ -45,6 +48,10 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_user);
+
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
         adminTargetUserId = getIntent().getStringExtra("userId");
         isAdminView = getIntent().getBooleanExtra("isAdminView", false);
