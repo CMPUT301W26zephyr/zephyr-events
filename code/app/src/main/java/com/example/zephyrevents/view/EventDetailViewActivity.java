@@ -711,6 +711,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 waitlistApplicants.setText(String.valueOf(trueCount));
 
                 boolean lotteryRun = false;
+                if (event.getStatus() == com.example.zephyrevents.model.EventStatus.CLOSED) {
+                    lotteryRun = true;
+                }
+
                 WaitlistEntry myEntry = null;
 
                 if (entries != null) {

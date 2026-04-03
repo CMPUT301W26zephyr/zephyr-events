@@ -32,9 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 nextIntent = new Intent(this, EventDetailViewActivity.class);
                 nextIntent.putExtra(EventDetailViewActivity.EXTRA_EVENT, getIntent().getStringExtra("eventId"));
 
-                if (getIntent().getBooleanExtra("FROM_NOTIFICATION", false)) {
-                    nextIntent.putExtra("FROM_NOTIFICATION", true);
-                }
+                nextIntent.putExtra("FROM_NOTIFICATION", true);
             } else {
                 nextIntent = new Intent(this, MainActivity.class);
                 if (getIntent().getExtras() != null) {
