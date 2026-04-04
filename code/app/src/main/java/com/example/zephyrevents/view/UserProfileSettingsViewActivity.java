@@ -1,43 +1,22 @@
 package com.example.zephyrevents.view;
 
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
-
-import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-
 import com.example.zephyrevents.R;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
-/**
- * Activity that allows the user to change local session settings.
- * TODO: Coordinate notification settings with Firebase.
- */
 public class UserProfileSettingsViewActivity extends AppCompatActivity {
-
-    private static final String PREFS_NAME = "notification_preference";
-
-    private static final String KEY_APP_UPDATE = "app_update";
-    private static final String KEY_ORGANIZER_ANNOUNCEMENT = "organizer_announcement";
-    private static final String KEY_EVENT_REMINDER = "event_remiinder";
-    private static final String KEY_EVENT_CHANGES = "event_changes";
-    private static final String KEY_WAITLIST_ALERTS= "waitlist_alerts";
-    private static final String KEY_LOTTERY_RESULTS = "lottery_results";
-
     private SharedPreferences user_prefs;
-
-    private Switch swAppUpdate;
-    private Switch sworganizerannoucement;
-    private Switch sweventreminders;
-    private Switch sweventchanges;
-    private Switch swwaitlistalert;
-    private Switch swlotteryresults;
+    private SwitchMaterial swOrganizer, swLottery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,74 +27,37 @@ public class UserProfileSettingsViewActivity extends AppCompatActivity {
         windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-        // Customize layout_top_bar
-        TextView toolbarTitle = findViewById(R.id.toolbar_title);
-        if (toolbarTitle != null) {
-            toolbarTitle.setText("Notification Settings");
-        }
-        View cancelBtn = findViewById(R.id.btn_cancel);
-        if (cancelBtn != null) {
-            cancelBtn.setVisibility(View.GONE);
-        }
-        View backBtn = findViewById(R.id.toolbar_back);
-        if (backBtn != null) {
-            backBtn.setOnClickListener(v -> finish());
-        }
+        TextView title = findViewById(R.id.toolbar_title);
+        if (title != null) title.setText("Notification Settings");
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
-        user_prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        user_prefs = getSharedPreferences("notification_preference", MODE_PRIVATE);
+        swOrganizer = findViewById(R.id.swOrganizerAnnouncement);
+        swLottery = findViewById(R.id.swLotteryResultsNotif);
 
-        swAppUpdate = findViewById(R.id.swAppUpdate);
-        sworganizerannoucement = findViewById(R.id.swOrganizerAnnouncement);
-        sweventreminders = findViewById(R.id.swEventReminders);
-        sweventchanges = findViewById(R.id.swEventChanges);
-        swwaitlistalert = findViewById(R.id.swWaitlistAlerts);
-        swlotteryresults = findViewById(R.id.swLotteryResultsNotif);
+        swOrganizer.setChecked(user_prefs.getBoolean("organizer_announcement", true));
+        swLottery.setChecked(user_prefs.getBoolean("lottery_results", true));
 
-        loadSetting();
-        setUpClickListener();
+        updateToggleColor(swOrganizer);
+        updateToggleColor(swLottery);
 
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() { finish(); }
+        swOrganizer.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            user_prefs.edit().putBoolean("organizer_announcement", isChecked).apply();
+            updateToggleColor(swOrganizer);
+        });
+
+        swLottery.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            user_prefs.edit().putBoolean("lottery_results", isChecked).apply();
+            updateToggleColor(swLottery);
         });
     }
 
-    private void loadSetting(){
-        swAppUpdate.setChecked(user_prefs.getBoolean(KEY_APP_UPDATE,true));
-        sworganizerannoucement.setChecked(user_prefs.getBoolean(KEY_ORGANIZER_ANNOUNCEMENT,false));
-        sweventreminders.setChecked(user_prefs.getBoolean(KEY_EVENT_REMINDER,true));
-        sweventchanges.setChecked(user_prefs.getBoolean(KEY_EVENT_CHANGES,false));
-        swwaitlistalert.setChecked(user_prefs.getBoolean(KEY_WAITLIST_ALERTS,false));
-        swlotteryresults.setChecked(user_prefs.getBoolean(KEY_LOTTERY_RESULTS,true));
-    }
-
-    private void setUpClickListener(){
-        CompoundButton.OnCheckedChangeListener listener = (buttonView, isChecked) -> saveSetting();
-        swAppUpdate.setOnCheckedChangeListener(listener);
-        sworganizerannoucement.setOnCheckedChangeListener(listener);
-        sweventreminders.setOnCheckedChangeListener(listener);
-        sweventchanges.setOnCheckedChangeListener(listener);
-        swwaitlistalert.setOnCheckedChangeListener(listener);
-        swlotteryresults.setOnCheckedChangeListener(listener);
-    }
-
-    private void saveSetting() {
-        user_prefs.edit()
-                .putBoolean(KEY_APP_UPDATE, swAppUpdate.isChecked())
-                .putBoolean(KEY_ORGANIZER_ANNOUNCEMENT, sworganizerannoucement.isChecked())
-                .putBoolean(KEY_EVENT_REMINDER, sweventreminders.isChecked())
-                .putBoolean(KEY_EVENT_CHANGES, sweventchanges.isChecked())
-                .putBoolean(KEY_WAITLIST_ALERTS, swwaitlistalert.isChecked())
-                .putBoolean(KEY_LOTTERY_RESULTS, swlotteryresults.isChecked())
-                .apply();
+    private void updateToggleColor(SwitchMaterial toggle) {
+        if (toggle.isChecked()) {
+            toggle.setTrackTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primary_red)));
+        } else {
+            toggle.setTrackTintList(ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
+        }
     }
 }
-
-
-
-
-
-
-
-
-

@@ -136,8 +136,14 @@ public class EventsListFragment extends Fragment {
         // Setup Toolbar Buttons
         view.findViewById(R.id.toolbar_back).setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        view.findViewById(R.id.btnSearchFilter).setOnClickListener(v ->
-                filterLauncher.launch(new Intent(requireContext(), FilterEventsActivity.class)));
+        view.findViewById(R.id.btnSearchFilter).setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), FilterEventsActivity.class);
+            intent.putExtra(FilterEventsActivity.EXTRA_ANYTIME, filterAnytime);
+            intent.putExtra(FilterEventsActivity.EXTRA_RANGE_START_MS, filterRangeStartMs);
+            intent.putExtra(FilterEventsActivity.EXTRA_RANGE_END_MS, filterRangeEndMs);
+            intent.putExtra(FilterEventsActivity.EXTRA_ONLY_WITH_SPACE, filterOnlyWithSpace);
+            filterLauncher.launch(intent);
+        });
     }
 
     // Refresh data every time the screen becomes visible

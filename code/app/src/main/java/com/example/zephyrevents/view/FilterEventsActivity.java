@@ -1,28 +1,29 @@
 package com.example.zephyrevents.view;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CalendarView;
-import android.widget.CompoundButton;
-import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.core.widget.NestedScrollView;
-import com.example.zephyrevents.R;
 
-import java.text.SimpleDateFormat;
+import com.example.zephyrevents.R;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class FilterEventsActivity extends AppCompatActivity {
 
@@ -31,163 +32,244 @@ public class FilterEventsActivity extends AppCompatActivity {
     public static final String EXTRA_RANGE_END_MS = "filter_range_end_ms";
     public static final String EXTRA_ONLY_WITH_SPACE = "filter_only_with_space";
 
-    private static final int PICK_START = 0;
-    private static final int PICK_END = 1;
+    private final Calendar startCal = Calendar.getInstance();
+    private final Calendar endCal = Calendar.getInstance();
 
-    private long customStartMs = -1L;
-    private long customEndMs = -1L;
+    private CalendarView calStart, calEnd;
+    private TimePicker timeStart, timeEnd;
+    private HorizontalScrollView scrollFilterRange;
+    private View columnFilterEnd;
 
-    private int pickMode = PICK_START;
-    private int selYear;
-    private int selMonth;
-    private int selDay;
-
-    private CalendarView calendarAvailability;
-    private TimePicker timePickerAvailability;
-    private EditText etStartDate;
-    private EditText etEndDate;
-
-    private final SimpleDateFormat dfDisplay =
-            new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault());
+    private RadioButton rbAnytime, rbCustom;
+    private SwitchMaterial switchOnlyWithSpace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_events);
 
+        // Immersive Edge-to-Edge Mode
         WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-        etStartDate = findViewById(R.id.etStartDate);
-        etEndDate = findViewById(R.id.etEndDate);
-        calendarAvailability = findViewById(R.id.calendarAvailability);
-        timePickerAvailability = findViewById(R.id.timePickerAvailability);
-        NestedScrollView scrollFilter = findViewById(R.id.scrollFilterContent);
+        // Setup Top Bar
+        TextView title = findViewById(R.id.toolbar_title);
+        if (title != null) title.setText("Filter Events");
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
-        timePickerAvailability.setIs24HourView(false);
-
-        View.OnTouchListener keepScrollForWheels = (v, event) -> {
-            int a = event.getActionMasked();
-            if (a == MotionEvent.ACTION_DOWN) {
-                scrollFilter.requestDisallowInterceptTouchEvent(true);
-            } else if (a == MotionEvent.ACTION_UP || a == MotionEvent.ACTION_CANCEL) {
-                scrollFilter.requestDisallowInterceptTouchEvent(false);
-            }
-            return false;
-        };
-        timePickerAvailability.setOnTouchListener(keepScrollForWheels);
-
-        long initial = System.currentTimeMillis();
-        syncSelectionFromMillis(initial);
-        calendarAvailability.setDate(initial, false, true);
-
-        etStartDate.setOnClickListener(v -> {
-            pickMode = PICK_START;
-            long ref = customStartMs >= 0 ? customStartMs : calendarAvailability.getDate();
-            syncSelectionFromMillis(ref);
-            calendarAvailability.setDate(ref, true, true);
-        });
-        etEndDate.setOnClickListener(v -> {
-            pickMode = PICK_END;
-            long ref = customEndMs >= 0 ? customEndMs : calendarAvailability.getDate();
-            syncSelectionFromMillis(ref);
-            calendarAvailability.setDate(ref, true, true);
-        });
-
-        calendarAvailability.post(() -> {
-            calendarAvailability.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-                selYear = year;
-                selMonth = month;
-                selDay = dayOfMonth;
-                applyActiveField();
-            });
-            timePickerAvailability.setOnTimeChangedListener((view, hourOfDay, minute) -> applyActiveField());
-        });
-
-        View backBtn = findViewById(R.id.btnBack);
-        backBtn.setOnClickListener(v -> finish());
-        backBtn.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                finish();
-            }
-            return true;
-        });
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                finish();
-            }
-        });
-
+        // Views
         RadioGroup radioDate = findViewById(R.id.radioDate);
+        rbAnytime = findViewById(R.id.rbAnytime);
+        rbCustom = findViewById(R.id.rbCustom);
+        switchOnlyWithSpace = findViewById(R.id.switchOnlyWithSpace);
         LinearLayout customDateSelection = findViewById(R.id.customDateSelection);
-        radioDate.setOnCheckedChangeListener((group, checkedId) ->
-                customDateSelection.setVisibility(checkedId == R.id.rbCustom ? View.VISIBLE : View.GONE));
 
-        findViewById(R.id.btnApplyFilter).setOnClickListener(v -> {
-            Intent out = new Intent();
-            CompoundButton rbAnytime = findViewById(R.id.rbAnytime);
-            boolean anytime = rbAnytime != null && rbAnytime.isChecked();
-            out.putExtra(EXTRA_ANYTIME, anytime);
+        calStart = findViewById(R.id.calendar_filter_start);
+        timeStart = findViewById(R.id.time_filter_start);
+        calEnd = findViewById(R.id.calendar_filter_end);
+        timeEnd = findViewById(R.id.time_filter_end);
 
-            if (!anytime) {
-                if (customStartMs < 0 || customEndMs < 0 || customStartMs > customEndMs) {
-                    android.widget.Toast.makeText(this, "Pick a valid start and end date", android.widget.Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                out.putExtra(EXTRA_RANGE_START_MS, customStartMs);
-                out.putExtra(EXTRA_RANGE_END_MS, customEndMs);
-            } else {
-                out.putExtra(EXTRA_RANGE_START_MS, -1L);
-                out.putExtra(EXTRA_RANGE_END_MS, -1L);
-            }
-            CompoundButton spaceSwitch = findViewById(R.id.switchOnlyWithSpace);
-            out.putExtra(EXTRA_ONLY_WITH_SPACE, spaceSwitch != null && spaceSwitch.isChecked());
-            setResult(RESULT_OK, out);
-            finish();
-        });
+        scrollFilterRange = findViewById(R.id.scroll_filter_range);
+        columnFilterEnd = findViewById(R.id.column_filter_end);
 
-        findViewById(R.id.btnClearFilter).setOnClickListener(v -> {
-            customStartMs = -1L;
-            customEndMs = -1L;
-            etStartDate.setText("");
-            etEndDate.setText("");
+        timeStart.setIs24HourView(false);
+        timeEnd.setIs24HourView(false);
+
+        // Clear Filters Text Action
+        TextView clearFilters = findViewById(R.id.btn_clear_filters);
+        clearFilters.setOnClickListener(v -> {
+            // 1. Reset Radio buttons & Switch
+            rbAnytime.setChecked(true);
+            switchOnlyWithSpace.setChecked(false);
+
+            // 2. Reset Calendars to Current Date/Time
             long now = System.currentTimeMillis();
-            syncSelectionFromMillis(now);
-            calendarAvailability.setDate(now, false, true);
+            startCal.setTimeInMillis(now);
+            startCal.set(Calendar.SECOND, 0);
+            endCal.setTimeInMillis(now);
+            endCal.set(Calendar.SECOND, 0);
 
+            // Unbind listeners temporarily so the minutes don't overwrite
+            timeStart.setOnTimeChangedListener(null);
+            timeEnd.setOnTimeChangedListener(null);
+
+            timeStart.setHour(startCal.get(Calendar.HOUR_OF_DAY));
+            timeStart.setMinute(startCal.get(Calendar.MINUTE));
+            timeEnd.setHour(endCal.get(Calendar.HOUR_OF_DAY));
+            timeEnd.setMinute(endCal.get(Calendar.MINUTE));
+
+            calStart.setDate(now, false, true);
+            calEnd.setDate(now, false, true);
+
+            attachTimeListener(timeStart, startCal, 1);
+            attachTimeListener(timeEnd, endCal, 2);
+
+            // 3. Stage the result so if they press the physical back button, the filters apply
             Intent out = new Intent();
             out.putExtra(EXTRA_ANYTIME, true);
             out.putExtra(EXTRA_RANGE_START_MS, -1L);
             out.putExtra(EXTRA_RANGE_END_MS, -1L);
             out.putExtra(EXTRA_ONLY_WITH_SPACE, false);
             setResult(RESULT_OK, out);
+
+            Toast.makeText(this, "Filters reset", Toast.LENGTH_SHORT).show();
+            // NOTE: We do NOT call finish() here so the user remains on the screen!
+        });
+
+        // Dynamic Radio Button UI
+        radioDate.setOnCheckedChangeListener((group, checkedId) -> {
+            boolean isCustom = (checkedId == R.id.rbCustom);
+            customDateSelection.setVisibility(isCustom ? View.VISIBLE : View.GONE);
+            updateRadioUI(isCustom);
+        });
+
+        // Dynamic Switch UI
+        switchOnlyWithSpace.setOnCheckedChangeListener((buttonView, isChecked) -> updateSwitchColors());
+
+        // Extract passed Intents to restore previous user choices!
+        boolean isAnytime = getIntent().getBooleanExtra(EXTRA_ANYTIME, true);
+        long savedStart = getIntent().getLongExtra(EXTRA_RANGE_START_MS, -1L);
+        long savedEnd = getIntent().getLongExtra(EXTRA_RANGE_END_MS, -1L);
+        boolean savedSpace = getIntent().getBooleanExtra(EXTRA_ONLY_WITH_SPACE, false);
+
+        // Restore Switch
+        switchOnlyWithSpace.setChecked(savedSpace);
+        updateSwitchColors();
+
+        // Restore Radio Buttons
+        if (isAnytime) {
+            rbAnytime.setChecked(true);
+            updateRadioUI(false);
+        } else {
+            rbCustom.setChecked(true);
+            updateRadioUI(true);
+        }
+
+        // Set baseline min dates safely so past days aren't un-clickable if scrolling
+        long today = System.currentTimeMillis() - 1000;
+        calStart.setMinDate(today);
+        calEnd.setMinDate(today);
+
+        // Restore exact Calendar and TimePicker states
+        restoreCalendarState(savedStart, savedEnd);
+
+        // Apply Button
+        findViewById(R.id.btnApplyFilter).setOnClickListener(v -> {
+            Intent out = new Intent();
+            boolean anytime = rbAnytime.isChecked();
+            out.putExtra(EXTRA_ANYTIME, anytime);
+
+            if (!anytime) {
+                if (startCal.getTimeInMillis() > endCal.getTimeInMillis()) {
+                    Toast.makeText(this, "Start date must be before End date", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                out.putExtra(EXTRA_RANGE_START_MS, startCal.getTimeInMillis());
+                out.putExtra(EXTRA_RANGE_END_MS, endCal.getTimeInMillis());
+            } else {
+                out.putExtra(EXTRA_RANGE_START_MS, -1L);
+                out.putExtra(EXTRA_RANGE_END_MS, -1L);
+            }
+
+            out.putExtra(EXTRA_ONLY_WITH_SPACE, switchOnlyWithSpace.isChecked());
+            setResult(RESULT_OK, out);
             finish();
         });
     }
 
-    private void syncSelectionFromMillis(long ms) {
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(ms);
-        selYear = c.get(Calendar.YEAR);
-        selMonth = c.get(Calendar.MONTH);
-        selDay = c.get(Calendar.DAY_OF_MONTH);
-        timePickerAvailability.setHour(c.get(Calendar.HOUR_OF_DAY));
-        timePickerAvailability.setMinute(c.get(Calendar.MINUTE));
+    private void updateRadioUI(boolean isCustomSelected) {
+        if (isCustomSelected) {
+            rbCustom.setBackgroundResource(R.drawable.bg_button_filled);
+            rbCustom.setTextColor(ContextCompat.getColor(this, R.color.white));
+            rbAnytime.setBackgroundResource(R.drawable.bg_button_outline);
+            rbAnytime.setTextColor(ContextCompat.getColor(this, R.color.primary_red));
+        } else {
+            rbAnytime.setBackgroundResource(R.drawable.bg_button_filled);
+            rbAnytime.setTextColor(ContextCompat.getColor(this, R.color.white));
+            rbCustom.setBackgroundResource(R.drawable.bg_button_outline);
+            rbCustom.setTextColor(ContextCompat.getColor(this, R.color.primary_red));
+        }
     }
 
-    private void applyActiveField() {
-        Calendar c = Calendar.getInstance();
-        c.set(selYear, selMonth, selDay, timePickerAvailability.getHour(), timePickerAvailability.getMinute(), 0);
-        c.set(Calendar.MILLISECOND, 0);
-        long ms = c.getTimeInMillis();
-        if (pickMode == PICK_START) {
-            customStartMs = ms;
-            etStartDate.setText(dfDisplay.format(new Date(ms)));
+    private void updateSwitchColors() {
+        if (switchOnlyWithSpace.isChecked()) {
+            switchOnlyWithSpace.setTrackTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primary_red)));
         } else {
-            customEndMs = ms;
-            etEndDate.setText(dfDisplay.format(new Date(ms)));
+            switchOnlyWithSpace.setTrackTintList(ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
         }
+    }
+
+    private void restoreCalendarState(long savedStart, long savedEnd) {
+        if (savedStart > 0) {
+            startCal.setTimeInMillis(savedStart);
+        } else {
+            startCal.setTimeInMillis(System.currentTimeMillis());
+            startCal.set(Calendar.SECOND, 0);
+        }
+
+        if (savedEnd > 0) {
+            endCal.setTimeInMillis(savedEnd);
+        } else {
+            endCal.setTimeInMillis(System.currentTimeMillis());
+            endCal.set(Calendar.SECOND, 0);
+        }
+
+        setupDateAndTime(calStart, timeStart, startCal, 1);
+        setupDateAndTime(calEnd, timeEnd, endCal, 2);
+    }
+
+    private void setupDateAndTime(CalendarView calView, TimePicker timePicker, Calendar tracker, int type) {
+        // Detach listener before setting exact minutes so it doesn't instantly overwrite
+        timePicker.setOnTimeChangedListener(null);
+        timePicker.setHour(tracker.get(Calendar.HOUR_OF_DAY));
+        timePicker.setMinute(tracker.get(Calendar.MINUTE));
+
+        calView.setDate(tracker.getTimeInMillis(), false, true);
+
+        calView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            tracker.set(Calendar.YEAR, year);
+            tracker.set(Calendar.MONTH, month);
+            tracker.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            long selectedMillis = tracker.getTimeInMillis();
+
+            if (type == 1) { // Start Calendar
+                if (endCal.getTimeInMillis() < selectedMillis) {
+                    endCal.setTimeInMillis(selectedMillis);
+                    calEnd.setDate(selectedMillis, false, true);
+
+                    timeEnd.setOnTimeChangedListener(null);
+                    timeEnd.setHour(tracker.get(Calendar.HOUR_OF_DAY));
+                    timeEnd.setMinute(tracker.get(Calendar.MINUTE));
+                    attachTimeListener(timeEnd, endCal, 2);
+                }
+
+                if (scrollFilterRange != null && columnFilterEnd != null) {
+                    scrollFilterRange.postDelayed(() ->
+                            scrollFilterRange.smoothScrollTo(columnFilterEnd.getLeft(), 0), 300);
+                }
+
+            } else if (type == 2) { // End Calendar
+                if (startCal.getTimeInMillis() > selectedMillis) {
+                    startCal.setTimeInMillis(selectedMillis);
+                    calStart.setDate(selectedMillis, false, true);
+
+                    timeStart.setOnTimeChangedListener(null);
+                    timeStart.setHour(tracker.get(Calendar.HOUR_OF_DAY));
+                    timeStart.setMinute(tracker.get(Calendar.MINUTE));
+                    attachTimeListener(timeStart, startCal, 1);
+                }
+            }
+        });
+
+        attachTimeListener(timePicker, tracker, type);
+    }
+
+    private void attachTimeListener(TimePicker timePicker, Calendar tracker, int type) {
+        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
+            tracker.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            tracker.set(Calendar.MINUTE, minute);
+        });
     }
 }
