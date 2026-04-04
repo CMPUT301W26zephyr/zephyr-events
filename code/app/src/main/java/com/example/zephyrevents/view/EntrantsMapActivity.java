@@ -63,6 +63,13 @@ public class EntrantsMapActivity extends AppCompatActivity {
                     marker.setPosition(point);
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                     marker.setTitle(entry.getUserId());
+
+                    android.graphics.drawable.GradientDrawable circle = new android.graphics.drawable.GradientDrawable();
+                    circle.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                    circle.setColor(androidx.core.content.ContextCompat.getColor(EntrantsMapActivity.this, R.color.primary_red));
+                    circle.setSize(40, 40);
+                    marker.setIcon(circle);
+
                     mapView.getOverlays().add(marker);
 
                     if (first == null) first = point;

@@ -1,13 +1,12 @@
 package com.example.zephyrevents.view;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
@@ -170,6 +169,7 @@ public class EventCreateFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_event_create, container, false);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -185,55 +185,67 @@ public class EventCreateFragment extends Fragment {
         EditText inputLocation = view.findViewById(R.id.input_location);
         EditText inputAddress = view.findViewById(R.id.input_address);
         Button btnFindAddress = view.findViewById(R.id.btn_find_address);
-        AutoCompleteTextView dropdownRadius = view.findViewById(R.id.radiusDropdown);
-
-        // The following map setup, radius dropdown, and tap receiver is from Anthropic, Claude (claude.ai), "Android osmdroid map with radius dropdown selector and tap-to-place circle overlay", 2025-03-30
-        String[] radiusOptions = new String[]{"100 m", "250 m", "500 m", "1000 m"};
-        dropdownRadius.setAdapter(new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                radiusOptions
-        ));
-
-        dropdownRadius.setText("500 m", false);
-
-        dropdownRadius.setOnItemClickListener((parent, view1, position, id) -> {
-            String selected = (String) parent.getItemAtPosition(position);
-
-            switch (selected) {
-                case "100 m":
-                    selectedRadiusMeters = 100;
-                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
-                    break;
-                case "250 m":
-                    selectedRadiusMeters = 250;
-                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
-                    break;
-                case "500 m":
-                    selectedRadiusMeters = 500;
-                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
-                    break;
-                case "1000 m":
-                    selectedRadiusMeters = 1000;
-                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
-                    break;
-            }
-        });
 
         SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
 
         org.osmdroid.views.MapView mapView = view.findViewById(R.id.map_view);
-        mapView.setVisibility(switchGeo.isChecked() ? View.VISIBLE : View.GONE);
+        //mapView.setVisibility(switchGeo.isChecked() ? View.VISIBLE : View.GONE);
+
+        // The following map setup, radius text input, tap receiver, and address geocoding is from Anthropic, Claude (claude.ai), "Android osmdroid map with radius input, tap-to-place circle overlay, and address geocoding", 2025-03-30
+        EditText inputRadius = view.findViewById(R.id.input_radius);
+        inputRadius.setText("500");
+
+        inputRadius.addTextChangedListener(new android.text.TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void afterTextChanged(android.text.Editable s) {
+                String val = s.toString().trim();
+                if (!val.isEmpty()) {
+                    selectedRadiusMeters = Double.parseDouble(val);
+                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
+                    if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
+                        org.osmdroid.util.GeoPoint last = new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng);
+                        mapView.getOverlays().clear();
+                        mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+                        org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+                        circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(last, selectedRadiusMeters));
+                        circle.setFillColor(0x33E53935);
+                        circle.setStrokeColor(0x99E53935);
+                        circle.setStrokeWidth(2f);
+                        mapView.getOverlays().add(circle);
+                        mapView.invalidate();
+                    }
+                }
+            }
+        });
 
         switchGeo.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mapView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            View geoControls = view.findViewById(R.id.geo_controls);
+            View mapFrame = view.findViewById(R.id.map_frame);
+            mapFrame.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            geoControls.setVisibility(isChecked ? View.VISIBLE : View.GONE);
         });
+
         org.osmdroid.config.Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
 
         mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
         mapView.getController().setZoom(14.0);
         mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(53.5461, -113.4938));
+        View mapTouchInterceptor = view.findViewById(R.id.map_touch_interceptor);
+        mapTouchInterceptor.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                case android.view.MotionEvent.ACTION_MOVE:
+                    mapView.getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    mapView.getParent().requestDisallowInterceptTouchEvent(false);
+                    break;
+            }
+            return false;
+        });
 
         btnFindAddress.setOnClickListener(v -> {
             moveMapToTypedAddress(inputAddress.getText().toString().trim(), mapView);
@@ -451,7 +463,10 @@ public class EventCreateFragment extends Fragment {
         inputLocation.setText(viewModel.location);
         inputAddress.setText(viewModel.address);
         switchGeo.setChecked(viewModel.requireGeolocation);
-
+        View geoControls = view.findViewById(R.id.geo_controls);
+        View mapFrame = view.findViewById(R.id.map_frame);
+        mapFrame.setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
+        geoControls.setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
         // 4. SETUP CALENDARS AND TIME PICKERS
         long today = System.currentTimeMillis() - 1000;
         if (!viewModel.isEditMode) {
