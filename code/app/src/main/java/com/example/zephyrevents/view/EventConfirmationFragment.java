@@ -148,6 +148,18 @@ public class EventConfirmationFragment extends Fragment {
 
                     com.example.zephyrevents.model.Location eventLoc = new com.example.zephyrevents.model.Location();
                     eventLoc.setLocationString(finalLocationStr);
+                    eventLoc.setRequiresGeolocation(viewModel.requireGeolocation);
+                    eventLoc.setGeolocationRadiusKm(viewModel.geolocationRadiusKm);
+
+                    if (viewModel.eventLat != 0 || viewModel.eventLng != 0) {
+                        eventLoc.setCoordinate(
+                                new com.example.zephyrevents.model.Coordinate(
+                                        viewModel.eventLat,
+                                        viewModel.eventLng
+                                )
+                        );
+                    }
+
                     newEvent.setLocation(eventLoc);
 
                     SimpleDateFormat sdfFull = new SimpleDateFormat("MMM d, yyyy, h:mm a", java.util.Locale.getDefault());

@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Query;
 
 
 /**
@@ -180,6 +181,7 @@ public class EventRepository {
      */
     public void getAllEvents(RepositoryCallback<List<Event>> callback){
         db.collection(Collections.EVENTS)
+                .orderBy("time.endTime", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override

@@ -1,13 +1,12 @@
 package com.example.zephyrevents.view;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
@@ -49,6 +48,11 @@ import androidx.appcompat.app.AlertDialog;
 public class EventCreateFragment extends Fragment {
 
     private EventViewModel viewModel;
+
+    // Geolocation
+    private double selectedRadiusMeters = 500;
+    private org.osmdroid.events.MapEventsReceiver receiver;
+
 
     // Use Calendars to precisely track exact milliseconds for validation
     private final Calendar regStartCal = Calendar.getInstance();
@@ -165,6 +169,7 @@ public class EventCreateFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_event_create, container, false);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -179,7 +184,101 @@ public class EventCreateFragment extends Fragment {
 
         EditText inputLocation = view.findViewById(R.id.input_location);
         EditText inputAddress = view.findViewById(R.id.input_address);
+        Button btnFindAddress = view.findViewById(R.id.btn_find_address);
+
         SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
+
+        org.osmdroid.views.MapView mapView = view.findViewById(R.id.map_view);
+        //mapView.setVisibility(switchGeo.isChecked() ? View.VISIBLE : View.GONE);
+
+        // The following map setup, radius text input, tap receiver, and address geocoding is from Anthropic, Claude (claude.ai), "Android osmdroid map with radius input, tap-to-place circle overlay, and address geocoding", 2025-03-30
+        EditText inputRadius = view.findViewById(R.id.input_radius);
+        inputRadius.setText("500");
+
+        inputRadius.addTextChangedListener(new android.text.TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void afterTextChanged(android.text.Editable s) {
+                String val = s.toString().trim();
+                if (!val.isEmpty()) {
+                    selectedRadiusMeters = Double.parseDouble(val);
+                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
+                    if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
+                        org.osmdroid.util.GeoPoint last = new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng);
+                        mapView.getOverlays().clear();
+                        mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+                        org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+                        circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(last, selectedRadiusMeters));
+                        circle.setFillColor(0x33E53935);
+                        circle.setStrokeColor(0x99E53935);
+                        circle.setStrokeWidth(2f);
+                        mapView.getOverlays().add(circle);
+                        mapView.invalidate();
+                    }
+                }
+            }
+        });
+
+        switchGeo.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            View geoControls = view.findViewById(R.id.geo_controls);
+            View mapFrame = view.findViewById(R.id.map_frame);
+            mapFrame.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            geoControls.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        });
+
+        org.osmdroid.config.Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
+
+        mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK);
+        mapView.setMultiTouchControls(true);
+        mapView.getController().setZoom(14.0);
+        mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(53.5461, -113.4938));
+        View mapTouchInterceptor = view.findViewById(R.id.map_touch_interceptor);
+        mapTouchInterceptor.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                case android.view.MotionEvent.ACTION_MOVE:
+                    mapView.getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    mapView.getParent().requestDisallowInterceptTouchEvent(false);
+                    break;
+            }
+            return false;
+        });
+
+        btnFindAddress.setOnClickListener(v -> {
+            moveMapToTypedAddress(inputAddress.getText().toString().trim(), mapView);
+        });
+        receiver = new org.osmdroid.events.MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(org.osmdroid.util.GeoPoint p) {
+                mapView.getOverlays().clear();
+                mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+
+                org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+                circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(p, selectedRadiusMeters));
+                circle.setFillColor(0x33E53935);
+                circle.setStrokeColor(0x99E53935);
+                circle.setStrokeWidth(2f);
+                mapView.getOverlays().add(circle);
+
+                viewModel.eventLat = p.getLatitude();
+                viewModel.eventLng = p.getLongitude();
+
+                mapView.invalidate();
+                return true;
+            }
+
+            @Override
+            public boolean longPressHelper(org.osmdroid.util.GeoPoint p) { return false; }
+        };
+
+        mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+        // Restore pin if returning from confirmation
+        if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
+            mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng));
+        }
 
         textRegPeriod = view.findViewById(R.id.text_reg_period);
         textEvent = view.findViewById(R.id.text_event_date);
@@ -364,7 +463,10 @@ public class EventCreateFragment extends Fragment {
         inputLocation.setText(viewModel.location);
         inputAddress.setText(viewModel.address);
         switchGeo.setChecked(viewModel.requireGeolocation);
-
+        View geoControls = view.findViewById(R.id.geo_controls);
+        View mapFrame = view.findViewById(R.id.map_frame);
+        mapFrame.setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
+        geoControls.setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
         // 4. SETUP CALENDARS AND TIME PICKERS
         long today = System.currentTimeMillis() - 1000;
         if (!viewModel.isEditMode) {
@@ -393,6 +495,11 @@ public class EventCreateFragment extends Fragment {
                         isValid = false;
                     }
 
+                    if (switchGeo.isChecked() && (viewModel.eventLat == 0 || viewModel.eventLng == 0)) {
+                        Toast.makeText(requireContext(), "Please select a location on the map.", Toast.LENGTH_SHORT).show();
+                        isValid = false;
+                    }
+
                     if (isValid) {
                         viewModel.title = inputTitle.getText().toString().trim();
                         viewModel.price = inputPrice.getText().toString().trim();
@@ -402,6 +509,11 @@ public class EventCreateFragment extends Fragment {
                         viewModel.location = inputLocation.getText().toString().trim();
                         viewModel.address = inputAddress.getText().toString().trim();
                         viewModel.requireGeolocation = switchGeo.isChecked();
+
+                        // TODO: Capture the event venue's lat/lng here after the organizer enters
+                        // the address or selects a map pin, then carry those coordinates forward
+                        // so EventConfirmationFragment can store them in Event.location.coordinate.
+
 
                         // Save the full formatted strings (Date + Time) to the ViewModel
                         viewModel.registrationPeriod = sdfFull.format(regStartCal.getTime()) + " - " + sdfFull.format(regEndCal.getTime());
@@ -640,6 +752,54 @@ public class EventCreateFragment extends Fragment {
             } catch (ParseException ex) {
                 return null;
             }
+        }
+    }
+
+    // The following function is from Anthropic, Claude (claude.ai), "Android map function to geocode a typed address and display a radius circle using osmdroid", 2025-03-30
+    private void moveMapToTypedAddress(String addressText, org.osmdroid.views.MapView mapView) {
+        if (addressText == null || addressText.trim().isEmpty()) {
+            Toast.makeText(requireContext(), "Please enter an address.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        android.location.Geocoder geocoder = new android.location.Geocoder(requireContext(), java.util.Locale.getDefault());
+
+        try {
+            java.util.List<android.location.Address> results = geocoder.getFromLocationName(addressText, 1);
+
+            if (results == null || results.isEmpty()) {
+                Toast.makeText(requireContext(), "Address not found.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            android.location.Address result = results.get(0);
+            double lat = result.getLatitude();
+            double lng = result.getLongitude();
+
+            org.osmdroid.util.GeoPoint point = new org.osmdroid.util.GeoPoint(lat, lng);
+
+            mapView.getOverlays().clear();
+            mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+
+
+            org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+            circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(point, selectedRadiusMeters));
+            circle.setFillColor(0x33E53935);
+            circle.setStrokeColor(0x99E53935);
+            circle.setStrokeWidth(2f);
+            mapView.getOverlays().add(circle);
+
+            viewModel.eventLat = lat;
+            viewModel.eventLng = lng;
+
+            mapView.getController().setZoom(16.0);
+            mapView.getController().setCenter(point);
+            mapView.invalidate();
+
+            Toast.makeText(requireContext(), "Address found.", Toast.LENGTH_SHORT).show();
+
+        } catch (java.io.IOException e) {
+            Toast.makeText(requireContext(), "Could not search address.", Toast.LENGTH_SHORT).show();
         }
     }
 }

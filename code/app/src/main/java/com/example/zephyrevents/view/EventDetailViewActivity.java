@@ -49,6 +49,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
 
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
@@ -64,6 +67,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private UserController userController;
     private UserRepository userRepository;
     private final EventCommentRepository commentRepository = new EventCommentRepository();
+    private WaitlistRepository pendingRepo; // store repo while waiting for permission
 
     private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation;
     private TextView organizerName, eventAbout, totalCapacity, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
@@ -422,7 +426,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
             });
         }
         if (rowMap != null) {
-            rowMap.setOnClickListener(v -> Toast.makeText(this, R.string.map_not_available, Toast.LENGTH_SHORT).show());
+            rowMap.setOnClickListener(v -> {
+                if (event == null) return;
+                Intent intent = new Intent(this, EntrantsMapActivity.class);
+                intent.putExtra(EXTRA_EVENT, event.getEventId());
+                startActivity(intent);
+            });
         }
     }
 
@@ -873,7 +882,6 @@ public class EventDetailViewActivity extends AppCompatActivity {
             }
         }
 
-
         attachCommentsListener();
 
         if (isInvited) {
@@ -1055,22 +1063,33 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> {
-            WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
-            repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    populateUI();
-                    String name = eventNameForWaitlistStatus();
-                    showCenteredWaitlistOverlay(
-                            getString(R.string.status_waitlist_on_list_title),
-                            getString(R.string.status_waitlist_joined_body, name),
-                            true);
+            if (event.getLocation() != null && event.getLocation().isRequiresGeolocation()) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    pendingRepo = repo;
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+                } else {
+                    doLocationJoin(repo);
                 }
+            } else {
+                WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
+                repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        populateUI();
+                        String name = eventNameForWaitlistStatus();
+                        showCenteredWaitlistOverlay(
+                                getString(R.string.status_waitlist_on_list_title),
+                                getString(R.string.status_waitlist_joined_body, name),
+                                true);
+                    }
 
-                @Override
-                public void onFailure(Exception e) {
-                }
-            });
+                    @Override
+                    public void onFailure(Exception e) {
+                    }
+                });
+            }
         });
         buttonSecondary.setVisibility(View.GONE);
     }
@@ -1320,6 +1339,45 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 @Override public void onFailure(Exception e) {}
             });
         });
+    }
+
+    private void doLocationJoin(WaitlistRepository repo) {
+        com.example.zephyrevents.util.DistanceHelper.getUserLocation(this,
+                new com.example.zephyrevents.util.DistanceHelper.LocationCallback() {
+                    @Override
+                    public void onLocation(double userLat, double userLng) {
+                        com.example.zephyrevents.model.Coordinate userCoord =
+                                new com.example.zephyrevents.model.Coordinate(userLat, userLng);
+                        com.example.zephyrevents.model.Coordinate eventCoord =
+                                event.getLocation().getCoordinate();
+                        double radiusKm = event.getLocation().getGeolocationRadiusKm();
+
+                        if (!com.example.zephyrevents.util.DistanceHelper.isWithinDistance(
+                                userCoord, eventCoord, radiusKm)) {
+                            Toast.makeText(EventDetailViewActivity.this,
+                                    "You must be within " + (int)(radiusKm * 1000) + "m of the event.",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        WaitlistEntry newEntry = new WaitlistEntry(
+                                currentUserId, event.getEventId(), userLat, userLng, Status.WAITLISTED);
+                        repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                            @Override public void onSuccess(Void result) {
+                                Toast.makeText(EventDetailViewActivity.this, "Joined Waitlist!", Toast.LENGTH_SHORT).show();
+                                populateUI();
+                            }
+                            @Override public void onFailure(Exception e) {}
+                        });
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Toast.makeText(EventDetailViewActivity.this,
+                                "Could not get your location. Please enable location services.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }
