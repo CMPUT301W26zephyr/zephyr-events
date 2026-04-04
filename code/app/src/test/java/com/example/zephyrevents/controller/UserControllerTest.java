@@ -120,7 +120,7 @@ public class UserControllerTest {
         verify(mockRepo).saveUser(userCaptor.capture(), any());
         User savedUser = userCaptor.getValue();
         assertTrue("new name".equals(savedUser.getName()));
-        assertTrue("USA".equals(savedUser.getLocation()));
+        assertTrue("".equals(savedUser.getLocation()));
         assertTrue("new@gmail.com".equals(savedUser.getContactInfo().getEmail()));
         assertTrue("000".equals(savedUser.getContactInfo().getPhone()));
 

@@ -11,6 +11,9 @@ import java.util.List;
 
 import android.media.Image;
 import android.net.Uri;
+
+import androidx.annotation.VisibleForTesting;
+
 import com.example.zephyrevents.repository.ImageRepository;
 
 
@@ -28,7 +31,7 @@ public class EventController {
     private List<WaitlistEntry> mockLotteries = new ArrayList<>();
     private List<WaitlistEntry> mockHistory = new ArrayList<>();
 
-    private final ImageRepository imageRepository;
+    private ImageRepository imageRepository;
 
     /**
      * Private constructor to enforce the Singleton pattern.
@@ -36,6 +39,15 @@ public class EventController {
     private EventController() {
         eventRepository = new EventRepository();
         imageRepository = new ImageRepository();
+    }
+
+    /**
+     * Unit tests only: inject repository and skip real Firebase / {@link ImageRepository}.
+     */
+    @VisibleForTesting
+    public EventController(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+        this.imageRepository = null;
     }
 
     /**
