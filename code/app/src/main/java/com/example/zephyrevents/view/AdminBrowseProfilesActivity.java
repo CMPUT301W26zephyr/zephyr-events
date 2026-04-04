@@ -4,33 +4,34 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
-
+import com.example.zephyrevents.repository.UserRepository;
+import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminBrowseProfilesActivity extends AppCompatActivity {
 
-    private ListView listView;
-    private AdminGenericEventAdapter adapter;
-
-    private List<Object> userList;
-    private List<Object> displayedList;
-
-    private EditText etSearchBar;
-
-    private static final int REQUEST_EDIT_USER = 1;
+    private RecyclerView recyclerView;
+    private AdminUserAdapter adapter;
+    private List<User> userList = new ArrayList<>();
+    private List<User> displayedList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,154 +42,114 @@ public class AdminBrowseProfilesActivity extends AppCompatActivity {
         windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-        findViewById(R.id.button_back2).setOnClickListener(v -> finish());
+        TextView title = findViewById(R.id.toolbar_title);
+        if (title != null) title.setText("Browse Profiles");
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
-        listView = findViewById(R.id.event_list);
+        recyclerView = findViewById(R.id.recycler_profiles);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new AdminUserAdapter();
+        recyclerView.setAdapter(adapter);
 
-        userList = new ArrayList<>();
-        displayedList = new ArrayList<>();
-
-        adapter = new AdminGenericEventAdapter(
-                this,
-                displayedList,
-                R.layout.admin_browse_user_item
-        );
-
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            User selectedUser = (User) displayedList.get(position);
-
-            Intent intent = new Intent(this, UserProfileEditViewActivity.class);
-            intent.putExtra("userId", selectedUser.getId());
-            intent.putExtra("isAdminView", true);
-
-            // 🔥 changed here
-            startActivityForResult(intent, REQUEST_EDIT_USER);
-        });
-
-        // Search bar setup
-        etSearchBar = findViewById(R.id.etSearchBar);
-
+        EditText etSearchBar = findViewById(R.id.etSearchBar);
         if (etSearchBar != null) {
             etSearchBar.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    filterUsers(s.toString().trim());
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {}
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) { filterUsers(s.toString().trim()); }
+                @Override public void afterTextChanged(Editable s) {}
             });
         }
-
-        setupBottomNav();
-
-        loadUsers();
     }
 
-    // 🔥 handle result from edit screen
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_EDIT_USER && resultCode == RESULT_OK) {
-            if (data != null && data.getBooleanExtra("USER_DELETED", false)) {
-
-                // Refresh list
-                loadUsers();
-
-                // Show toast
-                Toast.makeText(this, "User deleted", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void setupBottomNav() {
-
-        findViewById(R.id.nav_home).setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("TARGET_TAB", "Home");
-            startActivity(intent);
-        });
-
-        findViewById(R.id.nav_my_events).setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("TARGET_TAB", "MyEvents");
-            startActivity(intent);
-        });
-
-        findViewById(R.id.nav_create_event).setOnClickListener(v -> {
-            startActivity(new Intent(this, OrganizerEventAddEditView.class));
-        });
-
-        findViewById(R.id.nav_scan_qr).setOnClickListener(v -> {
-            startActivity(new Intent(this, QrScannerActivity.class));
-        });
-
-        findViewById(R.id.nav_profile).setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("TARGET_TAB", "ProfileView");
-            startActivity(intent);
-        });
-    }
-
-    private void loadUsers() {
-        com.example.zephyrevents.repository.UserRepository repo =
-                new com.example.zephyrevents.repository.UserRepository();
-
-        repo.getAllUsers(new RepositoryCallback<List<User>>() {
-
+    protected void onResume() {
+        super.onResume();
+        new UserRepository().getAllUsers(new RepositoryCallback<List<User>>() {
             @Override
             public void onSuccess(List<User> result) {
                 userList.clear();
-
-                if (result != null) {
-                    userList.addAll(result);
-                }
-
-                filterUsers("");
+                if (result != null) userList.addAll(result);
+                EditText et = findViewById(R.id.etSearchBar);
+                filterUsers(et != null ? et.getText().toString().trim() : "");
             }
-
             @Override
             public void onFailure(Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(AdminBrowseProfilesActivity.this,
-                                "Failed to load users",
-                                Toast.LENGTH_SHORT).show()
-                );
+                Toast.makeText(AdminBrowseProfilesActivity.this, "Failed to load users", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void filterUsers(String query) {
         displayedList.clear();
-
         if (query.isEmpty()) {
             displayedList.addAll(userList);
         } else {
             String lower = query.toLowerCase();
-
-            for (Object obj : userList) {
-                User user = (User) obj;
-
-                String name = user.getName();
-
-                String email = null;
-                if (user.getContactInfo() != null) {
-                    email = user.getContactInfo().getEmail();
-                }
-
-                if ((name != null && name.toLowerCase().contains(lower)) ||
-                        (email != null && email.toLowerCase().contains(lower))) {
+            for (User user : userList) {
+                String name = user.getName() != null ? user.getName().toLowerCase() : "";
+                String email = user.getContactInfo() != null && user.getContactInfo().getEmail() != null ? user.getContactInfo().getEmail().toLowerCase() : "";
+                if (name.contains(lower) || email.contains(lower)) {
                     displayedList.add(user);
                 }
             }
         }
+        adapter.notifyDataSetChanged();
+    }
 
-        runOnUiThread(() -> adapter.notifyDataSetChanged());
+    private class AdminUserAdapter extends RecyclerView.Adapter<AdminUserAdapter.VH> {
+        @NonNull
+        @Override
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_invite_row, parent, false);
+            return new VH(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull VH h, int position) {
+            User u = displayedList.get(position);
+            String nameStr = u.getName() != null ? u.getName() : "Unknown";
+            h.name.setText(nameStr);
+            String detail = u.getContactInfo() != null && u.getContactInfo().getEmail() != null ? u.getContactInfo().getEmail() : "";
+            h.detail.setText(detail);
+
+            // PFP Logic
+            String initial = nameStr.isEmpty() ? "?" : nameStr.substring(0, 1).toUpperCase();
+            h.initial.setText(initial);
+
+            if (u.getAvatarUrl() != null && !u.getAvatarUrl().isEmpty()) {
+                com.bumptech.glide.Glide.with(h.itemView.getContext())
+                        .load(u.getAvatarUrl()).circleCrop().into(h.avatar);
+            } else {
+                com.bumptech.glide.Glide.with(h.itemView.getContext()).clear(h.avatar);
+                h.avatar.setImageDrawable(null);
+            }
+
+            h.action.setOnClickListener(v -> {
+                Intent intent = new Intent(AdminBrowseProfilesActivity.this, UserProfileEditViewActivity.class);
+                intent.putExtra("userId", u.getId());
+                intent.putExtra("isAdminView", true);
+                startActivity(intent);
+            });
+        }
+
+        @Override
+        public int getItemCount() { return displayedList.size(); }
+
+        class VH extends RecyclerView.ViewHolder {
+            TextView name, detail;
+            MaterialButton action;
+            TextView initial;
+            ImageView avatar;
+
+            VH(@NonNull View itemView) {
+                super(itemView);
+                name = itemView.findViewById(R.id.user_invite_name);
+                detail = itemView.findViewById(R.id.user_invite_detail);
+                action = itemView.findViewById(R.id.user_invite_action);
+                initial = itemView.findViewById(R.id.user_invite_initial);
+                avatar = itemView.findViewById(R.id.user_invite_avatar);
+            }
+        }
     }
 }

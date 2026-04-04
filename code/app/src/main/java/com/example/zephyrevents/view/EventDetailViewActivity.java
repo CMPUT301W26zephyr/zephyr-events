@@ -614,8 +614,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
         boolean isManagingUser = currentUserId != null
                 && (currentUserId.equals(event.getOrganizerId())
                 || (event.getCoOrganizerUserIds() != null && event.getCoOrganizerUserIds().contains(currentUserId)));
-        commentAdapter.setOrganizerContext(event.getOrganizerId(), isManagingUser);
+        commentAdapter.setOrganizerContext(event.getOrganizerId(), isManagingUser || isAdminView);
         commentsRegistration = commentRepository.listenToEventComments(event.getEventId(), new RepositoryCallback<List<EventComment>>() {
+
             @Override
             public void onSuccess(List<EventComment> result) {
                 commentAdapter.submit(result);
@@ -787,7 +788,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         boolean isCoOrganizer = event.getCoOrganizerUserIds() != null
                 && currentUserId != null
                 && event.getCoOrganizerUserIds().contains(currentUserId);
-        boolean isManagingUser = isOrganizer || isCoOrganizer;
+        boolean isManagingUser = (isOrganizer || isCoOrganizer) && !isAdminView;
 
         TextView badgePrivate = findViewById(R.id.badge_private_event);
         if (badgePrivate != null) {

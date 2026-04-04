@@ -160,24 +160,28 @@ public class UserProfileViewFragment extends Fragment {
     }
 
     private void showPasswordDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Enter Admin Password");
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_notify_message, null);
+        com.google.android.material.textfield.TextInputEditText input = dialogView.findViewById(R.id.et_notify_message);
 
-        final EditText input = new EditText(requireContext());
-        builder.setView(input);
+        input.setHint("Enter admin password");
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            String password = input.getText().toString();
+        androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Admin Authentication")
+                .setView(dialogView)
+                .setPositiveButton("Enter", (d, which) -> {
+                    String password = input.getText().toString();
+                    if (password.equals("1324")) {
+                        openAdminHomeFragment();
+                    } else {
+                        Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
 
-            if (password.equals("1324")) {
-                openAdminHomeFragment();
-            } else {
-                Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
     }
 
     private void openAdminHomeFragment() {

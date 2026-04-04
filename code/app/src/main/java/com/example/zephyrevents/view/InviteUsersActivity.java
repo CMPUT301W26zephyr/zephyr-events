@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -186,6 +187,14 @@ public class InviteUsersActivity extends AppCompatActivity {
             }
             h.detail.setText(detail);
 
+            if (u.getAvatarUrl() != null && !u.getAvatarUrl().isEmpty()) {
+                com.bumptech.glide.Glide.with(h.itemView.getContext())
+                        .load(u.getAvatarUrl()).circleCrop().into(h.avatar);
+            } else {
+                com.bumptech.glide.Glide.with(h.itemView.getContext()).clear(h.avatar);
+                h.avatar.setImageDrawable(null);
+            }
+
             if (event == null) {
                 h.action.setEnabled(false);
                 return;
@@ -249,12 +258,16 @@ public class InviteUsersActivity extends AppCompatActivity {
             final TextView name;
             final TextView detail;
             final MaterialButton action;
+            TextView initial;
+            ImageView avatar;
 
             VH(@NonNull View itemView) {
                 super(itemView);
                 name = itemView.findViewById(R.id.user_invite_name);
                 detail = itemView.findViewById(R.id.user_invite_detail);
                 action = itemView.findViewById(R.id.user_invite_action);
+                initial = itemView.findViewById(R.id.user_invite_initial);
+                avatar = itemView.findViewById(R.id.user_invite_avatar);
             }
         }
     }

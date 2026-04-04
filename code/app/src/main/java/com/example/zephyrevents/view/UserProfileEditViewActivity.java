@@ -71,13 +71,15 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
             toolbarTitle.setText(isAdminView ? "Profile" : "Edit Profile");
         }
 
-        //  Hide top bar buttons in admin mode
         if (isAdminView) {
             View backBtn = findViewById(R.id.toolbar_back);
             View closeBtn = findViewById(R.id.btn_cancel);
 
-            if (backBtn != null) backBtn.setVisibility(View.GONE);
-            if (closeBtn != null) closeBtn.setVisibility(View.GONE);
+            if (backBtn != null) backBtn.setVisibility(View.GONE); // No back button
+            if (closeBtn != null) {
+                closeBtn.setVisibility(View.VISIBLE);
+                closeBtn.setOnClickListener(v -> finish());
+            }
         } else {
             // Normal user → enable navigation
             View backBtn = findViewById(R.id.toolbar_back);

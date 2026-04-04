@@ -188,26 +188,12 @@
                     android:id="@+id/rowAdmin"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:background="@color/white"
+                    android:paddingHorizontal="12dp"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true"
-                    android:paddingHorizontal="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/light_grey"
-                        android:text="I am Admin"
-                        android:padding="5dp"
-                        android:textColor="@color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.567" />
+                    android:focusable="true">
+                    <ImageView android:id="@+id/iconAdmin" android:layout_width="20dp" android:layout_height="20dp" app:srcCompat="@drawable/ic_person" app:tint="@color/primary_red" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:text="Enter Admin Mode" android:textColor="@color/primary_red" android:textSize="14sp" app:layout_constraintStart_toEndOf="@id/iconAdmin" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </LinearLayout>

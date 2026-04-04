@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -35,7 +36,10 @@ public class AdminBrowseImageActivity extends AppCompatActivity {
         windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-        findViewById(R.id.button_back2).setOnClickListener(v -> finish());
+        TextView title = findViewById(R.id.toolbar_title);
+        if (title != null) title.setText("Browse Images");
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
         gridLayout = findViewById(R.id.image_grid_preview);
 
