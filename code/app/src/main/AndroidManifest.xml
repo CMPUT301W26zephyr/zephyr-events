@@ -54,6 +54,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".view.PublicUserProfileActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".view.OrganizerEventAddEditView"
             android:exported="true" />
 
