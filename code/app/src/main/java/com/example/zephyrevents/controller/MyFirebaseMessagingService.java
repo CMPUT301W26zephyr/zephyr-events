@@ -14,7 +14,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle();
             String body = remoteMessage.getNotification().getBody();
-            if (title == null) title = "Zephyr Events";
+            if (title == null) title = "Lottofy";
 
             String eventId = "";
             if (remoteMessage.getData().containsKey("eventId")) {

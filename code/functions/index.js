@@ -27,7 +27,7 @@ exports.sendPushNotification = onDocumentCreated("notifications/{notificationId}
     // Use 'notification' payload so OS handles the banner
     const payload = {
         notification: {
-            title: "Zephyr Events",
+            title: "Lottofy",
             body: text,
         },
         data: {
