@@ -21,7 +21,7 @@ import com.example.zephyrevents.repository.ImageRepository;
 /**
  * Singleton controller managing event data and waitlist.
  * NOTE: Currently waitlisting is mocked/simulated in local memory. Singleton only needed due to this.
- * Acts as a centralized access pointe
+ * Acts as a centralized access pointe.
  */
 public class EventController {
 
