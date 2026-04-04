@@ -5,7 +5,7 @@
             <solid android:color="@color/header_pink"/>
         </shape>
     </item>
-    <item android:top="90dp">
+    <item android:top="68dp">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white"/>
             <corners android:topLeftRadius="60dp" android:topRightRadius="60dp"/>

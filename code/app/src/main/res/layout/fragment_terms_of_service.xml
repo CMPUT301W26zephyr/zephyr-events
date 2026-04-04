@@ -52,7 +52,7 @@
         style="@style/Button.Filled"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="48dp"
-        android:text="I agree"
+        android:text="@string/tos_i_agree"
         app:layout_constraintTop_toBottomOf="@id/tos_scroll"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

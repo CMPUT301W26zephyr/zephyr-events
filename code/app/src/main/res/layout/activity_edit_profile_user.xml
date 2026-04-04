@@ -88,46 +88,6 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
-            android:id="@+id/lblCountry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Country/Region"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/etEmail"
-            app:layout_constraintStart_toStartOf="parent"/>
-        <FrameLayout
-            android:id="@+id/countryContainer"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_card_white"
-            app:layout_constraintTop_toBottomOf="@id/lblCountry"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <Spinner
-                android:id="@+id/spCountry"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:paddingStart="12dp"
-                android:paddingEnd="40dp"/>
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="12dp"
-                android:src="@drawable/outline_arrow_drop_down_24"
-                app:tint="@color/black"
-                android:clickable="false"
-                android:focusable="false"/>
-        </FrameLayout>
-
-        <TextView
             android:id="@+id/lblPhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -136,7 +96,7 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/countryContainer"
+            app:layout_constraintTop_toBottomOf="@id/etEmail"
             app:layout_constraintStart_toStartOf="parent"/>
         <EditText
             android:id="@+id/etPhone"

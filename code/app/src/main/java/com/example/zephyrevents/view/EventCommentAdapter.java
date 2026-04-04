@@ -1,9 +1,11 @@
 package com.example.zephyrevents.view;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -12,8 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.model.EventComment;
+import com.example.zephyrevents.model.User;
+import com.example.zephyrevents.repository.RepositoryCallback;
+import com.example.zephyrevents.repository.UserRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,14 +33,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Top-level comments with expandable reply threads; organizer moderation via overflow menu.
+ * Top-level comments with expandable reply threads. Organizers/admins may delete any comment;
+ * other users may delete only their own. Host badge = primary organizer or co-organizer for this event.
  */
 public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapter.VH> {
 
     public interface CommentRowListener {
         void onReply(@NonNull EventComment parentComment);
 
-        /** User chose Delete from the overflow menu; activity should confirm then delete. */
         void onDeleteRequested(@NonNull EventComment comment);
     }
 
@@ -43,22 +49,142 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
     private final Map<String, List<EventComment>> repliesByParent = new HashMap<>();
     private final Set<String> expandedThreadIds = new HashSet<>();
 
-    @Nullable
-    private String organizerUserId;
+    private final Set<String> eventHostUserIds = new HashSet<>();
     private boolean canModerate;
+    @Nullable
+    private String currentUserId;
+
+    private final UserRepository userRepository = new UserRepository();
+    /** userId → resolved avatar URL (empty string = no photo). */
+    private final Map<String, String> resolvedAvatarByUserId = new HashMap<>();
+    private final Set<String> avatarLoadInFlight = new HashSet<>();
 
     public EventCommentAdapter(@NonNull CommentRowListener rowListener) {
         this.rowListener = rowListener;
     }
 
     /**
-     * @param organizerUserId event organizer id (for Creator badge)
-     * @param canModerate     true if current user may delete any comment (organizer)
+     * @param organizerUserId     primary organizer (creator badge + profile consistency)
+     * @param coOrganizerUserIds  co-organizers for this event (also get creator badge)
+     * @param canModerate         organizer/co-org/admin may delete any comment
+     * @param currentUserId       signed-in user id for delete-own
      */
-    public void setOrganizerContext(@Nullable String organizerUserId, boolean canModerate) {
-        this.organizerUserId = organizerUserId;
+    public void setOrganizerContext(@Nullable String organizerUserId, @Nullable List<String> coOrganizerUserIds,
+                                    boolean canModerate, @Nullable String currentUserId) {
+        eventHostUserIds.clear();
+        if (organizerUserId != null) {
+            eventHostUserIds.add(organizerUserId);
+        }
+        if (coOrganizerUserIds != null) {
+            for (String id : coOrganizerUserIds) {
+                if (id != null) {
+                    eventHostUserIds.add(id);
+                }
+            }
+        }
         this.canModerate = canModerate;
+        this.currentUserId = currentUserId;
         notifyDataSetChanged();
+    }
+
+    private boolean canShowDeleteFor(@Nullable EventComment c) {
+        if (c == null) return false;
+        if (canModerate) return true;
+        if (currentUserId == null || c.getUserId() == null) return false;
+        return currentUserId.equals(c.getUserId());
+    }
+
+    private boolean isHostComment(@Nullable EventComment c) {
+        return c != null && c.getUserId() != null && eventHostUserIds.contains(c.getUserId());
+    }
+
+    private static void bindOverflowMenu(@NonNull ImageButton overflow, @NonNull EventComment comment,
+                                         @NonNull EventCommentAdapter adapter, @NonNull CommentRowListener listener) {
+        if (adapter.canShowDeleteFor(comment)) {
+            overflow.setVisibility(View.VISIBLE);
+            overflow.setOnClickListener(v -> {
+                PopupMenu menu = new PopupMenu(overflow.getContext(), overflow);
+                menu.getMenu().add(0, 0, 0, R.string.delete_comment);
+                menu.setOnMenuItemClickListener(item -> {
+                    if (item.getItemId() == 0) {
+                        listener.onDeleteRequested(comment);
+                        return true;
+                    }
+                    return false;
+                });
+                menu.show();
+            });
+        } else {
+            overflow.setVisibility(View.GONE);
+            overflow.setOnClickListener(null);
+        }
+    }
+
+    private void bindAvatar(@NonNull ImageView imageView, @NonNull TextView letterView,
+                            @NonNull EventComment comment, int rootRowToRefreshOnResolve) {
+        String name = comment.getAuthorName() != null ? comment.getAuthorName() : letterView.getContext().getString(R.string.placeholder);
+        String initial = name.isEmpty() ? "?" : name.substring(0, 1).toUpperCase(Locale.getDefault());
+        letterView.setText(initial);
+
+        String fromDoc = comment.getAuthorAvatarUrl();
+        if (!TextUtils.isEmpty(fromDoc)) {
+            letterView.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
+            Glide.with(imageView)
+                    .load(fromDoc.trim())
+                    .circleCrop()
+                    .placeholder(R.drawable.bg_comment_avatar)
+                    .error(R.drawable.bg_comment_avatar)
+                    .into(imageView);
+            return;
+        }
+
+        String uid = comment.getUserId();
+        if (uid != null && resolvedAvatarByUserId.containsKey(uid)) {
+            String cached = resolvedAvatarByUserId.get(uid);
+            if (!TextUtils.isEmpty(cached)) {
+                letterView.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                Glide.with(imageView)
+                        .load(cached)
+                        .circleCrop()
+                        .placeholder(R.drawable.bg_comment_avatar)
+                        .error(R.drawable.bg_comment_avatar)
+                        .into(imageView);
+            } else {
+                imageView.setVisibility(View.GONE);
+                letterView.setVisibility(View.VISIBLE);
+                Glide.with(imageView).clear(imageView);
+            }
+            return;
+        }
+
+        if (uid != null && avatarLoadInFlight.add(uid)) {
+            userRepository.getUserById(uid, new RepositoryCallback<User>() {
+                @Override
+                public void onSuccess(User user) {
+                    String url = user != null && user.getAvatarUrl() != null ? user.getAvatarUrl().trim() : "";
+                    resolvedAvatarByUserId.put(uid, url);
+                    avatarLoadInFlight.remove(uid);
+                    if (rootRowToRefreshOnResolve != RecyclerView.NO_POSITION) {
+                        EventCommentAdapter.this.notifyItemChanged(rootRowToRefreshOnResolve);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    resolvedAvatarByUserId.put(uid, "");
+                    avatarLoadInFlight.remove(uid);
+                    if (rootRowToRefreshOnResolve != RecyclerView.NO_POSITION) {
+                        EventCommentAdapter.this.notifyItemChanged(rootRowToRefreshOnResolve);
+                    }
+                }
+            });
+        }
+
+        imageView.setVisibility(View.GONE);
+        letterView.setVisibility(View.VISIBLE);
+        Glide.with(imageView).clear(imageView);
     }
 
     public void submit(@Nullable List<EventComment> flat) {
@@ -82,11 +208,6 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
         notifyDataSetChanged();
     }
 
-    private boolean isCreator(@Nullable EventComment c) {
-        if (c == null || organizerUserId == null || c.getUserId() == null) return false;
-        return organizerUserId.equals(c.getUserId());
-    }
-
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -106,6 +227,7 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
     }
 
     static final class VH extends RecyclerView.ViewHolder {
+        private final ImageView avatarImage;
         private final TextView avatarLetter;
         private final TextView author;
         private final TextView creatorBadge;
@@ -118,6 +240,7 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
 
         VH(@NonNull View itemView) {
             super(itemView);
+            avatarImage = itemView.findViewById(R.id.comment_avatar_image);
             avatarLetter = itemView.findViewById(R.id.comment_avatar_letter);
             author = itemView.findViewById(R.id.comment_author);
             creatorBadge = itemView.findViewById(R.id.comment_creator_badge);
@@ -133,10 +256,11 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
             String name = root.getAuthorName() != null ? root.getAuthorName() : itemView.getContext().getString(R.string.placeholder);
             author.setText(name);
             body.setText(root.getBody() != null ? root.getBody() : "");
-            String initial = name.isEmpty() ? "?" : name.substring(0, 1).toUpperCase(Locale.getDefault());
-            avatarLetter.setText(initial);
 
-            creatorBadge.setVisibility(adapter.isCreator(root) ? View.VISIBLE : View.GONE);
+            int pos = getBindingAdapterPosition();
+            adapter.bindAvatar(avatarImage, avatarLetter, root, pos);
+
+            creatorBadge.setVisibility(adapter.isHostComment(root) ? View.VISIBLE : View.GONE);
 
             if (root.getCreatedAt() > 0) {
                 time.setText(new SimpleDateFormat("M-d", Locale.getDefault()).format(new Date(root.getCreatedAt())));
@@ -146,24 +270,7 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
 
             reply.setOnClickListener(v -> listener.onReply(root));
 
-            if (adapter.canModerate) {
-                overflow.setVisibility(View.VISIBLE);
-                overflow.setOnClickListener(v -> {
-                    PopupMenu menu = new PopupMenu(itemView.getContext(), overflow);
-                    menu.getMenu().add(0, 0, 0, R.string.delete_comment);
-                    menu.setOnMenuItemClickListener(item -> {
-                        if (item.getItemId() == 0) {
-                            listener.onDeleteRequested(root);
-                            return true;
-                        }
-                        return false;
-                    });
-                    menu.show();
-                });
-            } else {
-                overflow.setVisibility(View.GONE);
-                overflow.setOnClickListener(null);
-            }
+            bindOverflowMenu(overflow, root, adapter, listener);
 
             String id = root.getId();
             List<EventComment> replies = id != null ? adapter.repliesByParent.getOrDefault(id, new ArrayList<>()) : new ArrayList<>();
@@ -192,9 +299,9 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
                     } else {
                         adapter.expandedThreadIds.add(id);
                     }
-                    int pos = getBindingAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION) {
-                        adapter.notifyItemChanged(pos);
+                    int p = getBindingAdapterPosition();
+                    if (p != RecyclerView.NO_POSITION) {
+                        adapter.notifyItemChanged(p);
                     }
                 });
 
@@ -202,18 +309,21 @@ public class EventCommentAdapter extends RecyclerView.Adapter<EventCommentAdapte
                 if (expanded) {
                     repliesContainer.setVisibility(View.VISIBLE);
                     LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
+                    int rootPos = getBindingAdapterPosition();
                     for (EventComment r : replies) {
                         View row = inflater.inflate(R.layout.item_event_comment_reply, repliesContainer, false);
+                        ImageView rImg = row.findViewById(R.id.reply_avatar_image);
                         TextView ra = row.findViewById(R.id.reply_avatar_letter);
                         TextView rn = row.findViewById(R.id.reply_author);
                         TextView rb = row.findViewById(R.id.reply_body);
                         TextView creator = row.findViewById(R.id.reply_creator_badge);
+                        ImageButton replyOverflow = row.findViewById(R.id.reply_overflow);
                         String rnStr = r.getAuthorName() != null ? r.getAuthorName() : "?";
                         rn.setText(rnStr);
                         rb.setText(r.getBody() != null ? r.getBody() : "");
-                        String ri = rnStr.isEmpty() ? "?" : rnStr.substring(0, 1).toUpperCase(Locale.getDefault());
-                        ra.setText(ri);
-                        creator.setVisibility(adapter.isCreator(r) ? View.VISIBLE : View.GONE);
+                        adapter.bindAvatar(rImg, ra, r, rootPos);
+                        creator.setVisibility(adapter.isHostComment(r) ? View.VISIBLE : View.GONE);
+                        bindOverflowMenu(replyOverflow, r, adapter, listener);
                         repliesContainer.addView(row);
                     }
                 } else {
