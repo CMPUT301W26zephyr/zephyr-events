@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Query;
 
 
 /**
@@ -180,6 +181,7 @@ public class EventRepository {
      */
     public void getAllEvents(RepositoryCallback<List<Event>> callback){
         db.collection(Collections.EVENTS)
+                .orderBy("time.endTime", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -299,6 +301,32 @@ public class EventRepository {
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error getting events", e);
                         callback.onFailure(e);
+                    }
+                });
+    }
+
+    /**
+     * Returns document pertaining to a specific event with a real-time snapshot listener
+     *
+     * @param id
+     * @param callback
+     * @return A listener from firebase
+     */
+    public com.google.firebase.firestore.ListenerRegistration listenToEventById(String id, RepositoryCallback<Event> callback) {
+        if (id == null || id.trim().isEmpty()) {
+            callback.onFailure(new IllegalArgumentException("invalid event id"));
+            return null;
+        }
+        return db.collection(Collections.EVENTS).document(id)
+                .addSnapshotListener((doc, e) -> {
+                    if (e != null) {
+                        callback.onFailure(e);
+                        return;
+                    }
+                    if (doc != null && doc.exists()) {
+                        callback.onSuccess(doc.toObject(Event.class));
+                    } else {
+                        callback.onFailure(new IllegalArgumentException("document returned doesn't exist"));
                     }
                 });
     }

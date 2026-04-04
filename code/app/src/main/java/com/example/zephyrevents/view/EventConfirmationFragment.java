@@ -115,7 +115,10 @@ public class EventConfirmationFragment extends Fragment {
                         newEvent.setOrganizerId(viewModel.organizerId); // Preserve owner
                         newEvent.setCurrentApplicants(viewModel.originalApplicants); // Preserve users
                     } else {
-                        newEvent.setEventId(java.util.UUID.randomUUID().toString());
+                        if (viewModel.eventId == null || viewModel.eventId.isEmpty()) {
+                            viewModel.eventId = java.util.UUID.randomUUID().toString();
+                        }
+                        newEvent.setEventId(viewModel.eventId);
                         newEvent.setOrganizerId(new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId());
                     }
 
@@ -145,6 +148,18 @@ public class EventConfirmationFragment extends Fragment {
 
                     com.example.zephyrevents.model.Location eventLoc = new com.example.zephyrevents.model.Location();
                     eventLoc.setLocationString(finalLocationStr);
+                    eventLoc.setRequiresGeolocation(viewModel.requireGeolocation);
+                    eventLoc.setGeolocationRadiusKm(viewModel.geolocationRadiusKm);
+
+                    if (viewModel.eventLat != 0 || viewModel.eventLng != 0) {
+                        eventLoc.setCoordinate(
+                                new com.example.zephyrevents.model.Coordinate(
+                                        viewModel.eventLat,
+                                        viewModel.eventLng
+                                )
+                        );
+                    }
+
                     newEvent.setLocation(eventLoc);
 
                     SimpleDateFormat sdfFull = new SimpleDateFormat("MMM d, yyyy, h:mm a", java.util.Locale.getDefault());

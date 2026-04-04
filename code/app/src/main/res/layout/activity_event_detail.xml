@@ -320,10 +320,10 @@
                             android:paddingVertical="12dp">
 
                             <ImageView
+                                android:id = "@+id/organizer_avatar"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:src="@drawable/ic_person"
-                                app:tint="#757575" />
+                                android:src="@drawable/ic_person" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -784,4 +784,75 @@
                 app:backgroundTint="@null" />
         </LinearLayout>
     </LinearLayout>
+
+    <!-- Centered waitlist join/leave feedback: dimmed scrim + card (above all content) -->
+    <FrameLayout
+        android:id="@+id/waitlist_center_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:elevation="40dp"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:id="@+id/waitlist_overlay_scrim"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#BF000000" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/waitlist_overlay_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="36dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="16dp"
+            app:strokeColor="@color/light_stroke"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:minWidth="260dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="28dp"
+                android:paddingVertical="26dp">
+
+                <ImageView
+                    android:id="@+id/waitlist_overlay_icon"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_check_circle" />
+
+                <TextView
+                    android:id="@+id/waitlist_overlay_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/waitlist_overlay_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:textColor="#616161"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

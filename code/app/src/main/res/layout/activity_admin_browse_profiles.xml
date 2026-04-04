@@ -1,164 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey"
-    >
+    android:background="#FAFAFA">
 
-    <!-- Toolbar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingVertical="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    <include layout="@layout/layout_top_bar" android:id="@+id/top_bar" />
 
-        <LinearLayout
-            android:id="@+id/top_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:paddingTop="32dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+    <EditText
+        android:id="@+id/etSearchBar"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_card_white"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="8dp"
+        android:hint="Search profiles"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintTop_toBottomOf="@id/top_bar" />
 
-            <ImageButton
-                android:id="@+id/button_back2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
-                android:src="@drawable/ic_arrow_back"
-                app:tint="@color/black" />
-
-            <TextView
-                android:id="@+id/toolbar_title2"
-                android:layout_width="292dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Browse Profiles"
-                android:textColor="@color/primary_red"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <EditText
-            android:id="@+id/etSearchBar"
-            android:layout_width="0dp"
-            android:layout_height="58dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_card_white"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
-            android:hint="Search events"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/top_bar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- FIXED ListView -->
-    <ListView
-        android:id="@+id/event_list"
-        android:layout_width="0dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_profiles"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/admin_browse_user_item" />
-
-    <!-- Bottom Nav -->
-    <LinearLayout
-        android:id="@+id/bottom_nav"
-        android:layout_width="0dp"
-        android:layout_height="58dp"
-        android:background="#FAFAFA"
-        android:elevation="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageButton
-            android:id="@+id/nav_home"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="18dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_home"
-            app:tint="#757575" />
-
-        <ImageButton
-            android:id="@+id/nav_my_events"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="18dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_confirmation_number"
-            app:tint="#757575" />
-
-        <ImageButton
-            android:id="@+id/nav_create_event"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="18dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_add_box"
-            app:tint="#757575" />
-
-        <ImageButton
-            android:id="@+id/nav_scan_qr"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="18dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_qr_code_scanner"
-            app:tint="#757575" />
-
-        <ImageButton
-            android:id="@+id/nav_profile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-
-            android:padding="18dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_person"
-            app:tint="#757575" />
-
-    </LinearLayout>
-
+        android:paddingVertical="8dp"
+        app:layout_constraintTop_toBottomOf="@id/etSearchBar"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

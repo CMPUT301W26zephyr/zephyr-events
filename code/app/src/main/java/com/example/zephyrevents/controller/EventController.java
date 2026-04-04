@@ -173,12 +173,10 @@ public class EventController {
      */
     public void addToWaitlist(String eventKey, String userId) {
         if (!isOnWaitlist(eventKey, userId)) {
-            // TODO: Passing 0.0 for lat/lng for now until map integration is ready
             WaitlistEntry entry = new WaitlistEntry(userId, eventKey, 0.0, 0.0, Status.WAITLISTED);
             mockLotteries.add(entry);
         }
     }
-
     /**
      * Removes a user from mock waitlist based on ID.
      * @param eventKey  event ID
@@ -223,5 +221,16 @@ public class EventController {
      * @return  Currently returns false (placeholder).
      */
     public boolean isInvitedEvent(String eventKey) { return false; }
+
+    /**
+     * Returns document pertaining to a specific event with a real-time snapshot listener
+     *
+     * @param eventId
+     * @param callback
+     * @return A listener from firebase
+     */
+    public com.google.firebase.firestore.ListenerRegistration listenToEventById(String eventId, RepositoryCallback<Event> callback) {
+        return eventRepository.listenToEventById(eventId, callback);
+    }
 
 }

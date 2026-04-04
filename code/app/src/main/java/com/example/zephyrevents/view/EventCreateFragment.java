@@ -1,13 +1,12 @@
 package com.example.zephyrevents.view;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
@@ -49,6 +48,11 @@ import androidx.appcompat.app.AlertDialog;
 public class EventCreateFragment extends Fragment {
 
     private EventViewModel viewModel;
+
+    // Geolocation
+    private double selectedRadiusMeters = 500;
+    private org.osmdroid.events.MapEventsReceiver receiver;
+
 
     // Use Calendars to precisely track exact milliseconds for validation
     private final Calendar regStartCal = Calendar.getInstance();
@@ -165,6 +169,7 @@ public class EventCreateFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_event_create, container, false);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -179,7 +184,101 @@ public class EventCreateFragment extends Fragment {
 
         EditText inputLocation = view.findViewById(R.id.input_location);
         EditText inputAddress = view.findViewById(R.id.input_address);
+        Button btnFindAddress = view.findViewById(R.id.btn_find_address);
+
         SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
+
+        org.osmdroid.views.MapView mapView = view.findViewById(R.id.map_view);
+        //mapView.setVisibility(switchGeo.isChecked() ? View.VISIBLE : View.GONE);
+
+        // The following map setup, radius text input, tap receiver, and address geocoding is from Anthropic, Claude (claude.ai), "Android osmdroid map with radius input, tap-to-place circle overlay, and address geocoding", 2025-03-30
+        EditText inputRadius = view.findViewById(R.id.input_radius);
+        inputRadius.setText("500");
+
+        inputRadius.addTextChangedListener(new android.text.TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void afterTextChanged(android.text.Editable s) {
+                String val = s.toString().trim();
+                if (!val.isEmpty()) {
+                    selectedRadiusMeters = Double.parseDouble(val);
+                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
+                    if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
+                        org.osmdroid.util.GeoPoint last = new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng);
+                        mapView.getOverlays().clear();
+                        mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+                        org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+                        circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(last, selectedRadiusMeters));
+                        circle.setFillColor(0x33E53935);
+                        circle.setStrokeColor(0x99E53935);
+                        circle.setStrokeWidth(2f);
+                        mapView.getOverlays().add(circle);
+                        mapView.invalidate();
+                    }
+                }
+            }
+        });
+
+        switchGeo.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            View geoControls = view.findViewById(R.id.geo_controls);
+            View mapFrame = view.findViewById(R.id.map_frame);
+            mapFrame.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            geoControls.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        });
+
+        org.osmdroid.config.Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
+
+        mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK);
+        mapView.setMultiTouchControls(true);
+        mapView.getController().setZoom(14.0);
+        mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(53.5461, -113.4938));
+        View mapTouchInterceptor = view.findViewById(R.id.map_touch_interceptor);
+        mapTouchInterceptor.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                case android.view.MotionEvent.ACTION_MOVE:
+                    mapView.getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    mapView.getParent().requestDisallowInterceptTouchEvent(false);
+                    break;
+            }
+            return false;
+        });
+
+        btnFindAddress.setOnClickListener(v -> {
+            moveMapToTypedAddress(inputAddress.getText().toString().trim(), mapView);
+        });
+        receiver = new org.osmdroid.events.MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(org.osmdroid.util.GeoPoint p) {
+                mapView.getOverlays().clear();
+                mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+
+                org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+                circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(p, selectedRadiusMeters));
+                circle.setFillColor(0x33E53935);
+                circle.setStrokeColor(0x99E53935);
+                circle.setStrokeWidth(2f);
+                mapView.getOverlays().add(circle);
+
+                viewModel.eventLat = p.getLatitude();
+                viewModel.eventLng = p.getLongitude();
+
+                mapView.invalidate();
+                return true;
+            }
+
+            @Override
+            public boolean longPressHelper(org.osmdroid.util.GeoPoint p) { return false; }
+        };
+
+        mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+        // Restore pin if returning from confirmation
+        if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
+            mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng));
+        }
 
         textRegPeriod = view.findViewById(R.id.text_reg_period);
         textEvent = view.findViewById(R.id.text_event_date);
@@ -202,24 +301,31 @@ public class EventCreateFragment extends Fragment {
         Button btnDelete = view.findViewById(R.id.btn_delete_event);
         MaterialButtonToggleGroup toggleVisibility = view.findViewById(R.id.toggle_event_visibility);
         View privateWarning = view.findViewById(R.id.private_event_warning);
+        View eventFormBottom = view.findViewById(R.id.event_form_bottom_actions);
         Button btnInviteEntrants = view.findViewById(R.id.btn_invite_entrants_private);
         Button btnInviteCoorg = view.findViewById(R.id.btn_invite_coorganizer);
         View dividerInvites = view.findViewById(R.id.divider_event_invites);
         View rowInviteButtons = view.findViewById(R.id.row_invite_buttons);
         TextView labelInvites = view.findViewById(R.id.label_event_form_invites);
+        TextView textInviteHint = view.findViewById(R.id.text_invite_create_hint);
 
         toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
         privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
+        Runnable setupInvites = () -> updateInviteButtons(eventFormBottom, dividerInvites, labelInvites, rowInviteButtons,
+                btnInviteEntrants, btnInviteCoorg, textInviteHint, btnDelete);
         toggleVisibility.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) return;
             viewModel.privateEvent = checkedId == R.id.btn_visibility_private;
             privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
-            updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
+            setupInvites.run();
         });
 
-        Runnable setupInvites = () -> updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
         btnInviteEntrants.setOnClickListener(v -> {
             if (viewModel.eventId == null) return;
+            if (!viewModel.isEditMode) {
+                Toast.makeText(requireContext(), R.string.invite_after_publish_hint, Toast.LENGTH_LONG).show();
+                return;
+            }
             Intent i = new Intent(requireContext(), InviteUsersActivity.class);
             i.putExtra(InviteUsersActivity.EXTRA_EVENT_ID, viewModel.eventId);
             i.putExtra(InviteUsersActivity.EXTRA_MODE, InviteUsersActivity.MODE_PRIVATE_WAITLIST);
@@ -227,12 +333,15 @@ public class EventCreateFragment extends Fragment {
         });
         btnInviteCoorg.setOnClickListener(v -> {
             if (viewModel.eventId == null) return;
+            if (!viewModel.isEditMode) {
+                Toast.makeText(requireContext(), R.string.invite_after_publish_hint, Toast.LENGTH_LONG).show();
+                return;
+            }
             Intent i = new Intent(requireContext(), InviteUsersActivity.class);
             i.putExtra(InviteUsersActivity.EXTRA_EVENT_ID, viewModel.eventId);
             i.putExtra(InviteUsersActivity.EXTRA_MODE, InviteUsersActivity.MODE_CO_ORG);
             startActivity(i);
         });
-        setupInvites.run();
 
         eventImgPreview = view.findViewById(R.id.event_image_preview);
         View eventImgContainer = view.findViewById(R.id.event_image_container);
@@ -323,7 +432,7 @@ public class EventCreateFragment extends Fragment {
 
                             toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
                             privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
-                            updateInviteButtons(dividerInvites, labelInvites, rowInviteButtons, btnInviteEntrants, btnInviteCoorg);
+                            setupInvites.run();
 
                             if (e.getImageUrl() != null && !e.getImageUrl().isEmpty()) {
                                 viewModel.existingImgUrl = e.getImageUrl();
@@ -343,6 +452,8 @@ public class EventCreateFragment extends Fragment {
             btnDelete.setVisibility(View.GONE);
         }
 
+        setupInvites.run();
+
         // 3. RESTORE EXISTING VIEWMODEL DATA
         inputTitle.setText(viewModel.title);
         inputPrice.setText(viewModel.price);
@@ -352,7 +463,10 @@ public class EventCreateFragment extends Fragment {
         inputLocation.setText(viewModel.location);
         inputAddress.setText(viewModel.address);
         switchGeo.setChecked(viewModel.requireGeolocation);
-
+        View geoControls = view.findViewById(R.id.geo_controls);
+        View mapFrame = view.findViewById(R.id.map_frame);
+        mapFrame.setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
+        geoControls.setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
         // 4. SETUP CALENDARS AND TIME PICKERS
         long today = System.currentTimeMillis() - 1000;
         if (!viewModel.isEditMode) {
@@ -381,6 +495,11 @@ public class EventCreateFragment extends Fragment {
                         isValid = false;
                     }
 
+                    if (switchGeo.isChecked() && (viewModel.eventLat == 0 || viewModel.eventLng == 0)) {
+                        Toast.makeText(requireContext(), "Please select a location on the map.", Toast.LENGTH_SHORT).show();
+                        isValid = false;
+                    }
+
                     if (isValid) {
                         viewModel.title = inputTitle.getText().toString().trim();
                         viewModel.price = inputPrice.getText().toString().trim();
@@ -390,6 +509,11 @@ public class EventCreateFragment extends Fragment {
                         viewModel.location = inputLocation.getText().toString().trim();
                         viewModel.address = inputAddress.getText().toString().trim();
                         viewModel.requireGeolocation = switchGeo.isChecked();
+
+                        // TODO: Capture the event venue's lat/lng here after the organizer enters
+                        // the address or selects a map pin, then carry those coordinates forward
+                        // so EventConfirmationFragment can store them in Event.location.coordinate.
+
 
                         // Save the full formatted strings (Date + Time) to the ViewModel
                         viewModel.registrationPeriod = sdfFull.format(regStartCal.getTime()) + " - " + sdfFull.format(regEndCal.getTime());
@@ -414,6 +538,7 @@ public class EventCreateFragment extends Fragment {
                     viewModel.privateEvent = e.isPrivateEvent();
                     viewModel.coOrganizerUserIds = new ArrayList<>(e.getCoOrganizerUserIds());
                     viewModel.pendingPrivateWaitlistInviteUserIds = new ArrayList<>(e.getPendingPrivateWaitlistInviteUserIds());
+                    refreshInviteSectionFromView();
                 }
 
                 @Override
@@ -423,18 +548,68 @@ public class EventCreateFragment extends Fragment {
         }
     }
 
-    private void updateInviteButtons(View dividerInvites, TextView labelInvites, View rowInviteButtons,
-                                     Button btnInviteEntrants, Button btnInviteCoorg) {
-        boolean edit = viewModel.isEditMode && viewModel.eventId != null;
-        boolean showCoorg = edit;
-        boolean showEntrants = edit && viewModel.privateEvent;
-        btnInviteCoorg.setVisibility(showCoorg ? View.VISIBLE : View.GONE);
-        btnInviteEntrants.setVisibility(showEntrants ? View.VISIBLE : View.GONE);
-        boolean showSection = showCoorg || showEntrants;
-        int sectionVis = showSection ? View.VISIBLE : View.GONE;
-        if (dividerInvites != null) dividerInvites.setVisibility(sectionVis);
-        if (labelInvites != null) labelInvites.setVisibility(sectionVis);
-        if (rowInviteButtons != null) rowInviteButtons.setVisibility(sectionVis);
+    private void refreshInviteSectionFromView() {
+        View root = getView();
+        if (root == null) return;
+        updateInviteButtons(
+                root.findViewById(R.id.event_form_bottom_actions),
+                root.findViewById(R.id.divider_event_invites),
+                (TextView) root.findViewById(R.id.label_event_form_invites),
+                root.findViewById(R.id.row_invite_buttons),
+                root.findViewById(R.id.btn_invite_entrants_private),
+                root.findViewById(R.id.btn_invite_coorganizer),
+                (TextView) root.findViewById(R.id.text_invite_create_hint),
+                root.findViewById(R.id.btn_delete_event));
+    }
+
+    private void updateInviteButtons(View bottomCard, View dividerInvites, TextView labelInvites,
+                                     View rowInviteButtons, Button btnInviteEntrants, Button btnInviteCoorg,
+                                     TextView inviteCreateHint, Button btnDelete) {
+        boolean hasId = viewModel.eventId != null && !viewModel.eventId.isEmpty();
+        boolean showInviteSection;
+        if (viewModel.isEditMode) {
+            showInviteSection = hasId;
+        } else {
+            showInviteSection = hasId && viewModel.privateEvent;
+        }
+
+        boolean showCoorg = showInviteSection && (viewModel.isEditMode || viewModel.privateEvent);
+        boolean showEntrants = showInviteSection && viewModel.privateEvent;
+        boolean canInvite = viewModel.isEditMode;
+
+        if (btnInviteCoorg != null) {
+            btnInviteCoorg.setVisibility(showCoorg ? View.VISIBLE : View.GONE);
+            btnInviteCoorg.setAlpha(canInvite ? 1f : 0.52f);
+        }
+        if (btnInviteEntrants != null) {
+            btnInviteEntrants.setVisibility(showEntrants ? View.VISIBLE : View.GONE);
+            btnInviteEntrants.setAlpha(canInvite ? 1f : 0.52f);
+        }
+
+        int rowVis = (showCoorg || showEntrants) ? View.VISIBLE : View.GONE;
+        if (rowInviteButtons != null) {
+            rowInviteButtons.setVisibility(rowVis);
+        }
+
+        int sectionVis = showInviteSection ? View.VISIBLE : View.GONE;
+        if (dividerInvites != null) {
+            dividerInvites.setVisibility(sectionVis);
+        }
+        if (labelInvites != null) {
+            labelInvites.setVisibility(sectionVis);
+        }
+        if (inviteCreateHint != null) {
+            inviteCreateHint.setVisibility(showInviteSection && !viewModel.isEditMode ? View.VISIBLE : View.GONE);
+        }
+
+        boolean showDelete = viewModel.isEditMode;
+        if (btnDelete != null) {
+            btnDelete.setVisibility(showDelete ? View.VISIBLE : View.GONE);
+        }
+
+        if (bottomCard != null) {
+            bottomCard.setVisibility((showInviteSection || showDelete) ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void setupDateAndTime(CalendarView calView, TimePicker timePicker, Calendar tracker, int type) {
@@ -577,6 +752,54 @@ public class EventCreateFragment extends Fragment {
             } catch (ParseException ex) {
                 return null;
             }
+        }
+    }
+
+    // The following function is from Anthropic, Claude (claude.ai), "Android map function to geocode a typed address and display a radius circle using osmdroid", 2025-03-30
+    private void moveMapToTypedAddress(String addressText, org.osmdroid.views.MapView mapView) {
+        if (addressText == null || addressText.trim().isEmpty()) {
+            Toast.makeText(requireContext(), "Please enter an address.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        android.location.Geocoder geocoder = new android.location.Geocoder(requireContext(), java.util.Locale.getDefault());
+
+        try {
+            java.util.List<android.location.Address> results = geocoder.getFromLocationName(addressText, 1);
+
+            if (results == null || results.isEmpty()) {
+                Toast.makeText(requireContext(), "Address not found.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            android.location.Address result = results.get(0);
+            double lat = result.getLatitude();
+            double lng = result.getLongitude();
+
+            org.osmdroid.util.GeoPoint point = new org.osmdroid.util.GeoPoint(lat, lng);
+
+            mapView.getOverlays().clear();
+            mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+
+
+            org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+            circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(point, selectedRadiusMeters));
+            circle.setFillColor(0x33E53935);
+            circle.setStrokeColor(0x99E53935);
+            circle.setStrokeWidth(2f);
+            mapView.getOverlays().add(circle);
+
+            viewModel.eventLat = lat;
+            viewModel.eventLng = lng;
+
+            mapView.getController().setZoom(16.0);
+            mapView.getController().setCenter(point);
+            mapView.invalidate();
+
+            Toast.makeText(requireContext(), "Address found.", Toast.LENGTH_SHORT).show();
+
+        } catch (java.io.IOException e) {
+            Toast.makeText(requireContext(), "Could not search address.", Toast.LENGTH_SHORT).show();
         }
     }
 }

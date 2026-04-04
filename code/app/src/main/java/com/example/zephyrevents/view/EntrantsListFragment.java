@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.controller.LotteryController;
 import com.example.zephyrevents.controller.NotificationController;
 import com.example.zephyrevents.model.Entrant;
@@ -49,6 +50,8 @@ public class EntrantsListFragment extends Fragment {
     private UserRepository userRepository;
     private NotificationController notificationController;
     private List<WaitlistEntry> currentFilteredList = new ArrayList<>();
+    private com.google.firebase.firestore.ListenerRegistration eventRegistration;
+    private com.google.firebase.firestore.ListenerRegistration waitlistRegistration;
     private Map<String, User> userCache = new HashMap<>();
 
     public static EntrantsListFragment newInstance(int tabIndex, String eventId) {
@@ -175,90 +178,113 @@ public class EntrantsListFragment extends Fragment {
         loadData(recyclerView);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (eventRegistration != null) eventRegistration.remove();
+        if (waitlistRegistration != null) waitlistRegistration.remove();
+    }
+
     private void loadData(RecyclerView recyclerView) {
-        waitlistRepository.getWaitlist(eventId, new RepositoryCallback<List<WaitlistEntry>>() {
+        if (eventRegistration != null) eventRegistration.remove();
+        eventRegistration = EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
             @Override
-            public void onSuccess(List<WaitlistEntry> result) {
-                List<WaitlistEntry> filtered = new ArrayList<>();
-                boolean lotteryHasRun = false;
+            public void onSuccess(Event event) {
+                if (waitlistRegistration != null) waitlistRegistration.remove();
+                waitlistRegistration = waitlistRepository.listenToWaitlist(eventId, new RepositoryCallback<List<WaitlistEntry>>() {
+                    @Override
+                    public void onSuccess(List<WaitlistEntry> result) {
+                        List<WaitlistEntry> filtered = new ArrayList<>();
 
-                for (WaitlistEntry e : result) {
-                    if (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED ||
-                            e.getStatus() == Status.DECLINED || e.getStatus() == Status.LOST) {
-                        lotteryHasRun = true;
-                    }
+                        // Check if the event is already officially CLOSED
+                        boolean lotteryHasRun = false;
+                        if (event != null && event.getStatus() == com.example.zephyrevents.model.EventStatus.CLOSED) {
+                            lotteryHasRun = true;
+                        }
 
-                    if (tabIndex == 0 && e.getStatus() == Status.WAITLISTED) filtered.add(e);
-                    if (tabIndex == 1 && (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED || e.getStatus() == Status.DECLINED)) filtered.add(e);
-                    if (tabIndex == 2 && e.getStatus() == Status.SELECTED) filtered.add(e);
-                    if (tabIndex == 3 && e.getStatus() == Status.ACCEPTED) filtered.add(e);
-                }
-
-                currentFilteredList.clear();
-                currentFilteredList.addAll(filtered);
-
-                if (tabIndex == 0 && getView() != null) {
-                    Button btnRunLottery = getView().findViewById(R.id.btn_run_lottery);
-                    Button btnDrawReplacements = getView().findViewById(R.id.btn_draw_replacements);
-
-                    if (lotteryHasRun) {
-                        btnRunLottery.setVisibility(View.GONE);
-                        btnDrawReplacements.setVisibility(View.VISIBLE);
-                    } else {
-                        btnRunLottery.setVisibility(View.VISIBLE);
-                        btnDrawReplacements.setVisibility(View.GONE);
-                    }
-                }
-
-                List<Entrant> entrantList = new ArrayList<>();
-                Map<Entrant, WaitlistEntry> entryMap = new HashMap<>();
-
-                EntrantAdapter adapter = new EntrantAdapter(entrantList, entrant -> {
-                    WaitlistEntry mappedEntry = entryMap.get(entrant);
-                    if (mappedEntry != null) {
-                        waitlistRepository.updateStatus(eventId, mappedEntry.getUserId(), Status.DECLINED, new RepositoryCallback<Void>() {
-                            @Override
-                            public void onSuccess(Void result) {
-                                loadData(recyclerView);
+                        for (WaitlistEntry e : result) {
+                            if (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED ||
+                                    e.getStatus() == Status.DECLINED || e.getStatus() == Status.LOST) {
+                                lotteryHasRun = true;
                             }
 
-                            @Override
-                            public void onFailure(Exception e) {
-                                Toast.makeText(requireContext(), "Failed to cancel entrant", Toast.LENGTH_SHORT).show();
+                            if (tabIndex == 0 && e.getStatus() == Status.WAITLISTED) filtered.add(e);
+                            if (tabIndex == 1 && (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED || e.getStatus() == Status.DECLINED)) filtered.add(e);
+                            if (tabIndex == 2 && e.getStatus() == Status.SELECTED) filtered.add(e);
+                            if (tabIndex == 3 && e.getStatus() == Status.ACCEPTED) filtered.add(e);
+                        }
+
+                        currentFilteredList.clear();
+                        currentFilteredList.addAll(filtered);
+
+                        if (tabIndex == 0 && getView() != null) {
+                            Button btnRunLottery = getView().findViewById(R.id.btn_run_lottery);
+                            Button btnDrawReplacements = getView().findViewById(R.id.btn_draw_replacements);
+
+                            if (lotteryHasRun) {
+                                btnRunLottery.setVisibility(View.GONE);
+                                btnDrawReplacements.setVisibility(View.VISIBLE);
+                            } else {
+                                btnRunLottery.setVisibility(View.VISIBLE);
+                                btnDrawReplacements.setVisibility(View.GONE);
+                            }
+                        }
+
+                        List<Entrant> entrantList = new ArrayList<>();
+                        Map<Entrant, WaitlistEntry> entryMap = new HashMap<>();
+
+                        EntrantAdapter adapter = new EntrantAdapter(entrantList, entrant -> {
+                            WaitlistEntry mappedEntry = entryMap.get(entrant);
+                            if (mappedEntry != null) {
+                                waitlistRepository.updateStatus(eventId, mappedEntry.getUserId(), Status.DECLINED, new RepositoryCallback<Void>() {
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        loadData(recyclerView);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Exception e) {
+                                        Toast.makeText(requireContext(), "Failed to cancel entrant", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         });
+
+                        recyclerView.setAdapter(adapter);
+
+                        for (WaitlistEntry entry : filtered) {
+                            userRepository.getUserById(entry.getUserId(), new RepositoryCallback<User>() {
+                                @Override
+                                public void onSuccess(User user) {
+                                    String name = (user != null && user.getName() != null) ? user.getName() : "Unknown User";
+                                    boolean showCancel = (tabIndex == 2);
+                                    Entrant entrant = new Entrant(name, "Status: " + entry.getStatus().name(), showCancel);
+                                    entryMap.put(entrant, entry);
+                                    entrantList.add(entrant);
+                                    adapter.notifyDataSetChanged();
+                                }
+                                @Override
+                                public void onFailure(Exception e) {
+                                    boolean showCancel = (tabIndex == 2);
+                                    Entrant entrant = new Entrant("Unknown User", "Status: " + entry.getStatus().name(), showCancel);
+                                    entryMap.put(entrant, entry);
+                                    entrantList.add(entrant);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(requireContext(), "Error loading waitlist", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-                recyclerView.setAdapter(adapter);
-
-                for (WaitlistEntry entry : filtered) {
-                    userRepository.getUserById(entry.getUserId(), new RepositoryCallback<User>() {
-                        @Override
-                        public void onSuccess(User user) {
-                            userCache.put(entry.getUserId(), user);
-                            String name = (user != null && user.getName() != null) ? user.getName() : "Unknown User";
-                            boolean showCancel = (tabIndex == 2);
-                            Entrant entrant = new Entrant(name, "Status: " + entry.getStatus().name(), showCancel);
-                            entryMap.put(entrant, entry);
-                            entrantList.add(entrant);
-                            adapter.notifyDataSetChanged();
-                        }
-                        @Override
-                        public void onFailure(Exception e) {
-                            boolean showCancel = (tabIndex == 2);
-                            Entrant entrant = new Entrant("Unknown User", "Status: " + entry.getStatus().name(), showCancel);
-                            entryMap.put(entrant, entry);
-                            entrantList.add(entrant);
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
-                }
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(requireContext(), "Error loading waitlist", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Error checking event status", Toast.LENGTH_SHORT).show();
             }
         });
     }
