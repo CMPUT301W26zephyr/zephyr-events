@@ -120,6 +120,8 @@ public class Event {
         return waitlistCapacity != null && waitlistCapacity > 0 && currentApplicants >= waitlistCapacity;
     }
 
+    public void setCapacityFull(boolean capacityFull) {}  // Does nothing as this is computed property, prevents constant Firebase warnings
+
     public String getEventId() {
         return eventId;
     }
