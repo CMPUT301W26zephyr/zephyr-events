@@ -330,4 +330,19 @@ public class EventRepository {
                     }
                 });
     }
+
+    /**
+     * Counts events where this user is the primary organizer (Firestore {@code organizerId}).
+     */
+    public void countEventsOrganizedBy(@NonNull String userId, @NonNull RepositoryCallback<Integer> callback) {
+        if (userId == null || userId.trim().isEmpty()) {
+            callback.onSuccess(0);
+            return;
+        }
+        db.collection(Collections.EVENTS)
+                .whereEqualTo("organizerId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> callback.onSuccess(querySnapshot.size()))
+                .addOnFailureListener(callback::onFailure);
+    }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Profile tab: extra-tall pink; shallow bottom scoop (cubic), not a semicircle. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="312dp"
+    android:viewportWidth="360"
+    android:viewportHeight="312">
+    <path
+        android:fillColor="@color/header_pink"
+        android:pathData="M0,0 L360,0 L360,240 C360,268 270,312 180,312 C90,312 0,268 0,240 Z" />
+</vector>

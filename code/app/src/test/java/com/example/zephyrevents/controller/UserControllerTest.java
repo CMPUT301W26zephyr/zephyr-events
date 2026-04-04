@@ -112,7 +112,7 @@ public class UserControllerTest {
         }).when(mockRepo).saveUser(any(User.class), any());
 
         RepositoryCallback<Void> callback = Mockito.mock(RepositoryCallback.class);
-        userController.updateCurrentUserProfile("new name", "new@gmail.com", "000", "USA",callback);
+        userController.updateCurrentUserProfile("new name", "new@gmail.com", "000", "", callback);
 
         verify(callback).onSuccess(null);
 

@@ -154,6 +154,9 @@ public class UserProfileViewFragment extends Fragment {
         view.findViewById(R.id.rowNotificationSettings).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), UserProfileSettingsViewActivity.class)));
 
+        view.findViewById(R.id.rowTC).setOnClickListener(v ->
+                TermsOfServiceFragment.newReadOnly().show(getParentFragmentManager(), "TOS_VIEW"));
+
         view.findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
         view.findViewById(R.id.rowAdmin).setOnClickListener(v -> showPasswordDialog());

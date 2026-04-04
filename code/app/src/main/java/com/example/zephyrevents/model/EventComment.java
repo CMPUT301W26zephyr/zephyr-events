@@ -13,6 +13,8 @@ public class EventComment {
     private String userId;
     /** Denormalized for display; written once when the comment is created. */
     private String authorName;
+    /** Profile image URL at post time; keeps avatars consistent with the user profile. */
+    private String authorAvatarUrl;
     private String body;
     private long createdAt;
     /** Firestore id of parent comment, or null for a top-level comment. */
@@ -52,6 +54,14 @@ public class EventComment {
 
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+
+    public String getAuthorAvatarUrl() {
+        return authorAvatarUrl;
+    }
+
+    public void setAuthorAvatarUrl(String authorAvatarUrl) {
+        this.authorAvatarUrl = authorAvatarUrl;
     }
 
     public String getBody() {

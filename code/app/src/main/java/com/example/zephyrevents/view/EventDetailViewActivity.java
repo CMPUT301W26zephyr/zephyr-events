@@ -102,6 +102,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private EventCommentAdapter commentAdapter;
     private ListenerRegistration commentsRegistration;
+    /** True when organizer/co-organizer/admin may delete any comment (also used to authorize delete). */
+    private boolean commentCanModerate;
     private ListenerRegistration eventRegistration;
     private ListenerRegistration waitlistRegistration;
 
@@ -377,6 +379,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private void confirmDeleteComment(@NonNull EventComment comment) {
         if (comment.getId() == null) return;
+        if (!mayDeleteComment(comment)) {
+            Toast.makeText(this, R.string.delete_comment_forbidden, Toast.LENGTH_SHORT).show();
+            return;
+        }
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.delete_comment_title)
                 .setMessage(R.string.delete_comment_message)
@@ -394,6 +400,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
                             }
                         }))
                 .show();
+    }
+
+    private boolean mayDeleteComment(@NonNull EventComment comment) {
+        if (commentCanModerate) return true;
+        String authorId = comment.getUserId();
+        return authorId != null && authorId.equals(currentUserId);
     }
 
     private void setupManageActions() {
@@ -466,7 +478,13 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 String subtitle = replyTo != null && replyTo.getAuthorName() != null
                         ? getString(R.string.reply_to_user, replyTo.getAuthorName())
                         : null;
-                CommentComposeBottomSheet.show(EventDetailViewActivity.this, title, subtitle, letter, text -> postComment(text, parentCommentId, authorName));
+                String avatarUrl = "";
+                if (user != null && user.getAvatarUrl() != null && !user.getAvatarUrl().trim().isEmpty()) {
+                    avatarUrl = user.getAvatarUrl().trim();
+                }
+                String avatarForPost = avatarUrl;
+                CommentComposeBottomSheet.show(EventDetailViewActivity.this, title, subtitle, letter,
+                        text -> postComment(text, parentCommentId, authorName, avatarForPost.isEmpty() ? null : avatarForPost));
             }
 
             @Override
@@ -476,12 +494,16 @@ public class EventDetailViewActivity extends AppCompatActivity {
         });
     }
 
-    private void postComment(String text, @androidx.annotation.Nullable String parentCommentId, String authorName) {
+    private void postComment(String text, @androidx.annotation.Nullable String parentCommentId, String authorName,
+                               @androidx.annotation.Nullable String authorAvatarUrl) {
         if (event == null) return;
         EventComment c = new EventComment();
         c.setEventId(event.getEventId());
         c.setUserId(currentUserId);
         c.setAuthorName(authorName);
+        if (authorAvatarUrl != null && !authorAvatarUrl.trim().isEmpty()) {
+            c.setAuthorAvatarUrl(authorAvatarUrl.trim());
+        }
         c.setBody(text);
         c.setCreatedAt(System.currentTimeMillis());
         c.setParentCommentId(parentCommentId);
@@ -623,7 +645,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
         boolean isManagingUser = currentUserId != null
                 && (currentUserId.equals(event.getOrganizerId())
                 || (event.getCoOrganizerUserIds() != null && event.getCoOrganizerUserIds().contains(currentUserId)));
-        commentAdapter.setOrganizerContext(event.getOrganizerId(), isManagingUser || isAdminView);
+        commentCanModerate = isManagingUser || isAdminView;
+        commentAdapter.setOrganizerContext(
+                event.getOrganizerId(),
+                event.getCoOrganizerUserIds(),
+                commentCanModerate,
+                currentUserId);
         commentsRegistration = commentRepository.listenToEventComments(event.getEventId(), new RepositoryCallback<List<EventComment>>() {
 
             @Override
@@ -811,7 +838,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         MaterialCardView organizerCard = findViewById(R.id.organizer_card);
         if (organizerCard != null) {
-            organizerCard.setOnClickListener(v -> { /* reserved: organizer profile */ });
+            organizerCard.setOnClickListener(v -> {
+                if (event == null || event.getOrganizerId() == null || event.getOrganizerId().isEmpty()) {
+                    return;
+                }
+                Intent profileIntent = new Intent(EventDetailViewActivity.this, PublicUserProfileActivity.class);
+                profileIntent.putExtra(PublicUserProfileActivity.EXTRA_USER_ID, event.getOrganizerId());
+                startActivity(profileIntent);
+            });
         }
 
         if (isManagingUser) {
