@@ -46,7 +46,7 @@
             android:layout_height="52dp"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:text="RUN LOTTERY PREMATURELY"
+            android:text="RUN LOTTERY EARLY"
             android:textColor="@color/white"
             app:backgroundTint="@color/primary_red"
             app:cornerRadius="8dp"

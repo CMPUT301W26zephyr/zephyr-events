@@ -25,8 +25,26 @@
     <color name="light_stroke">#ECECEC</color>
     <color name="text_secondary">#7A7A7A</color>
     <color name="danger">#D93B3B</color>
+    <color name="green">#40A045</color>
     <!-- TikTok-style creator badge on comments -->
     <color name="creator_badge_blue">#5BA3E8</color>
     <color name="private_badge_purple">#7E57C2</color>
+    <color name="picker_coral">#E8525F</color>
+
+    <!-- My Events lottery ticket card backgrounds -->
+    <color name="ticket_groove_edge">#9E9E9E</color>
+    <color name="ticket_bg_loading">#FFFFFF</color>
+    <color name="ticket_bg_waiting">#FFF8E6</color>
+    <color name="ticket_stripe_waiting">#FF9800</color>
+    <color name="ticket_bg_selected">#E8F5E9</color>
+    <color name="ticket_stripe_selected">#43A047</color>
+    <color name="ticket_bg_accepted">#E8F5E9</color>
+    <color name="ticket_stripe_accepted">#2E7D32</color>
+    <color name="ticket_bg_declined">#FFEBEE</color>
+    <color name="ticket_stripe_declined">#E53935</color>
+    <color name="ticket_bg_lost">#ECEFF1</color>
+    <color name="ticket_stripe_lost">#78909C</color>
+    <color name="ticket_bg_organizer">#E3F2FD</color>
+    <color name="ticket_stripe_organizer">#1976D2</color>
 
 </resources>

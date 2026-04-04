@@ -5,31 +5,32 @@
     android:id="@+id/profile_user_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:translationY="-60dp">
 
     <View
         android:id="@+id/profile_header"
         android:layout_width="0dp"
-        android:layout_height="220dp"
-        android:background="@drawable/bg_profile_header"
+        android:layout_height="312dp"
+        android:background="@drawable/bg_profile_user_header"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <FrameLayout
         android:id="@+id/avatar_container"
-        android:layout_width="92dp"
-        android:layout_height="92dp"
-        app:layout_constraintTop_toTopOf="@+id/profile_header"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_header"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginTop="-64dp"
+        app:layout_constraintTop_toBottomOf="@id/profile_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/avatar_card"
-            android:layout_width="92dp"
-            android:layout_height="92dp"
-            app:cardCornerRadius="46dp"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            app:cardCornerRadius="64dp"
             app:cardElevation="0dp"
             app:cardPreventCornerOverlap="true"
             app:cardUseCompatPadding="false">
@@ -66,7 +67,7 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/profile_header"
+        app:layout_constraintTop_toBottomOf="@id/avatar_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -182,6 +183,18 @@
                     android:focusable="true">
                     <ImageView android:id="@+id/iconDelete" android:layout_width="20dp" android:layout_height="20dp" app:srcCompat="@drawable/ic_delete_24" app:tint="@color/danger" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
                     <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:text="Delete Profile" android:textColor="@color/danger" android:textSize="14sp" app:layout_constraintStart_toEndOf="@id/iconDelete" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/rowAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingHorizontal="12dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView android:id="@+id/iconAdmin" android:layout_width="20dp" android:layout_height="20dp" app:srcCompat="@drawable/ic_person" app:tint="@color/primary_red" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:text="Enter Admin Mode" android:textColor="@color/primary_red" android:textSize="14sp" app:layout_constraintStart_toEndOf="@id/iconAdmin" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </LinearLayout>

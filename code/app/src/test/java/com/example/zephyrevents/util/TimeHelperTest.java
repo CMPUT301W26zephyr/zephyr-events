@@ -1,7 +1,8 @@
 package com.example.zephyrevents.util;
 
-import static org.junit.Assert.*;
-        import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 // Anthropic, Claude, "Write unit tests for TimeHelper.java for an Android app", 2026-03-12
 

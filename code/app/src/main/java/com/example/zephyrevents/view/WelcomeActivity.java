@@ -6,6 +6,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.UserController;
@@ -23,10 +26,27 @@ public class WelcomeActivity extends AppCompatActivity {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
+
         UserController userController = new UserController(this);
 
         if (userController.isUserLoggedIn()) {
-            startActivity(new Intent(this, MainActivity.class));
+            Intent nextIntent;
+            // Intercept FCM notification clicks to route to Event Details
+            if (getIntent().getExtras() != null && getIntent().hasExtra("eventId")) {
+                nextIntent = new Intent(this, EventDetailViewActivity.class);
+                nextIntent.putExtra(EventDetailViewActivity.EXTRA_EVENT, getIntent().getStringExtra("eventId"));
+
+                nextIntent.putExtra("FROM_NOTIFICATION", true);
+            } else {
+                nextIntent = new Intent(this, MainActivity.class);
+                if (getIntent().getExtras() != null) {
+                    nextIntent.putExtras(getIntent().getExtras());
+                }
+            }
+            startActivity(nextIntent);
             finish();
             return;
         }

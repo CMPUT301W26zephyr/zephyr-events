@@ -63,6 +63,13 @@ public class LotteryController {
                         }
 
                         if (eligible.isEmpty()) {
+                            notificationController.sendAutomaticNotification(
+                                    event.getOrganizerId(),
+                                    eventId,
+                                    NotificationType.LOTTERY_COMPLETED,
+                                    "The lottery for \"" + event.getName() + "\" has been successfully run."
+                            );
+
                             if(callback != null) callback.onSuccess(null);
                             return;
                         }

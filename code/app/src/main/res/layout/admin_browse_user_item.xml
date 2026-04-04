@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
@@ -11,45 +9,40 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
         android:padding="12dp">
 
-        <!-- PROFILE -->
         <ImageView
             android:id="@+id/profile_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/_6usercircle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-
-        <!-- NAME AND EMAIL -->
-
-        <TextView
-            android:id="@+id/user_email"
-            android:layout_width="111dp"
-            android:layout_height="21dp"
-            android:layout_marginStart="24dp"
-            android:text="user@email.com"
-            android:textColor="#777"
-            android:textSize="13sp"
-            app:layout_constraintStart_toEndOf="@+id/profile_icon"
-            app:layout_constraintTop_toBottomOf="@id/user_name" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/user_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="User 1"
             android:textColor="@color/primary_red"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/profile_icon"
-            app:layout_constraintTop_toTopOf="@id/profile_icon" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/profile_icon"/>
 
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:textColor="#777"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@id/profile_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_name"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

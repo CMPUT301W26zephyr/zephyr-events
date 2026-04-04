@@ -91,29 +91,6 @@
                 android:hint="e.g. Beginner Swimming Lessons" />
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormLabel" android:text="Event Type" />
-            </LinearLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp">
-                <AutoCompleteTextView
-                    android:id="@+id/eventTypeDropdown"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:inputType="text"
-                    android:paddingHorizontal="12dp"
-                    android:popupBackground="#FFFFFF"
-                    android:textColor="#333333"
-                    android:textSize="16sp"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout style="@style/FormLabelRow">
                 <TextView style="@style/FormLabel" android:text="Event Price" />
             </LinearLayout>
             <EditText
@@ -132,22 +109,22 @@
                 android:inputType="textCapSentences" />
 
             <LinearLayout style="@style/FormLabelRow">
-                <TextView style="@style/FormLabel" android:text="Waiting List Capacity" android:layout_marginStart="0dp" />
-            </LinearLayout>
-            <EditText
-                android:id="@+id/input_waitlist"
-                style="@style/FormInput"
-                android:hint="e.g. 67 (Leave blank for unlimited)"
-                android:inputType="number" />
-
-            <LinearLayout style="@style/FormLabelRow">
                 <TextView style="@style/FormAsterisk" />
-                <TextView style="@style/FormLabel" android:text="Attendee Capacity" />
+                <TextView style="@style/FormLabel" android:text="Event Capacity" />
             </LinearLayout>
             <EditText
                 android:id="@+id/input_attendee_count"
                 style="@style/FormInput"
-                android:hint="e.g. 15"
+                android:hint="e.g. 30"
+                android:inputType="number" />
+
+            <LinearLayout style="@style/FormLabelRow">
+                <TextView style="@style/FormLabel" android:text="Waitlist Capacity" android:layout_marginStart="0dp" />
+            </LinearLayout>
+            <EditText
+                android:id="@+id/input_waitlist"
+                style="@style/FormInput"
+                android:hint="e.g. 150 (Leave blank for unlimited)"
                 android:inputType="number" />
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>
@@ -178,24 +155,52 @@
                 style="@style/FormInput"
                 android:hint="e.g. 1234 State Avenue" />
 
-            <FrameLayout
-                android:id = "@+id/event_image_container"
+            <LinearLayout
+                android:id="@+id/geo_controls"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="16dp"
-                android:background="#E0E0E0"
-                android:clickable = "true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-
-            <ImageView
-                    android:id = "@+id/event_image_preview"
+                <Button
+                    android:id="@+id/btn_find_address"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_image_placeholder2"/>
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Find Address"
+                    android:textColor="#FF3B5C"
+                    android:background="@drawable/bg_button_outline"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    app:backgroundTint="@null" />
+
+                <EditText
+                    android:id="@+id/input_radius"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="Radius in meters (e.g. 500)"
+                    android:inputType="number" />
+
+            </LinearLayout>
+            <FrameLayout
+                android:id="@+id/map_frame"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginTop="16dp"
+                android:visibility="gone">
+
+                <org.osmdroid.views.MapView
+                    android:id="@+id/map_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"/>
+                <View
+                    android:id="@+id/map_touch_interceptor"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
             </FrameLayout>
+
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_geolocation"
@@ -207,8 +212,27 @@
                 android:textColor="#000000"
                 android:textStyle="bold"
                 app:thumbTint="#FFFFFF"
-                app:trackTint="@color/primary_red"
-                android:checked="true"/>
+                app:trackTint="@color/switch_track_tint"
+                android:checked="false"/>
+
+            <FrameLayout
+                android:id = "@+id/event_image_container"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                android:background="#E0E0E0"
+                android:clickable = "true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+
+                <ImageView
+                    android:id = "@+id/event_image_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_image_placeholder2"/>
+            </FrameLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>
 
@@ -390,95 +414,116 @@
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
-            <View
-                android:id="@+id/divider_event_invites"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp"
-                android:background="@color/light_stroke"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/label_event_form_invites"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="@string/event_form_section_invites"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:visibility="gone" />
-
             <LinearLayout
-                android:id="@+id/row_invite_buttons"
+                android:id="@+id/event_form_bottom_actions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical"
                 android:visibility="gone">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_invite_entrants_private"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
+                <View
+                    android:id="@+id/divider_event_invites"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/light_stroke"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/label_event_form_invites"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/event_form_section_invites"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/text_invite_create_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/invite_create_flow_hint"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/row_invite_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_invite_entrants_private"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="42dp"
+                        android:paddingHorizontal="8dp"
+                        android:text="@string/invite_entrants"
+                        android:textAllCaps="false"
+                        android:textColor="#424242"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/light_stroke"
+                        app:strokeWidth="1dp" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_invite_coorganizer"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="42dp"
+                        android:paddingHorizontal="8dp"
+                        android:text="@string/invite_coorganizer"
+                        android:textAllCaps="false"
+                        android:textColor="#424242"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/light_stroke"
+                        app:strokeWidth="1dp" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_delete_event"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_button_delete_outlined"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:minHeight="42dp"
-                    android:paddingHorizontal="8dp"
-                    android:text="@string/invite_entrants"
+                    android:minHeight="44dp"
+                    android:paddingVertical="10dp"
+                    android:text="@string/delete_event"
                     android:textAllCaps="false"
-                    android:textColor="#424242"
-                    android:textSize="13sp"
+                    android:textColor="@color/danger"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
                     android:visibility="gone"
-                    app:cornerRadius="8dp"
-                    app:strokeColor="@color/light_stroke"
-                    app:strokeWidth="1dp" />
-
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="1dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_invite_coorganizer"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minHeight="42dp"
-                    android:paddingHorizontal="8dp"
-                    android:text="@string/invite_coorganizer"
-                    android:textAllCaps="false"
-                    android:textColor="#424242"
-                    android:textSize="13sp"
-                    android:visibility="gone"
-                    app:cornerRadius="8dp"
-                    app:strokeColor="@color/light_stroke"
-                    app:strokeWidth="1dp" />
+                    app:backgroundTint="@null"
+                    app:rippleColor="#33D93B3B" />
             </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete_event"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="8dp"
-                android:insetTop="4dp"
-                android:insetBottom="4dp"
-                android:minHeight="40dp"
-                android:text="@string/delete_event"
-                android:textAllCaps="false"
-                android:textColor="@color/danger"
-                android:textSize="14sp"
-                android:visibility="gone"
-                app:rippleColor="#33D93B3B" />
 
         </LinearLayout>
     </ScrollView>

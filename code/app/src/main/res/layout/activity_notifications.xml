@@ -10,8 +10,6 @@
         android:id="@+id/top_bar"
         layout="@layout/layout_top_bar" />
 
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_notifications"
         android:layout_width="match_parent"

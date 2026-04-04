@@ -51,6 +51,12 @@
         <item name="colorPrimary">@color/primary_red</item>
     </style>
 
+    <style name="ThemeOverlay.FilterAvailabilityPicker" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/picker_coral</item>
+        <item name="colorPrimary">@color/picker_coral</item>
+        <item name="android:colorControlActivated">@color/picker_coral</item>
+    </style>
+
     <!-- Splash Screen Theme -->
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/primary_red</item>
