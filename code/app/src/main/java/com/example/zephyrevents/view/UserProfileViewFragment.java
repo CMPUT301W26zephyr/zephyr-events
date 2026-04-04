@@ -19,6 +19,8 @@ import androidx.fragment.app.Fragment;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.RepositoryCallback;
+import com.example.zephyrevents.view.TermsOfServiceFragment;
+
 
 import android.text.TextUtils;
 import androidx.activity.result.ActivityResultLauncher;
@@ -153,6 +155,10 @@ public class UserProfileViewFragment extends Fragment {
 
         view.findViewById(R.id.rowNotificationSettings).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), UserProfileSettingsViewActivity.class)));
+
+        view.findViewById(R.id.rowTC).setOnClickListener(v ->
+            new TermsOfServiceFragment().show(getParentFragmentManager(), "TOS_PROFILE"));
+
 
         view.findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
