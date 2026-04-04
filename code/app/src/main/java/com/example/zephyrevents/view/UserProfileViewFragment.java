@@ -17,10 +17,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.RepositoryCallback;
-import com.example.zephyrevents.view.TermsOfServiceFragment;
-
 
 import android.text.TextUtils;
 import androidx.activity.result.ActivityResultLauncher;
@@ -157,8 +156,7 @@ public class UserProfileViewFragment extends Fragment {
                 startActivity(new Intent(requireContext(), UserProfileSettingsViewActivity.class)));
 
         view.findViewById(R.id.rowTC).setOnClickListener(v ->
-            new TermsOfServiceFragment().show(getParentFragmentManager(), "TOS_PROFILE"));
-
+                TermsOfServiceFragment.newReadOnly().show(getParentFragmentManager(), "TOS_VIEW"));
 
         view.findViewById(R.id.rowDeleteProfile).setOnClickListener(v -> showDeleteConfirmDialog());
 
@@ -166,24 +164,30 @@ public class UserProfileViewFragment extends Fragment {
     }
 
     private void showPasswordDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Enter Admin Password");
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_notify_message, null);
+        com.google.android.material.textfield.TextInputEditText input = dialogView.findViewById(R.id.et_notify_message);
 
-        final EditText input = new EditText(requireContext());
-        builder.setView(input);
+        input.setHint("Enter admin password");
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            String password = input.getText().toString();
+        androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Admin Authentication")
+                .setView(dialogView)
+                .setPositiveButton("Enter", (d, which) -> {
+                    String password = input.getText().toString();
+                    if (password.equals("1324")) {
+                        startActivity(new Intent(requireContext(), AdminHomeActivity.class));
+                    } else {
+                        Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
 
-            if (password.equals("1324")) {
-                openAdminHomeFragment();
-            } else {
-                Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
     }
 
     private void openAdminHomeFragment() {
@@ -232,6 +236,7 @@ public class UserProfileViewFragment extends Fragment {
                         userController.deleteAccount(new RepositoryCallback<Void>() {
                             @Override
                             public void onSuccess(Void result) {
+                                SystemLogController.getInstance().logAction("USER_DELETED", "User deleted their profile", userController.getCurrentUserId());
                                 Intent intent = new Intent(requireContext(), WelcomeActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
@@ -274,7 +279,6 @@ public class UserProfileViewFragment extends Fragment {
                 public void onSuccess(Void result) {
                     Toast.makeText(requireContext(), "Avatar removed", Toast.LENGTH_SHORT).show();
                     refreshProfile();
-
                 }
 
                 @Override

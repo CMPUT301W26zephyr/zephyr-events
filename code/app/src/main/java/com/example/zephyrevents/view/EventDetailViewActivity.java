@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventComment;
@@ -47,7 +50,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
 
+import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 public class EventDetailViewActivity extends AppCompatActivity {
@@ -61,6 +68,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private UserController userController;
     private UserRepository userRepository;
     private final EventCommentRepository commentRepository = new EventCommentRepository();
+    private WaitlistRepository pendingRepo; // store repo while waiting for permission
 
     private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation;
     private TextView organizerName, eventAbout, totalCapacity, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
@@ -95,6 +103,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private EventCommentAdapter commentAdapter;
     private ListenerRegistration commentsRegistration;
+    /** True when organizer/co-organizer/admin may delete any comment (also used to authorize delete). */
+    private boolean commentCanModerate;
     private ListenerRegistration eventRegistration;
     private ListenerRegistration eventResumeRegistration;
 
@@ -111,6 +121,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private TextView waitlistOverlaySubtitle;
     private final Handler overlayHandler = new Handler(Looper.getMainLooper());
     private Runnable pendingWaitlistOverlayHide;
+
+    private ImageView organizerAvatar;
+
+    private boolean isAdminView = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +156,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         isInvited = getIntent().getBooleanExtra(EXTRA_INVITED, false);
+        isAdminView = getIntent().getBooleanExtra("isAdminView", false);
+        String eventById = getIntent().getStringExtra(EXTRA_EVENT);
 
         // Handle link parameter (e.g. from qr code)
         if (eventId == null) {
@@ -375,6 +391,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private void confirmDeleteComment(@NonNull EventComment comment) {
         if (comment.getId() == null) return;
+        if (!mayDeleteComment(comment)) {
+            Toast.makeText(this, R.string.delete_comment_forbidden, Toast.LENGTH_SHORT).show();
+            return;
+        }
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.delete_comment_title)
                 .setMessage(R.string.delete_comment_message)
@@ -392,6 +412,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
                             }
                         }))
                 .show();
+    }
+
+    private boolean mayDeleteComment(@NonNull EventComment comment) {
+        if (commentCanModerate) return true;
+        String authorId = comment.getUserId();
+        return authorId != null && authorId.equals(currentUserId);
     }
 
     private void setupManageActions() {
@@ -424,7 +450,12 @@ public class EventDetailViewActivity extends AppCompatActivity {
             });
         }
         if (rowMap != null) {
-            rowMap.setOnClickListener(v -> Toast.makeText(this, R.string.map_not_available, Toast.LENGTH_SHORT).show());
+            rowMap.setOnClickListener(v -> {
+                if (event == null) return;
+                Intent intent = new Intent(this, EntrantsMapActivity.class);
+                intent.putExtra(EXTRA_EVENT, event.getEventId());
+                startActivity(intent);
+            });
         }
     }
 
@@ -459,7 +490,13 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 String subtitle = replyTo != null && replyTo.getAuthorName() != null
                         ? getString(R.string.reply_to_user, replyTo.getAuthorName())
                         : null;
-                CommentComposeBottomSheet.show(EventDetailViewActivity.this, title, subtitle, letter, text -> postComment(text, parentCommentId, authorName));
+                String avatarUrl = "";
+                if (user != null && user.getAvatarUrl() != null && !user.getAvatarUrl().trim().isEmpty()) {
+                    avatarUrl = user.getAvatarUrl().trim();
+                }
+                String avatarForPost = avatarUrl;
+                CommentComposeBottomSheet.show(EventDetailViewActivity.this, title, subtitle, letter,
+                        text -> postComment(text, parentCommentId, authorName, avatarForPost.isEmpty() ? null : avatarForPost));
             }
 
             @Override
@@ -469,12 +506,16 @@ public class EventDetailViewActivity extends AppCompatActivity {
         });
     }
 
-    private void postComment(String text, @androidx.annotation.Nullable String parentCommentId, String authorName) {
+    private void postComment(String text, @androidx.annotation.Nullable String parentCommentId, String authorName,
+                               @androidx.annotation.Nullable String authorAvatarUrl) {
         if (event == null) return;
         EventComment c = new EventComment();
         c.setEventId(event.getEventId());
         c.setUserId(currentUserId);
         c.setAuthorName(authorName);
+        if (authorAvatarUrl != null && !authorAvatarUrl.trim().isEmpty()) {
+            c.setAuthorAvatarUrl(authorAvatarUrl.trim());
+        }
         c.setBody(text);
         c.setCreatedAt(System.currentTimeMillis());
         c.setParentCommentId(parentCommentId);
@@ -492,6 +533,109 @@ public class EventDetailViewActivity extends AppCompatActivity {
         });
     }
 
+    // ADDED: admin image delete (replace only image)
+    private void showAdminImageDialog() {
+
+        View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.admin_delete_yesorno, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.button_cancel)
+                .setOnClickListener(v -> {
+                    dialog.dismiss();
+                    finish(); // go back to image list
+                });
+
+        dialogView.findViewById(R.id.button_delete)
+                .setOnClickListener(v -> {
+                    dialog.dismiss();
+
+                    if (event == null) return;
+
+                    // remove only image
+                    event.setImageUrl("");
+
+                    EventController.getInstance().createEvent(
+                            event,
+                            new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(
+                                                EventDetailViewActivity.this,
+                                                "Image removed",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+
+                                        finish(); // refresh UI
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(
+                                                    EventDetailViewActivity.this,
+                                                    "Update failed",
+                                                    Toast.LENGTH_SHORT
+                                            ).show()
+                                    );
+                                }
+                            }
+                    );
+                });
+
+        dialog.show();
+    }
+
+    private void showAdminDeleteEventDialog() {
+
+        View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.admin_delete_yesorno, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.button_cancel)
+                .setOnClickListener(v -> dialog.dismiss());
+
+        dialogView.findViewById(R.id.button_delete)
+                .setOnClickListener(v -> {
+
+                    dialog.dismiss();
+
+                    if (event == null) return;
+
+                    EventController.getInstance().deleteEvent(
+                            event.getEventId(),
+                            new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    SystemLogController.getInstance().logAction("EVENT_DELETED", "Event was permanently deleted by Admin", "Admin");
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(EventDetailViewActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(EventDetailViewActivity.this, "Delete failed", Toast.LENGTH_SHORT).show()
+                                    );
+                                }
+                            }
+                    );
+                });
+
+        dialog.show();
+    }
     private void detachCommentsListener() {
         if (commentsRegistration != null) {
             commentsRegistration.remove();
@@ -505,8 +649,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
         boolean isManagingUser = currentUserId != null
                 && (currentUserId.equals(event.getOrganizerId())
                 || (event.getCoOrganizerUserIds() != null && event.getCoOrganizerUserIds().contains(currentUserId)));
-        commentAdapter.setOrganizerContext(event.getOrganizerId(), isManagingUser);
+        commentCanModerate = isManagingUser || isAdminView;
+        commentAdapter.setOrganizerContext(
+                event.getOrganizerId(),
+                event.getCoOrganizerUserIds(),
+                commentCanModerate,
+                currentUserId);
         commentsRegistration = commentRepository.listenToEventComments(event.getEventId(), new RepositoryCallback<List<EventComment>>() {
+
             @Override
             public void onSuccess(List<EventComment> result) {
                 commentAdapter.submit(result);
@@ -595,6 +745,27 @@ public class EventDetailViewActivity extends AppCompatActivity {
         finish();
     }
 
+    private void bindOrganizerAvatar(@Nullable User user){
+        if (organizerAvatar == null) return;
+        if(user == null){
+            organizerAvatar.setImageResource(R.drawable.ic_person);
+            return;
+        }
+
+        String url = user.getAvatarUrl();
+        if (url == null || url.trim().isEmpty()){
+            organizerAvatar.setImageResource(R.drawable.ic_person);
+            return;
+        }
+        Glide.with(this)
+                .load(url)
+                .circleCrop()
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .into(organizerAvatar);
+        organizerAvatar.clearColorFilter();
+    }
+
     private void populateUI() {
         if (event == null) return;
 
@@ -614,6 +785,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 eventPoster.setImageResource(R.drawable.ic_image_placeholder2);
                 eventPoster.setImageTintList(ContextCompat.getColorStateList(this, android.R.color.darker_gray));
                 eventPoster.setOnClickListener(null);
+            }
+            if (isAdminView) {
+                eventPoster.setOnClickListener(v -> showAdminImageDialog());
             }
         }
 
@@ -656,7 +830,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         boolean isCoOrganizer = event.getCoOrganizerUserIds() != null
                 && currentUserId != null
                 && event.getCoOrganizerUserIds().contains(currentUserId);
-        boolean isManagingUser = isOrganizer || isCoOrganizer;
+        boolean isManagingUser = (isOrganizer || isCoOrganizer) && !isAdminView;
 
         TextView badgePrivate = findViewById(R.id.badge_private_event);
         if (badgePrivate != null) {
@@ -670,26 +844,52 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         MaterialCardView organizerCard = findViewById(R.id.organizer_card);
         if (organizerCard != null) {
-            organizerCard.setOnClickListener(v -> { /* reserved: organizer profile */ });
+            organizerCard.setOnClickListener(v -> {
+                if (event == null || event.getOrganizerId() == null || event.getOrganizerId().isEmpty()) {
+                    return;
+                }
+                Intent profileIntent = new Intent(EventDetailViewActivity.this, PublicUserProfileActivity.class);
+                profileIntent.putExtra(PublicUserProfileActivity.EXTRA_USER_ID, event.getOrganizerId());
+                startActivity(profileIntent);
+            });
         }
 
         if (isManagingUser) {
             if (isOrganizer) {
                 organizerName.setText("You");
+                if(event.getOrganizerId() != null){
+                    userRepository.getUserById(event.getOrganizerId(), new RepositoryCallback<User>() {
+                        @Override
+                        public void onSuccess(User result) {
+                            bindOrganizerAvatar(result);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            bindOrganizerAvatar(null);
+
+                        }
+                    });
+                } else{
+                    bindOrganizerAvatar(null);
+                }
             } else if (event.getOrganizerId() != null) {
                 userRepository.getUserById(event.getOrganizerId(), new RepositoryCallback<User>() {
                     @Override
                     public void onSuccess(User user) {
                         organizerName.setText(user != null && user.getName() != null ? user.getName() : "Organizer");
+                        bindOrganizerAvatar(user);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         organizerName.setText("Organizer");
+                        bindOrganizerAvatar(null);
                     }
                 });
             } else {
                 organizerName.setText("Organizer");
+                bindOrganizerAvatar(null);
             }
             tabManage.setVisibility(View.VISIBLE);
             sectionManage.setVisibility(View.VISIBLE);
@@ -707,15 +907,18 @@ public class EventDetailViewActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(User user) {
                         organizerName.setText(user != null && user.getName() != null ? user.getName() : "Unknown Organizer");
+                        bindOrganizerAvatar(user);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         organizerName.setText("Unknown Organizer");
+                        bindOrganizerAvatar(null);
                     }
                 });
             } else {
                 organizerName.setText("Unknown Organizer");
+                bindOrganizerAvatar(null);
             }
         }
 
@@ -732,6 +935,21 @@ public class EventDetailViewActivity extends AppCompatActivity {
         waitlistRegistration = new WaitlistRepository().listenToWaitlist(event.getEventId(), new RepositoryCallback<List<WaitlistEntry>>() {
             @Override
             public void onSuccess(List<WaitlistEntry> entries) {
+                if (isAdminView) {
+
+                    buttonPrimary.setVisibility(View.VISIBLE);
+                    buttonPrimary.setEnabled(true);
+                    buttonPrimary.setText("DELETE EVENT");
+                    buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_filled));
+                    buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
+
+                    buttonPrimary.setOnClickListener(v -> showAdminDeleteEventDialog());
+
+                    buttonSecondary.setVisibility(View.GONE);
+
+                    return;
+                }
+
                 int trueCount = (entries != null) ? entries.size() : 0;
                 waitlistApplicants.setText(String.valueOf(trueCount));
 
@@ -885,22 +1103,34 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_filled));
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(v -> {
-            WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
-            repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    populateUI();
-                    String name = eventNameForWaitlistStatus();
-                    showCenteredWaitlistOverlay(
-                            getString(R.string.status_waitlist_on_list_title),
-                            getString(R.string.status_waitlist_joined_body, name),
-                            true);
+            if (event.getLocation() != null && event.getLocation().isRequiresGeolocation()) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    pendingRepo = repo;
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+                } else {
+                    doLocationJoin(repo);
                 }
+            } else {
+                WaitlistEntry newEntry = new WaitlistEntry(currentUserId, event.getEventId(), 0.0, 0.0, Status.WAITLISTED);
+                repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        SystemLogController.getInstance().logAction("JOINED_WAITLIST", "User joined waitlist for " + event.getName(), currentUserId);
+                        populateUI();
+                        String name = eventNameForWaitlistStatus();
+                        showCenteredWaitlistOverlay(
+                                getString(R.string.status_waitlist_on_list_title),
+                                getString(R.string.status_waitlist_joined_body, name),
+                                true);
+                    }
 
-                @Override
-                public void onFailure(Exception e) {
-                }
-            });
+                    @Override
+                    public void onFailure(Exception e) {
+                    }
+                });
+            }
         });
         buttonSecondary.setVisibility(View.GONE);
     }
@@ -1100,6 +1330,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void res) {
+                        SystemLogController.getInstance().logAction("LOTTERY_RUN", "Lottery was manually executed", "Organizer");
                         Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
                         populateUI();
                     }
@@ -1150,6 +1381,45 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 @Override public void onFailure(Exception e) {}
             });
         });
+    }
+
+    private void doLocationJoin(WaitlistRepository repo) {
+        com.example.zephyrevents.util.DistanceHelper.getUserLocation(this,
+                new com.example.zephyrevents.util.DistanceHelper.LocationCallback() {
+                    @Override
+                    public void onLocation(double userLat, double userLng) {
+                        com.example.zephyrevents.model.Coordinate userCoord =
+                                new com.example.zephyrevents.model.Coordinate(userLat, userLng);
+                        com.example.zephyrevents.model.Coordinate eventCoord =
+                                event.getLocation().getCoordinate();
+                        double radiusKm = event.getLocation().getGeolocationRadiusKm();
+
+                        if (!com.example.zephyrevents.util.DistanceHelper.isWithinDistance(
+                                userCoord, eventCoord, radiusKm)) {
+                            Toast.makeText(EventDetailViewActivity.this,
+                                    "You must be within " + (int)(radiusKm * 1000) + "m of the event.",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        WaitlistEntry newEntry = new WaitlistEntry(
+                                currentUserId, event.getEventId(), userLat, userLng, Status.WAITLISTED);
+                        repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
+                            @Override public void onSuccess(Void result) {
+                                Toast.makeText(EventDetailViewActivity.this, "Joined Waitlist!", Toast.LENGTH_SHORT).show();
+                                populateUI();
+                            }
+                            @Override public void onFailure(Exception e) {}
+                        });
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Toast.makeText(EventDetailViewActivity.this,
+                                "Could not get your location. Please enable location services.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

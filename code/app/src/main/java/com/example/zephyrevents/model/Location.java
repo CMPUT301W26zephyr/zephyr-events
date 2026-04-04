@@ -8,6 +8,10 @@ import android.util.Log;
 public class Location {
     public Coordinate coordinate;
     public String locationString;
+    // should really pull this into event model, but it will break so much.
+    // semantically this words but its a bid odd.
+    public boolean requiresGeolocation;
+    public double geolocationRadiusKm = 0.5; // default 500m
     private static final String TAG = "Location";
 
 
@@ -18,9 +22,15 @@ public class Location {
      * @param coordinate
      * @param locationString
      */
-    public Location(Coordinate coordinate,String locationString){
+
+    public Location(Coordinate coordinate,String locationString, boolean requiresGeolocation){
         this.coordinate = coordinate;
         this.locationString = locationString;
+        this.requiresGeolocation = requiresGeolocation;
+    }
+
+    public Location(Coordinate coordinate,String locationString){
+        this(coordinate, locationString, false);  // chain to 3-arg
     }
 
     /**
@@ -31,7 +41,7 @@ public class Location {
      * @param locationString
      */
     public Location(double lat,double lng,String locationString){
-        this(new Coordinate(lat, lng), locationString);
+        this(new Coordinate(lat, lng), locationString, false);
     }
 
 
@@ -54,6 +64,22 @@ public class Location {
 
     public void setLocationString(String locationString) {
         this.locationString = locationString;
+    }
+
+    public boolean isRequiresGeolocation() {
+        return requiresGeolocation;
+    }
+
+    public double getGeolocationRadiusKm() {
+        return geolocationRadiusKm;
+    }
+
+    public void setGeolocationRadiusKm(double geolocationRadiusKm) {
+        this.geolocationRadiusKm = geolocationRadiusKm;
+    }
+
+    public void setRequiresGeolocation(boolean requiresGeolocation) {
+        this.requiresGeolocation = requiresGeolocation;
     }
 }
 

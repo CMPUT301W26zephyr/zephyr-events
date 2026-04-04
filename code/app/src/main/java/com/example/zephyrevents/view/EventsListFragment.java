@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -20,8 +19,17 @@ import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+import android.app.Activity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
+
+import java.util.Locale;
+
 
 public class EventsListFragment extends Fragment {
 
@@ -30,6 +38,60 @@ public class EventsListFragment extends Fragment {
     private List<Event> displayedEvents = new ArrayList<>();
     private EventController controller;
     private EditText etSearchBar; // Added as a class variable to keep track of searches
+
+    private boolean filterAnytime = true;
+    private long filterRangeStartMs = -1L;
+    private long filterRangeEndMs = -1L;
+
+    private boolean filterOnlyWithSpace = false;
+
+    private static final String STATE_FILTER_ANYTIME = "state_filter_anytime";
+    private static final String STATE_FILTER_RANGE_START = "state_filter_range_start";
+    private static final String STATE_FILTER_RANGE_END = "state_filter_range_end";
+    private static final String STATE_FILTER_ONLY_SPACE = "state_filter_only_space";
+
+    private final ActivityResultLauncher<Intent> filterLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if(result.getResultCode() != Activity.RESULT_OK || result.getData() == null){
+                    return;
+                }
+
+                Intent data = result.getData();
+                filterAnytime = data.getBooleanExtra(FilterEventsActivity.EXTRA_ANYTIME,true);
+                filterRangeStartMs = data.getLongExtra(FilterEventsActivity.EXTRA_RANGE_START_MS,-1L);
+                filterRangeEndMs = data.getLongExtra(FilterEventsActivity.EXTRA_RANGE_END_MS,-1L);
+                filterOnlyWithSpace = data.getBooleanExtra(FilterEventsActivity.EXTRA_ONLY_WITH_SPACE,false);
+                applyFilters();
+
+
+            });
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null){
+            filterAnytime = savedInstanceState.getBoolean(STATE_FILTER_ANYTIME, true);
+            filterRangeStartMs = savedInstanceState.getLong(STATE_FILTER_RANGE_START, -1L);
+            filterRangeEndMs = savedInstanceState.getLong(STATE_FILTER_RANGE_END, -1L);
+            filterOnlyWithSpace = savedInstanceState.getBoolean(STATE_FILTER_ONLY_SPACE, false);
+
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_FILTER_ANYTIME, filterAnytime);
+        outState.putLong(STATE_FILTER_RANGE_START, filterRangeStartMs);
+        outState.putLong(STATE_FILTER_RANGE_END, filterRangeEndMs);
+        outState.putBoolean(STATE_FILTER_ONLY_SPACE, filterOnlyWithSpace);
+
+
+
+
+    }
 
     @Nullable
     @Override
@@ -64,7 +126,7 @@ public class EventsListFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterEvents(s.toString().trim());
+                applyFilters();
             }
 
             @Override
@@ -75,7 +137,12 @@ public class EventsListFragment extends Fragment {
         view.findViewById(R.id.toolbar_back).setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         view.findViewById(R.id.btnSearchFilter).setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), FilterEventsActivity.class));
+            Intent intent = new Intent(requireContext(), FilterEventsActivity.class);
+            intent.putExtra(FilterEventsActivity.EXTRA_ANYTIME, filterAnytime);
+            intent.putExtra(FilterEventsActivity.EXTRA_RANGE_START_MS, filterRangeStartMs);
+            intent.putExtra(FilterEventsActivity.EXTRA_RANGE_END_MS, filterRangeEndMs);
+            intent.putExtra(FilterEventsActivity.EXTRA_ONLY_WITH_SPACE, filterOnlyWithSpace);
+            filterLauncher.launch(intent);
         });
     }
 
@@ -96,12 +163,8 @@ public class EventsListFragment extends Fragment {
                     }
                 }
 
-                // Re-apply the search filter if the user had text in the search bar
-                String currentQuery = "";
-                if (etSearchBar != null && etSearchBar.getText() != null) {
-                    currentQuery = etSearchBar.getText().toString().trim();
-                }
-                filterEvents(currentQuery);
+
+                applyFilters();
             }
 
             @Override
@@ -114,21 +177,53 @@ public class EventsListFragment extends Fragment {
     /**
      * Filters the master list based on the search query and updates the adapter.
      */
-    private void filterEvents(String query) {
+    private void applyFilters() {
         displayedEvents.clear();
 
-        if (query.isEmpty()) {
-            displayedEvents.addAll(allEvents);
-        } else {
-            String lower = query.toLowerCase();
-            for (Event e : allEvents) {
-                if ((e.getName() != null && e.getName().toLowerCase().contains(lower)) ||
-                        (e.getDescription() != null && e.getDescription().toLowerCase().contains(lower))) {
-                    displayedEvents.add(e);
-                }
-            }
+        String query = "";
+
+        if(etSearchBar != null && etSearchBar.getText() != null){
+            query = etSearchBar.getText().toString().trim().toLowerCase(Locale.getDefault());
         }
 
+        for (Event e : allEvents){
+            if(e == null){
+                continue;
+            }
+
+            if(!query.isEmpty()){
+                String n = e.getName() != null ? e.getName().toLowerCase(Locale.getDefault()) : "";
+                String d = e.getDescription() != null ? e.getDescription().toLowerCase(Locale.getDefault()) : "";
+                if (!n.contains(query) && !d.contains(query)){
+                    continue;
+                }
+
+            }
+
+            if(!filterAnytime){
+                if (filterRangeStartMs < 0 || filterRangeEndMs < 0){
+                    continue;
+                }
+
+                if(e.getTime() == null){
+                    continue;
+                }
+                long es = e.getTime().getStartTime();
+                long ee = e.getTime().getEndTime();
+
+                if(!(es < filterRangeEndMs && ee > filterRangeStartMs)){
+                    continue;
+                }
+            }
+
+            if(filterOnlyWithSpace){
+                Integer cap = e.getWaitlistCapacity();
+                if(cap != null && cap > 0 && e.getCurrentApplicants() >= cap){
+                    continue;
+                }
+            }
+            displayedEvents.add(e);
+        }
         adapter.notifyDataSetChanged();
     }
 

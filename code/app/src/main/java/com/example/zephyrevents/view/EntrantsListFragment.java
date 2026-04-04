@@ -24,6 +24,7 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.controller.LotteryController;
 import com.example.zephyrevents.controller.NotificationController;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.model.Entrant;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.Status;
@@ -105,6 +106,7 @@ public class EntrantsListFragment extends Fragment {
                 new LotteryController().runLottery(eventId, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
+                        SystemLogController.getInstance().logAction("LOTTERY_RUN", "Lottery was manually executed", "Organizer");
                         Toast.makeText(requireContext(), "Lottery Complete!", Toast.LENGTH_SHORT).show();
 
                         btnRunLottery.setVisibility(View.GONE);
@@ -161,6 +163,7 @@ public class EntrantsListFragment extends Fragment {
 
                         // Send the manual notification
                         notificationController.notifyUsersWithCustomMessage(targetIds, eventId, msg);
+                        SystemLogController.getInstance().logAction("ORGANIZER_NOTIFICATION", "Organizer sent manual notification", "Organizer");
                         Toast.makeText(requireContext(), "Notifications successfully sent!", Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton("Cancel", null)

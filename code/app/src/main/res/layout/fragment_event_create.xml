@@ -155,24 +155,52 @@
                 style="@style/FormInput"
                 android:hint="e.g. 1234 State Avenue" />
 
-            <FrameLayout
-                android:id = "@+id/event_image_container"
+            <LinearLayout
+                android:id="@+id/geo_controls"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="16dp"
-                android:background="#E0E0E0"
-                android:clickable = "true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-
-            <ImageView
-                    android:id = "@+id/event_image_preview"
+                <Button
+                    android:id="@+id/btn_find_address"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_image_placeholder2"/>
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Find Address"
+                    android:textColor="#FF3B5C"
+                    android:background="@drawable/bg_button_outline"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    app:backgroundTint="@null" />
+
+                <EditText
+                    android:id="@+id/input_radius"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="Radius in meters (e.g. 500)"
+                    android:inputType="number" />
+
+            </LinearLayout>
+            <FrameLayout
+                android:id="@+id/map_frame"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginTop="16dp"
+                android:visibility="gone">
+
+                <org.osmdroid.views.MapView
+                    android:id="@+id/map_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"/>
+                <View
+                    android:id="@+id/map_touch_interceptor"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
             </FrameLayout>
+
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_geolocation"
@@ -184,8 +212,27 @@
                 android:textColor="#000000"
                 android:textStyle="bold"
                 app:thumbTint="#FFFFFF"
-                app:trackTint="@color/primary_red"
-                android:checked="true"/>
+                app:trackTint="@color/switch_track_tint"
+                android:checked="false"/>
+
+            <FrameLayout
+                android:id = "@+id/event_image_container"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                android:background="#E0E0E0"
+                android:clickable = "true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+
+                <ImageView
+                    android:id = "@+id/event_image_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_image_placeholder2"/>
+            </FrameLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>
 

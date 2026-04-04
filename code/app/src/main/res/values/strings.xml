@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lottofly</string>
+    <string name="app_name">Lottofy</string>
     <string name="back">Back</string>
     <string name="all_events">All Events</string>
     <string name="date_location">Date, Location</string>
@@ -96,6 +96,9 @@
     <string name="map_not_available">Map view is not available yet.</string>
     <string name="qr_not_available">QR generation is not available from this screen yet.</string>
     <string name="delete_comment_failed">Could not delete comment.</string>
+    <string name="delete_comment_forbidden">You can only delete your own comments.</string>
+    <string name="terms_close">Close</string>
+    <string name="tos_i_agree">I agree</string>
 
     <!-- Private / public events -->
     <string name="visibility_public">Public</string>
@@ -104,6 +107,13 @@
     <string name="invite_entrants">Invite entrants</string>
     <string name="invite_coorganizer">Invite co-organizer</string>
     <string name="event_form_section_invites">Invites</string>
+    <string name="event_confirmation_preview_hint">Preview — this is how your event page will look to guests.</string>
+    <string name="event_confirmation_preview_title">Preview</string>
+    <string name="event_preview_no_description">No description yet.</string>
+    <string name="date_tbd">Date TBD</string>
+    <string name="location_tbd">Location TBD</string>
+    <string name="confirm_create_button">CONFIRM &amp; CREATE</string>
+
     <string name="invite_create_flow_hint">After your event is published, you can send invites from here. Tap Next to review and confirm, or open Edit event later.</string>
     <string name="invite_after_publish_hint">Publish your event first (Next, then Confirm &amp; Create). After that, use Edit event to send invites.</string>
     <string name="delete_event">Delete event</string>
@@ -148,4 +158,25 @@
     <string name="my_events_empty_lotteries_hint">Upcoming events you join will show up here.</string>
     <string name="my_events_empty_history">Nothing here yet</string>
     <string name="my_events_empty_history_hint">Past events and results will appear here.</string>
+
+    <string name="public_profile_title">Meet your organizer!</string>
+    <string name="public_profile_contact_header">Contact</string>
+    <string name="public_profile_unavailable">Could not load profile.</string>
+    <plurals name="events_organized_count">
+        <item quantity="one">%d event organized</item>
+        <item quantity="other">%d events organized</item>
+    </plurals>
+
+    <!-- Admin / profile-style admin home -->
+    <string name="user_profile_screen_title">User Profile</string>
+    <string name="edit_profile_photo">Edit profile photo</string>
+    <string name="admin_join_as_label">Join as</string>
+    <string name="admin_role_admin">Admin</string>
+    <string name="admin_role_organizer">Organizer</string>
+    <string name="admin_role_entrant">Entrant</string>
+    <string name="admin_manage_user_profiles">Manage user profiles</string>
+    <string name="admin_browse_events">Browse events</string>
+    <string name="admin_browse_images">Browse images</string>
+    <string name="admin_system_logs">System logs</string>
+    <string name="delete_profile">Delete Profile</string>
 </resources>
