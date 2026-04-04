@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventComment;
@@ -583,13 +584,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
                             new RepositoryCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
+                                    SystemLogController.getInstance().logAction("EVENT_DELETED", "Event was permanently deleted by Admin", "Admin");
                                     runOnUiThread(() -> {
-                                        Toast.makeText(
-                                                EventDetailViewActivity.this,
-                                                "Event deleted",
-                                                Toast.LENGTH_SHORT
-                                        ).show();
-
+                                        Toast.makeText(EventDetailViewActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
                                         finish();
                                     });
                                 }
@@ -597,11 +594,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(Exception e) {
                                     runOnUiThread(() ->
-                                            Toast.makeText(
-                                                    EventDetailViewActivity.this,
-                                                    "Delete failed",
-                                                    Toast.LENGTH_SHORT
-                                            ).show()
+                                            Toast.makeText(EventDetailViewActivity.this, "Delete failed", Toast.LENGTH_SHORT).show()
                                     );
                                 }
                             }
@@ -1077,6 +1070,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
+                        SystemLogController.getInstance().logAction("JOINED_WAITLIST", "User joined waitlist for " + event.getName(), currentUserId);
                         populateUI();
                         String name = eventNameForWaitlistStatus();
                         showCenteredWaitlistOverlay(
@@ -1289,6 +1283,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void res) {
+                        SystemLogController.getInstance().logAction("LOTTERY_RUN", "Lottery was manually executed", "Organizer");
                         Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
                         populateUI();
                     }

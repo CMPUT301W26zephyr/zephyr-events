@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
@@ -172,7 +173,7 @@ public class UserProfileViewFragment extends Fragment {
                 .setPositiveButton("Enter", (d, which) -> {
                     String password = input.getText().toString();
                     if (password.equals("1324")) {
-                        openAdminHomeFragment();
+                        startActivity(new Intent(requireContext(), AdminHomeActivity.class));
                     } else {
                         Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show();
                     }
@@ -182,6 +183,8 @@ public class UserProfileViewFragment extends Fragment {
 
         dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
                 .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
     }
 
     private void openAdminHomeFragment() {
@@ -230,6 +233,7 @@ public class UserProfileViewFragment extends Fragment {
                         userController.deleteAccount(new RepositoryCallback<Void>() {
                             @Override
                             public void onSuccess(Void result) {
+                                SystemLogController.getInstance().logAction("USER_DELETED", "User deleted their profile", userController.getCurrentUserId());
                                 Intent intent = new Intent(requireContext(), WelcomeActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
@@ -218,6 +219,11 @@ public class EventConfirmationFragment extends Fragment {
                                     if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
                                         new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
                                     }
+
+                                    String action = viewModel.isEditMode ? "EVENT_EDITED" : "EVENT_CREATED";
+                                    String desc = "Event '" + newEvent.getName() + "' was " + (viewModel.isEditMode ? "edited" : "created");
+                                    SystemLogController.getInstance().logAction(action, desc, newEvent.getOrganizerId());
+
                                     Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
                                     requireActivity().finish();
 
