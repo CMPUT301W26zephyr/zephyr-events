@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_image_placeholder2" />
+            android:src="@drawable/event_card_placeholder" />
     </androidx.cardview.widget.CardView>
 
     <!-- Title -->
