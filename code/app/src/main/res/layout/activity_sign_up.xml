@@ -5,11 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:padding="24dp"
-    >
-
+    android:padding="24dp">
 
     <LinearLayout
+        android:id="@+id/sign_up_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -20,9 +19,9 @@
 
         <ImageView
             android:layout_width="200dp"
-            android:layout_height="80dp"
+            android:layout_height="200dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_image_placeholder2" />
+            android:src="@drawable/ic_welcome_image" />
 
         <TextView
             style="@style/TxtTitle"
@@ -86,6 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:layout_marginBottom="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -95,15 +95,15 @@
                 android:layout_height="wrap_content"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
-                android:scaleX="0.7"
-                android:scaleY="0.7" />
+                android:scaleX="0.9"
+                android:scaleY="0.9" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="By checking the box you agree to our "
                 android:textColor="#666666"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/tv_tos_link"
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:text="Terms and Conditions"
                 android:textColor="#FF3B5C"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -120,10 +120,10 @@
     <Button
         android:id="@+id/btn_continue"
         style="@style/Button.Filled"
-        android:layout_marginBottom="96dp"
         android:text="CONTINUE"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sign_up_layout"
         app:layout_constraintStart_toStartOf="parent" />
 
 
