@@ -95,15 +95,20 @@ public class EventConfirmationFragment extends Fragment {
             description.setText(viewModel.description);
         }
 
+
         ImageView confirmImage = view.findViewById(R.id.confirm_event_image);
-        if (viewModel.pendingEventImageUri != null){
+
+        if (viewModel.pendingEventImageUri != null) {
             Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(confirmImage);
-        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()) {
+        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.trim().isEmpty()) {
             Glide.with(this).load(viewModel.existingImgUrl).centerCrop().into(confirmImage);
-        } else{
-            Glide.with(this).load(R.drawable.ic_image_placeholder2).centerCrop().into(confirmImage);
-            confirmImage.setImageTintList(androidx.core.content.ContextCompat.getColorStateList(requireContext(), android.R.color.darker_gray));
+        } else {
+            Glide.with(this).clear(confirmImage);
+            confirmImage.setImageDrawable(null);
+            confirmImage.setImageTintList(null);
         }
+
+
 
         String finalLocationStr = locationStr;
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(

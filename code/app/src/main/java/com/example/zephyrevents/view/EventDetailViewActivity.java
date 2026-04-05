@@ -106,7 +106,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
     /** True when organizer/co-organizer/admin may delete any comment (also used to authorize delete). */
     private boolean commentCanModerate;
     private ListenerRegistration eventRegistration;
+    private ListenerRegistration eventResumeRegistration;
+
     private ListenerRegistration waitlistRegistration;
+
 
     private ImageView eventPoster;
     private TextView inviteContextText;
@@ -193,6 +196,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
         overlayHandler.removeCallbacksAndMessages(null);
         if (eventRegistration != null) eventRegistration.remove();
         if (waitlistRegistration != null) waitlistRegistration.remove();
+        if(eventResumeRegistration != null){
+            eventResumeRegistration.remove();
+            eventResumeRegistration = null;
+        }
         super.onDestroy();
     }
 
@@ -202,7 +209,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
         super.onResume();
         String eventId = getIntent().getStringExtra(EXTRA_EVENT);
         if (eventId != null) {
-            EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
+            if(eventResumeRegistration != null){
+                eventResumeRegistration.remove();
+                eventResumeRegistration = null;
+            }
+            eventResumeRegistration = EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
                 @Override
                 public void onSuccess(Event result) {
                     event = result;
@@ -545,11 +556,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
                     if (event == null) return;
 
-                    // remove only image
-                    event.setImageUrl("");
-
-                    EventController.getInstance().createEvent(
+                    EventController.getInstance().saveEventWithOptionalImage(
                             event,
+                            null,
+                            "",
                             new RepositoryCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
@@ -758,25 +768,35 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private void populateUI() {
         if (event == null) return;
 
+        if(isFinishing() || isDestroyed()) return;
+
         if (eventPoster != null){
             eventPoster.setImageTintList(null);
             eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            String url = event.getImageUrl();
-            if (url != null && !url.isEmpty()){
+            if (event.hasPosterImage()) {
+                String url = event.getImageUrl();
                 Glide.with(this).load(url).centerCrop().into(eventPoster);
-                eventPoster.setOnClickListener(v -> {
-                    EventPosterFragment posterFragment = EventPosterFragment.newInstance(url);
-                    posterFragment.show(getSupportFragmentManager(), "EventPosterFragment");
-                });
-            } else{
-                eventPoster.setImageResource(R.drawable.ic_image_placeholder2);
-                eventPoster.setImageTintList(ContextCompat.getColorStateList(this, android.R.color.darker_gray));
-                eventPoster.setOnClickListener(null);
+                if (isAdminView) {
+                    eventPoster.setOnClickListener(v -> showAdminImageDialog());
+                } else {
+                    eventPoster.setOnClickListener(v -> {
+                        EventPosterFragment posterFragment = EventPosterFragment.newInstance(url);
+                        posterFragment.show(getSupportFragmentManager(), "EventPosterFragment");
+                    });
+                }
+                } else {
+                    Glide.with(this).clear(eventPoster);
+                    eventPoster.setImageDrawable(null);
+                    eventPoster.setImageTintList(null);
+                    eventPoster.setOnClickListener(null);
+                    if (isAdminView) {
+                        eventPoster.setOnClickListener(v -> showAdminImageDialog());
+                    } else {
+                        eventPoster.setOnClickListener(null);
+
+                    }
+                }
             }
-            if (isAdminView) {
-                eventPoster.setOnClickListener(v -> showAdminImageDialog());
-            }
-        }
 
         eventTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
         eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));

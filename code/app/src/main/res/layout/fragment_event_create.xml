@@ -221,9 +221,8 @@
                 android:layout_height="200dp"
                 android:layout_marginTop="16dp"
                 android:background="#E0E0E0"
-                android:clickable = "true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground">
+                android:clickable = "false"
+                android:focusable="false">
 
 
                 <ImageView
@@ -231,7 +230,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_image_placeholder2"/>
+                    android:contentDescription="@null" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_event_poster_actions"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:text="+-"
+                    android:textSize="11sp"
+                    app:backgroundTint="@color/primary_red"
+                    app:cornerRadius="14dp" />
             </FrameLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>

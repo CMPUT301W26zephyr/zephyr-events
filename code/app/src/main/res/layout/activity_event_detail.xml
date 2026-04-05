@@ -28,9 +28,7 @@
                 android:id="@+id/event_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="center"
-                android:src="@drawable/ic_image_placeholder2"
-                app:tint="#BDBDBD" />
+                android:scaleType="centerCrop" />
         </FrameLayout>
 
         <LinearLayout

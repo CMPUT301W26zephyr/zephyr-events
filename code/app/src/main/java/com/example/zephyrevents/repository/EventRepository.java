@@ -67,6 +67,10 @@ public class EventRepository {
             callback.onFailure(e);
             return; // exit before network call.
         }
+        String poster = event.getImageUrl();
+        if (poster != null && poster.trim().isEmpty()){
+            event.setImageUrl(null);
+        }
         db.collection(Collections.EVENTS)
                 .document(event.getEventId())
                 .set(event)
