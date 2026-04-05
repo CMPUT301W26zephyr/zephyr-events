@@ -106,7 +106,9 @@ public class EntrantsListFragment extends Fragment {
                 new LotteryController().runLottery(eventId, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
-                        SystemLogController.getInstance().logAction("LOTTERY_RUN", "Lottery was manually executed", "Organizer");
+                        String eName = (eventName != null) ? eventName : "Unknown Event";
+                        SystemLogController.getInstance()
+                                .logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + eName + "'", "Organizer");
                         Toast.makeText(requireContext(), "Lottery Complete!", Toast.LENGTH_SHORT).show();
 
                         btnRunLottery.setVisibility(View.GONE);
@@ -163,7 +165,9 @@ public class EntrantsListFragment extends Fragment {
 
                         // Send the manual notification
                         notificationController.notifyUsersWithCustomMessage(targetIds, eventId, msg);
-                        SystemLogController.getInstance().logAction("ORGANIZER_NOTIFICATION", "Organizer sent manual notification", "Organizer");
+                        String eName = (eventName != null) ? eventName : "Unknown Event";
+                        SystemLogController.getInstance()
+                                .logAction("MANUAL_NOTIFICATION", "Organizer sent a custom notification to " + targetIds.size() + " entrants for event: '" + eName + "'", "Organizer");
                         Toast.makeText(requireContext(), "Notifications successfully sent!", Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton("Cancel", null)
@@ -193,6 +197,7 @@ public class EntrantsListFragment extends Fragment {
         eventRegistration = EventController.getInstance().listenToEventById(eventId, new RepositoryCallback<Event>() {
             @Override
             public void onSuccess(Event event) {
+                if (event != null) eventName = event.getName();
                 if (waitlistRegistration != null) waitlistRegistration.remove();
                 waitlistRegistration = waitlistRepository.listenToWaitlist(eventId, new RepositoryCallback<List<WaitlistEntry>>() {
                     @Override

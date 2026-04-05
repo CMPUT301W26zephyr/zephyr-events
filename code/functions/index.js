@@ -147,6 +147,16 @@ exports.runScheduledLotteries = onSchedule("every 1 minutes", async (event) => {
                 time: now
             }));
         }
+
+        // Log the automatic lottery run to System Logs
+        const logId = admin.firestore().collection("system_logs").doc().id;
+        promises.push(admin.firestore().collection("system_logs").doc(logId).set({
+            id: logId,
+            timestamp: now,
+            actionType: "AUTOMATIC_LOTTERY_RUN",
+            description: `Lottery automatically executed for event '${eventData.name}'`,
+            actorName: "System"
+        }));
     }
 
     await Promise.all(promises);

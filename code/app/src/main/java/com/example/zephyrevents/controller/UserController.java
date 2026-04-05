@@ -96,6 +96,7 @@ public class UserController {
         userRepository.createUser(newUser, new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
+                SystemLogController.getInstance().logAction("USER_CREATED", "New user account created: " + name + " (" + email + ")", name);
                 prefs.edit().putString(KEY_USER_ID, newUserId).apply();
                 callback.onSuccess(null);
             }

@@ -227,7 +227,7 @@ public class EventConfirmationFragment extends Fragment {
 
                                     String action = viewModel.isEditMode ? "EVENT_EDITED" : "EVENT_CREATED";
                                     String desc = "Event '" + newEvent.getName() + "' was " + (viewModel.isEditMode ? "edited" : "created");
-                                    SystemLogController.getInstance().logAction(action, desc, newEvent.getOrganizerId());
+                                    SystemLogController.getInstance().logAction(action, desc, "Organizer");
 
                                     Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
                                     requireActivity().finish();

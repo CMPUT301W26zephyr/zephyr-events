@@ -23,6 +23,7 @@ import android.net.Uri;
 
 import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
@@ -207,6 +208,10 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void result) {
                         runOnUiThread(() -> {
+
+                            String deletedName = etName.getText() != null ? etName.getText().toString() : "Unknown User";
+                            SystemLogController.getInstance()
+                                    .logAction("ADMIN_DELETED_PROFILE", "Admin deleted user profile: " + deletedName, "Admin");
 
                             Intent resultIntent = new Intent();
                             resultIntent.putExtra("USER_DELETED", true);

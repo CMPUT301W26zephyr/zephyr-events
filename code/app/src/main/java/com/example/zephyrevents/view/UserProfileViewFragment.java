@@ -236,7 +236,10 @@ public class UserProfileViewFragment extends Fragment {
                         userController.deleteAccount(new RepositoryCallback<Void>() {
                             @Override
                             public void onSuccess(Void result) {
-                                SystemLogController.getInstance().logAction("USER_DELETED", "User deleted their profile", userController.getCurrentUserId());
+                                String deletedName = txtName.getText() != null ? txtName.getText().toString() : "Unknown User";
+                                SystemLogController.getInstance()
+                                        .logAction("USER_DELETED_PROFILE", "User deleted their profile: " + deletedName, deletedName);
+
                                 Intent intent = new Intent(requireContext(), WelcomeActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);

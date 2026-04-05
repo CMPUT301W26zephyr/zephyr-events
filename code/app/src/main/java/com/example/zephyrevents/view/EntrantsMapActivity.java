@@ -1,6 +1,7 @@
 package com.example.zephyrevents.view;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ public class EntrantsMapActivity extends AppCompatActivity {
 
         String eventId = getIntent().getStringExtra(EventDetailViewActivity.EXTRA_EVENT);
 
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
         TextView title = findViewById(R.id.toolbar_title);
         title.setText("Entrant Locations");

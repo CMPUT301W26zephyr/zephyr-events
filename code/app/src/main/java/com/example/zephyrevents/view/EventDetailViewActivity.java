@@ -563,6 +563,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
                             new RepositoryCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
+                                    com.example.zephyrevents.controller.SystemLogController.getInstance()
+                                            .logAction("ADMIN_DELETED_IMAGE", "Admin deleted poster for event: '" + event.getName() + "'", "Admin");
+
                                     runOnUiThread(() -> {
                                         Toast.makeText(
                                                 EventDetailViewActivity.this,
@@ -616,7 +619,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
                             new RepositoryCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
-                                    SystemLogController.getInstance().logAction("EVENT_DELETED", "Event was permanently deleted by Admin", "Admin");
+                                    SystemLogController.getInstance()
+                                            .logAction("ADMIN_DELETED_EVENT", "Admin deleted event: '" + event.getName() + "'", "Admin");
                                     runOnUiThread(() -> {
                                         Toast.makeText(EventDetailViewActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
                                         finish();
@@ -1124,7 +1128,6 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 repo.addUserToWaitlist(newEntry, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
-                        SystemLogController.getInstance().logAction("JOINED_WAITLIST", "User joined waitlist for " + event.getName(), currentUserId);
                         populateUI();
                         String name = eventNameForWaitlistStatus();
                         showCenteredWaitlistOverlay(
@@ -1337,7 +1340,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void res) {
-                        SystemLogController.getInstance().logAction("LOTTERY_RUN", "Lottery was manually executed", "Organizer");
+                        SystemLogController.getInstance()
+                                .logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + event.getName() + "'", organizerName.getText().toString());
                         Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
                         populateUI();
                     }
