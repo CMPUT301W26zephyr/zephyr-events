@@ -404,8 +404,8 @@ public class EventCreateFragment extends Fragment {
                                 viewModel.geolocationRadiusKm = 0.5; // fallback default
                             }
                             if (e.getLocation().getCoordinate() != null) {
-                                viewModel.eventLat = e.getLocation().getCoordinate().getLng();
-                                viewModel.eventLng = e.getLocation().getCoordinate().getLat();
+                                viewModel.eventLat = e.getLocation().getCoordinate().getLat();
+                                viewModel.eventLng = e.getLocation().getCoordinate().getLng();
                             }
 
                             long regStart = e.getRegistrationStartTime();
