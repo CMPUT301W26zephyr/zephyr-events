@@ -9,19 +9,22 @@
     android:background="#FFFFFF">
 
     <!-- Circular Avatar -->
-    <TextView
-        android:id="@+id/notification_avatar"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/notification_image_card"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="@drawable/bg_badge_private"
-        android:backgroundTint="@color/secondary_red"
-        android:gravity="center"
-        android:textColor="@color/primary_red"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="ZE" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/notification_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_image_placeholder2" />
+    </androidx.cardview.widget.CardView>
 
     <!-- Title -->
     <TextView
@@ -34,8 +37,8 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/notification_time"
-        app:layout_constraintStart_toEndOf="@id/notification_avatar"
-        app:layout_constraintTop_toTopOf="@id/notification_avatar"
+        app:layout_constraintStart_toEndOf="@id/notification_image_card"
+        app:layout_constraintTop_toTopOf="@id/notification_image_card"
         tools:text="You've been Selected!" />
 
     <!-- Description -->

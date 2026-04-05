@@ -38,6 +38,8 @@ public class MyEventsFragment extends Fragment {
 
     private MyEventListAdapter lotteryAdapter;
     private MyEventListAdapter historyAdapter;
+    private View notificationDot;
+    private com.google.firebase.firestore.ListenerRegistration notifRegistration;
     private boolean showingLotteries = true;
 
     @Nullable
@@ -61,6 +63,8 @@ public class MyEventsFragment extends Fragment {
 
         tabLotteries.setOnClickListener(v -> showLotteries());
         tabHistory.setOnClickListener(v -> showHistory());
+
+        notificationDot = view.findViewById(R.id.notification_dot);
 
         view.findViewById(R.id.toolbar_back).setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
@@ -90,10 +94,27 @@ public class MyEventsFragment extends Fragment {
         fetchUserEvents();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (notifRegistration != null) notifRegistration.remove();
+    }
 
     private void fetchUserEvents() {
         String currentUserId = new UserController(requireContext()).getCurrentUserId();
         if (currentUserId == null) return;
+
+        // Notification bell red icon
+        if (notifRegistration != null) notifRegistration.remove();
+        notifRegistration = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection("notifications")
+                .whereEqualTo("userId", currentUserId)
+                .whereEqualTo("read", false)
+                .addSnapshotListener((snap, e) -> {
+                    if (e == null && snap != null && notificationDot != null) {
+                        notificationDot.setVisibility(snap.isEmpty() ? View.GONE : View.VISIBLE);
+                    }
+                });
 
         // Fetch ALL events first so we can check their dates and find ones we organize
         EventController.getInstance().getAllEvents(new RepositoryCallback<List<Event>>() {

@@ -47,15 +47,22 @@ public class UserNotificationListView extends AppCompatActivity {
         btnClear.setVisibility(View.VISIBLE);
         btnClear.setOnClickListener(v -> {
             if (uid != null) {
-                new NotificationRepository().deleteAllUserNotifications(uid, new RepositoryCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        Toast.makeText(UserNotificationListView.this, "All notifications cleared", Toast.LENGTH_SHORT).show();
-                        recyclerView.setAdapter(new NotificationAdapter(new ArrayList<>()));
-                    }
-                    @Override
-                    public void onFailure(Exception e) {}
-                });
+                new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                        .setTitle("Clear Notifications")
+                        .setMessage("Are you sure you want to delete all notifications?")
+                        .setPositiveButton("Clear All", (dialog, which) -> {
+                            new NotificationRepository().deleteAllUserNotifications(uid, new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    Toast.makeText(UserNotificationListView.this, "All notifications cleared", Toast.LENGTH_SHORT).show();
+                                    recyclerView.setAdapter(new NotificationAdapter(new ArrayList<>()));
+                                }
+                                @Override
+                                public void onFailure(Exception e) {}
+                            });
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
         });
 
@@ -64,6 +71,8 @@ public class UserNotificationListView extends AppCompatActivity {
             finish();
             return;
         }
+
+        new NotificationRepository().markAllAsRead(uid);
 
         new NotificationRepository().getUserNotifications(uid, new RepositoryCallback<List<Notification>>() {
             @Override

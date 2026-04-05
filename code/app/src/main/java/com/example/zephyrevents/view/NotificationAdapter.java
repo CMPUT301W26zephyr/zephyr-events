@@ -67,8 +67,25 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(when, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
         holder.timeText.setText(timeAgo.toString());
 
-        // 4. Mock the Avatar Initials (e.g. "AB" as requested, or dynamically generated)
-        holder.avatarText.setText("ZE");
+        // 4. Event Image
+        com.bumptech.glide.Glide.with(holder.itemView.getContext()).clear(holder.avatarImg);
+        holder.avatarImg.setImageResource(R.drawable.ic_image_placeholder2);
+
+        // Fetch Event image directly
+        if (notif.getEventId() != null && !notif.getEventId().isEmpty()) {
+            com.example.zephyrevents.controller.EventController.getInstance().getEventById(notif.getEventId(), new com.example.zephyrevents.repository.RepositoryCallback<com.example.zephyrevents.model.Event>() {
+                @Override
+                public void onSuccess(com.example.zephyrevents.model.Event e) {
+                    if (e != null && e.getImageUrl() != null && !e.getImageUrl().isEmpty()) {
+                        com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                                .load(e.getImageUrl())
+                                .centerCrop()
+                                .into(holder.avatarImg);
+                    }
+                }
+                @Override public void onFailure(Exception ex) {}
+            });
+        }
 
         // 5. Button Visibility logic (Losers don't get a button)
         holder.btnGoto.setVisibility(View.VISIBLE);
@@ -89,20 +106,29 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             android.widget.PopupMenu popup = new android.widget.PopupMenu(v.getContext(), holder.moreIcon);
             popup.getMenu().add("Delete");
             popup.setOnMenuItemClickListener(item -> {
-                int safePosition = holder.getBindingAdapterPosition();
-                if (safePosition != RecyclerView.NO_POSITION) {
-                    new com.example.zephyrevents.repository.NotificationRepository()
-                            .deleteNotification(notif.getNotificationId(), new com.example.zephyrevents.repository.RepositoryCallback<Void>() {
-                                @Override
-                                public void onSuccess(Void result) {
-                                    notifications.remove(safePosition);
-                                    notifyItemRemoved(safePosition);
-                                    notifyItemRangeChanged(safePosition, notifications.size());
-                                }
-                                @Override
-                                public void onFailure(Exception e) { }
-                            });
-                }
+
+                new com.google.android.material.dialog.MaterialAlertDialogBuilder(v.getContext())
+                        .setTitle("Delete Notification")
+                        .setMessage("Are you sure you want to delete this notification?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
+                            int safePosition = holder.getBindingAdapterPosition();
+                            if (safePosition != RecyclerView.NO_POSITION) {
+                                new com.example.zephyrevents.repository.NotificationRepository()
+                                        .deleteNotification(notif.getNotificationId(), new com.example.zephyrevents.repository.RepositoryCallback<Void>() {
+                                            @Override
+                                            public void onSuccess(Void result) {
+                                                notifications.remove(safePosition);
+                                                notifyItemRemoved(safePosition);
+                                                notifyItemRangeChanged(safePosition, notifications.size());
+                                            }
+                                            @Override
+                                            public void onFailure(Exception e) { }
+                                        });
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+
                 return true;
             });
             popup.show();
@@ -115,13 +141,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView avatarText, titleText, descText, timeText;
-        ImageView moreIcon;
+        TextView titleText, descText, timeText;
+        ImageView avatarImg, moreIcon;
         Button btnGoto;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            avatarText = itemView.findViewById(R.id.notification_avatar);
+            avatarImg = itemView.findViewById(R.id.notification_avatar);
             titleText = itemView.findViewById(R.id.notification_title);
             descText = itemView.findViewById(R.id.notification_desc);
             timeText = itemView.findViewById(R.id.notification_time);
