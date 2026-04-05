@@ -23,8 +23,8 @@
                 android:id="@+id/confirm_event_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_image_placeholder2" />
+                android:scaleType="centerCrop"/>
+
         </FrameLayout>
 
         <LinearLayout

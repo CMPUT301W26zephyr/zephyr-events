@@ -290,4 +290,8 @@ public class Event {
     public void setPendingCoOrganizerUserIds(List<String> pendingCoOrganizerUserIds) {
         this.pendingCoOrganizerUserIds = pendingCoOrganizerUserIds;
     }
+
+    public boolean hasPosterImage(){
+        return imageUrl != null && !imageUrl.trim().isEmpty();
+    }
 }

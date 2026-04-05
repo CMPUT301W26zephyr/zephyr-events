@@ -124,13 +124,13 @@ public class EventController {
             });
         } else{
             final String eventId = event.getEventId();
-            if (existingImageUrl != null && !existingImageUrl.isEmpty()){
-                event.setImageUrl(existingImageUrl);
+            if (existingImageUrl != null && !existingImageUrl.trim().isEmpty()){
+                event.setImageUrl(existingImageUrl.trim());
             } else{
                 event.setImageUrl(null);
             }
 
-            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.isEmpty();
+            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.trim().isEmpty();
 
             eventRepository.saveEvent(event, new RepositoryCallback<Void>() {
                 @Override

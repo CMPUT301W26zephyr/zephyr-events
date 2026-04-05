@@ -556,11 +556,10 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
                     if (event == null) return;
 
-                    // remove only image
-                    event.setImageUrl("");
-
-                    EventController.getInstance().createEvent(
+                    EventController.getInstance().saveEventWithOptionalImage(
                             event,
+                            null,
+                            "",
                             new RepositoryCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
@@ -774,22 +773,30 @@ public class EventDetailViewActivity extends AppCompatActivity {
         if (eventPoster != null){
             eventPoster.setImageTintList(null);
             eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            String url = event.getImageUrl();
-            if (url != null && !url.isEmpty()){
+            if (event.hasPosterImage()) {
+                String url = event.getImageUrl();
                 Glide.with(this).load(url).centerCrop().into(eventPoster);
-                eventPoster.setOnClickListener(v -> {
-                    EventPosterFragment posterFragment = EventPosterFragment.newInstance(url);
-                    posterFragment.show(getSupportFragmentManager(), "EventPosterFragment");
-                });
-            } else{
-                eventPoster.setImageResource(R.drawable.ic_image_placeholder2);
-                eventPoster.setImageTintList(ContextCompat.getColorStateList(this, android.R.color.darker_gray));
-                eventPoster.setOnClickListener(null);
+                if (isAdminView) {
+                    eventPoster.setOnClickListener(v -> showAdminImageDialog());
+                } else {
+                    eventPoster.setOnClickListener(v -> {
+                        EventPosterFragment posterFragment = EventPosterFragment.newInstance(url);
+                        posterFragment.show(getSupportFragmentManager(), "EventPosterFragment");
+                    });
+                }
+                } else {
+                    Glide.with(this).clear(eventPoster);
+                    eventPoster.setImageDrawable(null);
+                    eventPoster.setImageTintList(null);
+                    eventPoster.setOnClickListener(null);
+                    if (isAdminView) {
+                        eventPoster.setOnClickListener(v -> showAdminImageDialog());
+                    } else {
+                        eventPoster.setOnClickListener(null);
+
+                    }
+                }
             }
-            if (isAdminView) {
-                eventPoster.setOnClickListener(v -> showAdminImageDialog());
-            }
-        }
 
         eventTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
         eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));

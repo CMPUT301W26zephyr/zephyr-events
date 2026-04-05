@@ -25,6 +25,7 @@ import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.RepositoryCallback;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -84,12 +85,14 @@ public class EventCreateFragment extends Fragment {
     private ActivityResultLauncher<PickVisualMediaRequest> pickEventImg;
     private ImageView eventImgPreview;
 
+    private MaterialButton btnPosterActions;
+
+
     private boolean eventHasPoster() {
         return viewModel != null
                 && (viewModel.pendingEventImageUri != null
-                || (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()));
-
-
+                || (viewModel.existingImgUrl != null
+                && !viewModel.existingImgUrl.trim().isEmpty()));
     }
 
     private void launchPickEventPoster() {
@@ -103,7 +106,7 @@ public class EventCreateFragment extends Fragment {
         viewModel.existingImgUrl = "";
         if (eventImgPreview != null) {
             Glide.with(this).clear(eventImgPreview);
-            eventImgPreview.setImageResource(R.drawable.ic_image_placeholder2);
+            eventImgPreview.setImageDrawable(null);
         }
     }
 
@@ -122,6 +125,8 @@ public class EventCreateFragment extends Fragment {
         });
         dialog.show();
     }
+
+
 
     private void showPosterOptionDialog() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_event_poster, null);
@@ -344,15 +349,15 @@ public class EventCreateFragment extends Fragment {
         });
 
         eventImgPreview = view.findViewById(R.id.event_image_preview);
-        View eventImgContainer = view.findViewById(R.id.event_image_container);
+        btnPosterActions = view.findViewById(R.id.btn_event_poster_actions);
 
-        eventImgContainer.setOnClickListener(v -> {
-            if (eventHasPoster()) {
-                showPosterOptionDialog();
-            } else {
-                launchPickEventPoster();
-            }
-        });
+       btnPosterActions.setOnClickListener(v -> {
+           if (eventHasPoster()){
+               showPosterOptionDialog();
+           } else {
+               launchPickEventPoster();
+           }
+       });
 
         if (viewModel.pendingEventImageUri != null) {
             Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(eventImgPreview);
