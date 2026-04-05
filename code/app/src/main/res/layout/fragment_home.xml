@@ -1,121 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.HomeFragment"
     android:id="@+id/swipe_refresh_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".view.HomeFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:layout_height="match_parent">
 
-        <!-- Top Navigation Area -->
-        <LinearLayout
-            android:id="@+id/top_nav"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="24dp"
-            android:gravity="center_vertical"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:fillViewport="true"
+            android:overScrollMode="never">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:background="#FFFFFF"
+                android:orientation="vertical"
+                android:paddingBottom="88dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Top Navigation Area -->
+                <LinearLayout
+                    android:id="@+id/top_nav"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Explore"
-                    android:textSize="18sp"
-                    android:textColor="#333333" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="24dp">
 
-                <TextView
-                    style="@style/TxtTitle"
-                    android:textColor="#FF3B5C"
-                    android:text="Your Community!" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Explore"
+                            android:textColor="#333333"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            style="@style/TxtTitle"
+                            android:text="Your Community!"
+                            android:textColor="#FF3B5C" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/btn_search"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="#333333" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/featured_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="24dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="24dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Featured Events"
+                        android:textColor="#333333"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/view_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View All"
+                        android:textColor="#FF3B5C"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 16dp padding + 8dp card margin = 24dp inset, same as category carousels (16dp RV + 8dp item) -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/carousel_featured"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp" />
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tab_layout_dots"
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:background="@android:color/transparent"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    app:tabBackground="@drawable/dot_full"
+                    app:tabGravity="center"
+                    app:tabIndicatorHeight="0dp"
+                    app:tabMaxWidth="32dp"
+                    app:tabPaddingEnd="16dp"
+                    app:tabPaddingStart="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/categories_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
             </LinearLayout>
-                <!-- Search Icon -->
-            <ImageView
-                android:id="@+id/btn_search"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_search"
-                app:tint="#333333" />
-        </LinearLayout>
-
-        <!-- Selection Tabs -->
-        <!-- Featured Events Header -->
-        <LinearLayout
-            android:id="@+id/featured_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="24dp"
-            app:layout_constraintTop_toBottomOf="@+id/top_nav">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Featured Events"
-                android:textColor="#333333"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/view_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="View All"
-                android:textColor="#FF3B5C"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- The Carousel -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/carousel_featured"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/featured_header" />
-
-        <!-- Dots Indicator -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout_dots"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:background="@android:color/transparent"
-            app:tabBackground="@drawable/dot_full"
-            app:tabGravity="center"
-            app:tabIndicatorHeight="0dp"
-            app:tabMaxWidth="32dp"
-            app:tabPaddingStart="16dp"
-            app:tabPaddingEnd="16dp"
-            app:layout_constraintTop_toBottomOf="@id/carousel_featured"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.core.widget.NestedScrollView>
 
         <ProgressBar
             android:id="@+id/progress_bar_featured"
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:visibility="gone"
+            android:layout_gravity="center"
             android:indeterminateTint="@color/primary_red"
-            style="?android:attr/progressBarStyleLarge"
-            app:layout_constraintTop_toTopOf="@id/carousel_featured"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:visibility="gone" />
+    </FrameLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
