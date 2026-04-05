@@ -1,5 +1,6 @@
 package com.example.zephyrevents.view;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -105,6 +107,28 @@ public class InviteUsersActivity extends AppCompatActivity {
         });
     }
 
+    /** Filled pink “Invite” vs white outlined pink “Delete” for pending/already-invited rows. */
+    private void applyInviteRowActionStyle(MaterialButton btn, boolean deleteMode) {
+        float d = getResources().getDisplayMetrics().density;
+        int cornerPx = Math.round(12 * d);
+        int strokePx = Math.max(1, Math.round(1 * d));
+        int pink = ContextCompat.getColor(this, R.color.primary_red);
+        int white = ContextCompat.getColor(this, R.color.white);
+        btn.setCornerRadius(cornerPx);
+        if (deleteMode) {
+            btn.setText(R.string.delete_action);
+            btn.setBackgroundTintList(ColorStateList.valueOf(white));
+            btn.setStrokeColor(ColorStateList.valueOf(pink));
+            btn.setStrokeWidth(strokePx);
+            btn.setTextColor(ColorStateList.valueOf(pink));
+        } else {
+            btn.setText(R.string.invite_action);
+            btn.setStrokeWidth(0);
+            btn.setBackgroundTintList(ColorStateList.valueOf(pink));
+            btn.setTextColor(ColorStateList.valueOf(white));
+        }
+    }
+
     private void runSearch(String query) {
         userRepository.searchUsers(query, new RepositoryCallback<List<User>>() {
             @Override
@@ -197,6 +221,7 @@ public class InviteUsersActivity extends AppCompatActivity {
 
             if (event == null) {
                 h.action.setEnabled(false);
+                applyInviteRowActionStyle(h.action, false);
                 return;
             }
             h.action.setEnabled(true);
@@ -207,14 +232,14 @@ public class InviteUsersActivity extends AppCompatActivity {
 
             if (MODE_CO_ORG.equals(mode)) {
                 if (isCo || isPendingCo) {
-                    h.action.setText(R.string.remove_action);
+                    applyInviteRowActionStyle(h.action, true);
                     h.action.setOnClickListener(v -> {
                         event.getCoOrganizerUserIds().remove(u.getId());
                         event.getPendingCoOrganizerUserIds().remove(u.getId());
                         persistEvent(null);
                     });
                 } else {
-                    h.action.setText(R.string.invite_action);
+                    applyInviteRowActionStyle(h.action, false);
                     h.action.setOnClickListener(v -> {
                         if (!event.getPendingCoOrganizerUserIds().contains(u.getId())) {
                             event.getPendingCoOrganizerUserIds().add(u.getId());
@@ -226,13 +251,13 @@ public class InviteUsersActivity extends AppCompatActivity {
                 }
             } else {
                 if (isPendingWaitlist) {
-                    h.action.setText(R.string.remove_action);
+                    applyInviteRowActionStyle(h.action, true);
                     h.action.setOnClickListener(v -> {
                         event.getPendingPrivateWaitlistInviteUserIds().remove(u.getId());
                         persistEvent(null);
                     });
                 } else {
-                    h.action.setText(R.string.invite_action);
+                    applyInviteRowActionStyle(h.action, false);
                     h.action.setOnClickListener(v -> {
                         if (event.getCoOrganizerUserIds().contains(u.getId())) {
                             Toast.makeText(InviteUsersActivity.this, R.string.coorganizer_cannot_join, Toast.LENGTH_SHORT).show();

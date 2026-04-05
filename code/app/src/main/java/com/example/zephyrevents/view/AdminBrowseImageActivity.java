@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.util.DialogUiHelper;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
@@ -145,18 +146,17 @@ public class AdminBrowseImageActivity extends AppCompatActivity {
 
         View dialogView = LayoutInflater.from(this)
                 .inflate(R.layout.admin_delete_yesorno, null);
+        DialogUiHelper.bindAdminDeleteContent(dialogView,
+                R.string.admin_delete_title_event,
+                R.string.admin_delete_message_event);
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
 
-        // Cancel → go back to list
         dialogView.findViewById(R.id.button_cancel)
-                .setOnClickListener(v -> {
-                    dialog.dismiss();
-                    finish();
-                });
+                .setOnClickListener(v -> dialog.dismiss());
 
         // Delete event
         dialogView.findViewById(R.id.button_delete)

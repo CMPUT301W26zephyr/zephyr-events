@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,8 @@ import com.example.zephyrevents.repository.EventRepository;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
 import com.example.zephyrevents.repository.WaitlistRepository;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -245,17 +248,7 @@ public class EntrantsListFragment extends Fragment {
                         EntrantAdapter adapter = new EntrantAdapter(entrantList, entrant -> {
                             WaitlistEntry mappedEntry = entryMap.get(entrant);
                             if (mappedEntry != null) {
-                                waitlistRepository.updateStatus(eventId, mappedEntry.getUserId(), Status.DECLINED, new RepositoryCallback<Void>() {
-                                    @Override
-                                    public void onSuccess(Void result) {
-                                        loadData(recyclerView);
-                                    }
-
-                                    @Override
-                                    public void onFailure(Exception e) {
-                                        Toast.makeText(requireContext(), "Failed to cancel entrant", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                showCancelUnregisteredConfirmation(mappedEntry, recyclerView);
                             }
                         }, entrant -> {
                             if (entrant.userId == null || entrant.userId.isEmpty()) {
@@ -308,6 +301,38 @@ public class EntrantsListFragment extends Fragment {
                 Toast.makeText(requireContext(), "Error checking event status", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /** Unregistered tab: confirm before declining the entrant (same shell as other admin-style delete dialogs). */
+    private void showCancelUnregisteredConfirmation(WaitlistEntry mappedEntry, RecyclerView recyclerView) {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.admin_delete_yesorno, null);
+        DialogUiHelper.bindAdminDeleteContent(dialogView,
+                R.string.entrants_cancel_unregistered_title,
+                R.string.entrants_cancel_unregistered_message);
+        MaterialButton confirmBtn = dialogView.findViewById(R.id.button_delete);
+        confirmBtn.setText(R.string.dialog_action_confirm);
+
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        dialogView.findViewById(R.id.button_cancel).setOnClickListener(v -> dialog.dismiss());
+        confirmBtn.setOnClickListener(v -> {
+            dialog.dismiss();
+            waitlistRepository.updateStatus(eventId, mappedEntry.getUserId(), Status.DECLINED, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    loadData(recyclerView);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(requireContext(), "Failed to cancel entrant", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+        dialog.show();
     }
 
     private static void saveEntrantsToCsv(Context context, List<WaitlistEntry> entrants, String eventId, Map<String, User> userCache) {

@@ -131,6 +131,21 @@
     <string name="search_users_hint">Search by name, phone, or email</string>
     <string name="invite_action">+ Invite</string>
     <string name="remove_action">Remove</string>
+    <string name="delete_action">Delete</string>
+    <string name="admin_browse_edit_profile">Edit</string>
+    <string name="confirm_geo_badge_label">Location check-in required (GPS)</string>
+
+    <string name="admin_delete_title_image">Delete this image?</string>
+    <string name="admin_delete_message_image">This event poster will be permanently removed.</string>
+    <string name="admin_delete_title_event">Delete this event?</string>
+    <string name="admin_delete_message_event">This event and its data will be permanently deleted.</string>
+    <string name="admin_delete_title_user">Delete this user\'s profile?</string>
+    <string name="admin_delete_message_user">This profile and related data will be permanently removed.</string>
+    <string name="admin_delete_title_own_profile">Delete your profile?</string>
+    <string name="admin_delete_message_own_profile">Your account, waitlist entries, and personal information will be permanently deleted.</string>
+    <string name="dialog_action_confirm">Confirm</string>
+    <string name="entrants_cancel_unregistered_title">Cancel this registration?</string>
+    <string name="entrants_cancel_unregistered_message">This entrant will be marked as declined and removed from the unregistered list.</string>
     <string name="next">Next</string>
 
     <!-- Notifications copy -->
