@@ -183,8 +183,8 @@ public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
 
                 @Override
                 public void onFailure(Exception e) {
-                    titleView.setText("Unknown Event");
-                    applyTicketColors(rowFinal, TicketKind.NEUTRAL);
+                    rowFinal.setVisibility(View.GONE);
+                    rowFinal.setLayoutParams(new android.widget.AbsListView.LayoutParams(-1, 1));
                 }
             });
         }

@@ -59,6 +59,26 @@ public class DrawReplacementsDialog extends DialogFragment {
             new LotteryController().drawReplacements(eventId, new RepositoryCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
+                    // Log Draw Replacements
+                    new com.example.zephyrevents.repository.EventRepository().getEventById(eventId, new RepositoryCallback<com.example.zephyrevents.model.Event>() {
+                        @Override
+                        public void onSuccess(com.example.zephyrevents.model.Event e) {
+                            String eName = (e != null && e.getName() != null) ? e.getName() : "Unknown Event";
+                            new com.example.zephyrevents.repository.UserRepository().getUserById(
+                                    new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId(),
+                                    new RepositoryCallback<com.example.zephyrevents.model.User>() {
+                                        @Override
+                                        public void onSuccess(com.example.zephyrevents.model.User u) {
+                                            String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                                            com.example.zephyrevents.controller.SystemLogController.getInstance()
+                                                    .logAction("DRAW_REPLACEMENTS", "Replacement entrants were drawn for event: '" + eName + "'", actor);
+                                        }
+                                        @Override public void onFailure(Exception ex) {}
+                                    });
+                        }
+                        @Override public void onFailure(Exception ex) {}
+                    });
+
                     Toast.makeText(requireContext(), "Replacements Drawn!", Toast.LENGTH_SHORT).show();
                     dismiss();
                 }
