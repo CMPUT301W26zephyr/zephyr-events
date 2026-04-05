@@ -748,7 +748,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private void setupBackButton() {
         ImageButton back = findViewById(R.id.button_back);
-        if (back != null) back.setOnClickListener(v -> finish());
+        if (back != null) back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
     }
 
     private void navigateBack() {
