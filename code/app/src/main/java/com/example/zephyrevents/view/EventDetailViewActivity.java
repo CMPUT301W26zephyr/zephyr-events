@@ -502,6 +502,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 }
                 String avatarForPost = avatarUrl;
                 CommentComposeBottomSheet.show(EventDetailViewActivity.this, title, subtitle, letter,
+                        avatarForPost.isEmpty() ? null : avatarForPost,
                         text -> postComment(text, parentCommentId, authorName, avatarForPost.isEmpty() ? null : avatarForPost));
             }
 
@@ -769,8 +770,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(url)
                 .circleCrop()
-                .placeholder(R.drawable.ic_person)
-                .error(R.drawable.ic_person)
+                .placeholder(R.drawable.bg_comment_avatar)
+                .error(R.drawable.bg_comment_avatar)
                 .into(organizerAvatar);
         organizerAvatar.clearColorFilter();
     }
@@ -809,7 +810,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
             }
 
         eventTitle.setText(event.getName() != null ? event.getName() : "Unnamed Event");
-        eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
+        if (event.getPrice() <= 0) {
+            eventPrice.setText(R.string.event_price_free);
+        } else {
+            eventPrice.setText(String.format(Locale.getDefault(), "$%.2f", event.getPrice()));
+        }
 
         if (event.getTime() != null && event.getTime().getStartTime() > 0) {
             eventDate.setText(new SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault()).format(new Date(event.getTime().getStartTime())));

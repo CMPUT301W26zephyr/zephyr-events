@@ -2,14 +2,10 @@ package com.example.zephyrevents.view;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -25,6 +21,18 @@ public class OrganizerEntrantsListView extends AppCompatActivity {
 
     private final String[] tabTitles = new String[]{"Waitlist", "Winners", "Unregistered", "Final List"};
     private String eventId;
+    private TabLayout tabLayout;
+
+    /**
+     * Called by {@link EntrantsListFragment} when waitlist data loads so tab labels show counts, e.g. Waitlist (3).
+     */
+    public void updateTabCount(int tabIndex, int count) {
+        if (tabLayout == null || tabIndex < 0 || tabIndex >= tabTitles.length) return;
+        TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
+        if (tab != null) {
+            tab.setText(tabTitles[tabIndex] + " (" + count + ")");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +52,13 @@ public class OrganizerEntrantsListView extends AppCompatActivity {
         findViewById(R.id.btn_cancel).setVisibility(View.GONE);
         findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout = findViewById(R.id.tab_layout);
         ViewPager2 viewPager = findViewById(R.id.view_pager);
 
         viewPager.setAdapter(new EntrantsPagerAdapter(this));
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            tab.setText(tabTitles[position]);
+            tab.setText(tabTitles[position] + " (0)");
         }).attach();
     }
 
