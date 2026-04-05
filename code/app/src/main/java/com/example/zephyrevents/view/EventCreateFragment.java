@@ -129,7 +129,6 @@ public class EventCreateFragment extends Fragment {
     }
 
 
-
     private void showPosterOptionDialog() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_event_poster, null);
         AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
@@ -203,24 +202,24 @@ public class EventCreateFragment extends Fragment {
         inputRadius.setText("500");
 
         inputRadius.addTextChangedListener(new android.text.TextWatcher() {
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             public void afterTextChanged(android.text.Editable s) {
                 String val = s.toString().trim();
                 if (!val.isEmpty()) {
-                    selectedRadiusMeters = Double.parseDouble(val);
-                    viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
-                    if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
-                        org.osmdroid.util.GeoPoint last = new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng);
-                        mapView.getOverlays().clear();
-                        mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
-                        org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
-                        circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(last, selectedRadiusMeters));
-                        circle.setFillColor(0x33E53935);
-                        circle.setStrokeColor(0x99E53935);
-                        circle.setStrokeWidth(2f);
-                        mapView.getOverlays().add(circle);
-                        mapView.invalidate();
+                    try {
+                        selectedRadiusMeters = Double.parseDouble(val);
+                        viewModel.geolocationRadiusKm = selectedRadiusMeters / 1000.0;
+                        if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
+                            org.osmdroid.util.GeoPoint pt = new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng);
+                            updateMapCircle(pt, selectedRadiusMeters, mapView, true);
+                        }
+                    } catch (NumberFormatException e) {
+                        // ignore invalid input
                     }
                 }
             }
@@ -260,25 +259,14 @@ public class EventCreateFragment extends Fragment {
         receiver = new org.osmdroid.events.MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(org.osmdroid.util.GeoPoint p) {
-                mapView.getOverlays().clear();
-                mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
-
-                org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
-                circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(p, selectedRadiusMeters));
-                circle.setFillColor(0x33E53935);
-                circle.setStrokeColor(0x99E53935);
-                circle.setStrokeWidth(2f);
-                mapView.getOverlays().add(circle);
-
-                viewModel.eventLat = p.getLatitude();
-                viewModel.eventLng = p.getLongitude();
-
-                mapView.invalidate();
+                updateMapCircle(p, selectedRadiusMeters, mapView, false);
                 return true;
             }
 
             @Override
-            public boolean longPressHelper(org.osmdroid.util.GeoPoint p) { return false; }
+            public boolean longPressHelper(org.osmdroid.util.GeoPoint p) {
+                return false;
+            }
         };
 
         mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
@@ -353,13 +341,13 @@ public class EventCreateFragment extends Fragment {
         eventImgPreview = view.findViewById(R.id.event_image_preview);
         btnPosterActions = view.findViewById(R.id.btn_event_poster_actions);
 
-       btnPosterActions.setOnClickListener(v -> {
-           if (eventHasPoster()){
-               showPosterOptionDialog();
-           } else {
-               launchPickEventPoster();
-           }
-       });
+        btnPosterActions.setOnClickListener(v -> {
+            if (eventHasPoster()) {
+                showPosterOptionDialog();
+            } else {
+                launchPickEventPoster();
+            }
+        });
 
         if (viewModel.pendingEventImageUri != null) {
             Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(eventImgPreview);
@@ -410,6 +398,16 @@ public class EventCreateFragment extends Fragment {
                                 }
                             }
 
+                            viewModel.requireGeolocation = e.getLocation().isRequiresGeolocation();
+                            viewModel.geolocationRadiusKm = e.getLocation().getGeolocationRadiusKm();
+                            if (viewModel.geolocationRadiusKm == 0) {
+                                viewModel.geolocationRadiusKm = 0.5; // fallback default
+                            }
+                            if (e.getLocation().getCoordinate() != null) {
+                                viewModel.eventLat = e.getLocation().getCoordinate().getLng();
+                                viewModel.eventLng = e.getLocation().getCoordinate().getLat();
+                            }
+
                             long regStart = e.getRegistrationStartTime();
                             long regEnd = e.getRegistrationEndTime();
                             long eventTime = e.getTime() != null ? e.getTime().getStartTime() : 0;
@@ -436,6 +434,22 @@ public class EventCreateFragment extends Fragment {
                             inputAttendeeCount.setText(viewModel.attendeeCount);
                             inputLocation.setText(viewModel.location);
                             inputAddress.setText(viewModel.address);
+
+                            SwitchMaterial switchGeo = view.findViewById(R.id.switch_geolocation);
+                            switchGeo.setChecked(viewModel.requireGeolocation);
+
+                            view.findViewById(R.id.map_frame).setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
+                            view.findViewById(R.id.geo_controls).setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
+
+                            EditText inputRadius = view.findViewById(R.id.input_radius);
+                            selectedRadiusMeters = viewModel.geolocationRadiusKm * 1000.0;
+                            inputRadius.setText(String.valueOf((int) selectedRadiusMeters));
+
+                            if (viewModel.eventLat != 0 && viewModel.eventLng != 0) {
+                                org.osmdroid.views.MapView mapView = view.findViewById(R.id.map_view);
+                                org.osmdroid.util.GeoPoint pt = new org.osmdroid.util.GeoPoint(viewModel.eventLat, viewModel.eventLng);
+                                updateMapCircle(pt, selectedRadiusMeters, mapView, true);
+                            }
 
                             toggleVisibility.check(viewModel.privateEvent ? R.id.btn_visibility_private : R.id.btn_visibility_public);
                             privateWarning.setVisibility(viewModel.privateEvent ? View.VISIBLE : View.GONE);
@@ -790,33 +804,90 @@ public class EventCreateFragment extends Fragment {
             }
 
             android.location.Address result = results.get(0);
-            double lat = result.getLatitude();
-            double lng = result.getLongitude();
 
-            org.osmdroid.util.GeoPoint point = new org.osmdroid.util.GeoPoint(lat, lng);
-
-            mapView.getOverlays().clear();
-            mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
-
-
-            org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
-            circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(point, selectedRadiusMeters));
-            circle.setFillColor(0x33E53935);
-            circle.setStrokeColor(0x99E53935);
-            circle.setStrokeWidth(2f);
-            mapView.getOverlays().add(circle);
-
-            viewModel.eventLat = lat;
-            viewModel.eventLng = lng;
-
-            mapView.getController().setZoom(16.0);
-            mapView.getController().setCenter(point);
-            mapView.invalidate();
+            org.osmdroid.util.GeoPoint point = new org.osmdroid.util.GeoPoint(result.getLatitude(), result.getLongitude());
+            updateMapCircle(point, selectedRadiusMeters, mapView, true);
 
             Toast.makeText(requireContext(), "Address found.", Toast.LENGTH_SHORT).show();
 
         } catch (java.io.IOException e) {
             Toast.makeText(requireContext(), "Could not search address.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // The following function is from Google Gemini 3.1 Pro Preview, Google AI Studio, "the fill in
+    // circle is not rendered correctly if it's more than half the circumference of the earth; could
+    // you extract the drawing logic as a method and make the zooming be handled properly?"
+    private void updateMapCircle(org.osmdroid.util.GeoPoint point, double radiusMeters, org.osmdroid.views.MapView mapView, boolean zoomToFit) {
+        if (point == null || mapView == null) return;
+
+        // Save coordinates to ViewModel
+        viewModel.eventLat = point.getLatitude();
+        viewModel.eventLng = point.getLongitude();
+
+        mapView.getOverlays().clear();
+        if (receiver != null) {
+            mapView.getOverlays().add(new org.osmdroid.views.overlay.MapEventsOverlay(receiver));
+        }
+
+        // 1. Draw the Radius Overlay OR a "Global" Fill
+        // 10,000 km effectively covers half the globe. Anything larger triggers
+        // spherical math projection bugs in osmdroid, so we snap it to Global.
+        if (radiusMeters >= 10000000.0) {
+            // Draw a massive rectangle that tints the entire map view red
+            org.osmdroid.views.overlay.Polygon globalFill = new org.osmdroid.views.overlay.Polygon();
+            java.util.List<org.osmdroid.util.GeoPoint> globalPoints = new java.util.ArrayList<>();
+            globalPoints.add(new org.osmdroid.util.GeoPoint(85.0, -180.0));
+            globalPoints.add(new org.osmdroid.util.GeoPoint(85.0, 180.0));
+            globalPoints.add(new org.osmdroid.util.GeoPoint(-85.0, 180.0));
+            globalPoints.add(new org.osmdroid.util.GeoPoint(-85.0, -180.0));
+            globalPoints.add(new org.osmdroid.util.GeoPoint(85.0, -180.0)); // Close the polygon
+
+            globalFill.setPoints(globalPoints);
+            globalFill.setFillColor(0x33E53935);
+            globalFill.setStrokeColor(0x00000000); // Hide the border for global fill
+            mapView.getOverlays().add(globalFill);
+        } else {
+            // Draw the exact radius circle
+            org.osmdroid.views.overlay.Polygon circle = new org.osmdroid.views.overlay.Polygon();
+            circle.setPoints(org.osmdroid.views.overlay.Polygon.pointsAsCircle(point, radiusMeters));
+            circle.setFillColor(0x33E53935);
+            circle.setStrokeColor(0x99E53935);
+            circle.setStrokeWidth(2f);
+            mapView.getOverlays().add(circle);
+        }
+
+        // 2. Add a Marker (Pin) exactly at the center coordinates
+        org.osmdroid.views.overlay.Marker centerMarker = new org.osmdroid.views.overlay.Marker(mapView);
+        centerMarker.setPosition(point);
+        centerMarker.setAnchor(org.osmdroid.views.overlay.Marker.ANCHOR_CENTER, org.osmdroid.views.overlay.Marker.ANCHOR_BOTTOM);
+        centerMarker.setTitle("Event Center");
+
+        android.graphics.drawable.GradientDrawable circle = new android.graphics.drawable.GradientDrawable();
+        circle.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+        circle.setColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
+        circle.setSize(30, 30);
+        centerMarker.setIcon(circle);
+
+        mapView.getOverlays().add(centerMarker);
+
+        // 3. Handle Auto-Zooming
+        if (zoomToFit) {
+            mapView.post(() -> {
+                if (radiusMeters >= 5000000.0) {
+                    // Zoom all the way out for massive/global radii
+                    mapView.getController().setZoom(1.8);
+                    mapView.getController().setCenter(point);
+                } else if (mapView.getWidth() > 0 && mapView.getHeight() > 0) {
+                    java.util.List<org.osmdroid.util.GeoPoint> pts = org.osmdroid.views.overlay.Polygon.pointsAsCircle(point, radiusMeters);
+                    org.osmdroid.util.BoundingBox bbox = org.osmdroid.util.BoundingBox.fromGeoPoints(pts);
+                    mapView.zoomToBoundingBox(bbox, true, 80);
+                } else {
+                    mapView.getController().setCenter(point);
+                }
+            });
+        } else {
+            mapView.invalidate();
         }
     }
 }

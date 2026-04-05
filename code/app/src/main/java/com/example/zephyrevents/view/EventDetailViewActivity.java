@@ -864,6 +864,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
             manageQr.setVisibility(isManagingUser && !event.isPrivateEvent() ? View.VISIBLE : View.GONE);
         }
 
+        View entrantMap = findViewById(R.id.manage_row_map);
+        if (entrantMap != null) {
+            entrantMap.setVisibility(isManagingUser && event.getLocation().isRequiresGeolocation() ? View.VISIBLE : View.GONE);
+        }
+
         MaterialCardView organizerCard = findViewById(R.id.organizer_card);
         if (organizerCard != null) {
             organizerCard.setOnClickListener(v -> {
