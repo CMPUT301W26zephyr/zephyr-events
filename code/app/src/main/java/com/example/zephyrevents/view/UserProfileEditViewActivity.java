@@ -26,6 +26,7 @@ import android.net.Uri;
 import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.SystemLogController;
+import com.example.zephyrevents.util.DialogUiHelper;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
@@ -178,18 +179,17 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
     private void showDeleteDialog() {
         View dialogView = LayoutInflater.from(this)
                 .inflate(R.layout.admin_delete_yesorno, null);
+        DialogUiHelper.bindAdminDeleteContent(dialogView,
+                R.string.admin_delete_title_user,
+                R.string.admin_delete_message_user);
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
 
-        // Cancel → go back to list
         dialogView.findViewById(R.id.button_cancel)
-                .setOnClickListener(v -> {
-                    dialog.dismiss();
-                    finish(); // return to list
-                });
+                .setOnClickListener(v -> dialog.dismiss());
 
         // Delete
         dialogView.findViewById(R.id.button_delete)

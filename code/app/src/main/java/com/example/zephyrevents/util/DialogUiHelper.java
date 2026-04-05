@@ -1,8 +1,11 @@
 package com.example.zephyrevents.util;
 
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
@@ -53,6 +56,21 @@ public final class DialogUiHelper {
         }
         if (pos != null) {
             pos.setTextColor(pink);
+        }
+    }
+
+    /** Sets title and body on {@link R.layout#admin_delete_yesorno} for contextual admin delete confirmations. */
+    public static void bindAdminDeleteContent(@Nullable View root, @StringRes int titleRes, @StringRes int messageRes) {
+        if (root == null) {
+            return;
+        }
+        TextView title = root.findViewById(R.id.admin_delete_title);
+        TextView message = root.findViewById(R.id.admin_delete_message);
+        if (title != null) {
+            title.setText(titleRes);
+        }
+        if (message != null) {
+            message.setText(messageRes);
         }
     }
 }

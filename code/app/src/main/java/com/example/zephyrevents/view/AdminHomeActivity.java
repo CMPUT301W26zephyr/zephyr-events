@@ -26,6 +26,7 @@ import androidx.core.view.WindowCompat;
 import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.UserController;
+import com.example.zephyrevents.util.DialogUiHelper;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
 public class AdminHomeActivity extends AppCompatActivity {
@@ -75,8 +76,6 @@ public class AdminHomeActivity extends AppCompatActivity {
                     });
                 }
         );
-
-        findViewById(R.id.admin_back).setOnClickListener(v -> finish());
 
         findViewById(R.id.admin_btn_edit_avatar).setOnClickListener(v -> {
             if (profileHasAvatar) {
@@ -166,16 +165,19 @@ public class AdminHomeActivity extends AppCompatActivity {
     }
 
     private void showDeleteConfirmDialog() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_profile_confirm, null);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.admin_delete_yesorno, null);
+        DialogUiHelper.bindAdminDeleteContent(dialogView,
+                R.string.admin_delete_title_own_profile,
+                R.string.admin_delete_message_own_profile);
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
 
-        dialogView.findViewById(R.id.btnDialogCancel).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.button_cancel).setOnClickListener(v -> dialog.dismiss());
 
-        dialogView.findViewById(R.id.btnDialogConfirm).setOnClickListener(v -> {
+        dialogView.findViewById(R.id.button_delete).setOnClickListener(v -> {
             dialog.dismiss();
             userController.deleteAccount(new RepositoryCallback<Void>() {
                 @Override

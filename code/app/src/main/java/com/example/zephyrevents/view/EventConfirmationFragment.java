@@ -51,6 +51,7 @@ public class EventConfirmationFragment extends Fragment {
         TextView regPeriod = view.findViewById(R.id.text_confirm_reg_period);
         TextView location = view.findViewById(R.id.text_confirm_location);
         TextView geo = view.findViewById(R.id.text_confirm_geo);
+        TextView geoBadge = view.findViewById(R.id.text_confirm_geo_badge);
         TextView capacity = view.findViewById(R.id.text_confirm_capacity);
         TextView waitlistCap = view.findViewById(R.id.text_confirm_waitlist_capacity);
         TextView visibility = view.findViewById(R.id.text_confirm_visibility);
@@ -66,6 +67,9 @@ public class EventConfirmationFragment extends Fragment {
         date.setText(viewModel.eventDate);
         regPeriod.setText(viewModel.registrationPeriod);
         geo.setText(viewModel.requireGeolocation ? "Required" : "Not Required");
+        if (geoBadge != null) {
+            geoBadge.setVisibility(viewModel.requireGeolocation ? View.VISIBLE : View.GONE);
+        }
 
         String locationStr = viewModel.location;
         if (viewModel.address != null && !viewModel.address.trim().isEmpty()) {

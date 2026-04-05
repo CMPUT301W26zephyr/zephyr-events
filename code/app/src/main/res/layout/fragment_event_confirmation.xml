@@ -174,6 +174,21 @@
                         tools:text="Community Rec Centre (1234 State Ave)" />
 
                     <TextView
+                        android:id="@+id/text_confirm_geo_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_geo_required_badge"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="5dp"
+                        android:text="@string/confirm_geo_badge_label"
+                        android:textColor="@color/primary_red"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"

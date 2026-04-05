@@ -11,8 +11,8 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_buttons"
         android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp" />
+        android:paddingTop="4dp"
+        android:paddingBottom="12dp" />
 
     <LinearLayout
         android:id="@+id/bottom_buttons"

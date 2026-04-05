@@ -125,6 +125,8 @@ public class AdminBrowseProfilesActivity extends AppCompatActivity {
                 h.avatar.setImageDrawable(null);
             }
 
+            h.action.setText(R.string.admin_browse_edit_profile);
+
             h.action.setOnClickListener(v -> {
                 Intent intent = new Intent(AdminBrowseProfilesActivity.this, UserProfileEditViewActivity.class);
                 intent.putExtra("userId", u.getId());
