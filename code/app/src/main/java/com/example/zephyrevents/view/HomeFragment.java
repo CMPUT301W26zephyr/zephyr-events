@@ -436,6 +436,11 @@ public class HomeFragment extends Fragment {
         if (event.getImageUrl() != null && !event.getImageUrl().trim().isEmpty()) {
             score += 50;  // favor images
         }
+        String desc = event.getDescription();
+        if (desc != null && !desc.trim().isEmpty()) {
+            score += 8 + Math.min(desc.length()/5, 12);
+        }
+
         // TODO: add more heuristics for featured events
         return score;
     }
