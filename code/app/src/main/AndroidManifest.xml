@@ -98,7 +98,6 @@
         <activity android:name=".view.AdminBrowseImageActivity" />
         <activity android:name=".view.AdminBrowseEventActivity" />
         <activity android:name=".view.AdminSystemNotificationActivity" />
-        <activity android:name=".view.AdminStatisticsActivity" />
         <activity android:name=".view.AdminSystemLogActivity" />
         <activity android:name=".view.AdminTermsConditionsActivity" />
 
