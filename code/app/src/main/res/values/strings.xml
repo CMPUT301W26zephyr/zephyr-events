@@ -179,4 +179,17 @@
     <string name="admin_browse_images">Browse images</string>
     <string name="admin_system_logs">System logs</string>
     <string name="delete_profile">Delete Profile</string>
+
+    <!-- Home explore categories -->
+    <string name="home_category_closing_soon">Closing soon</string>
+    <string name="home_category_trending">Trending</string>
+    <string name="home_category_new">New on Lottofy</string>
+    <string name="home_category_free">Free for all</string>
+    <string name="home_see_all">See all</string>
+
+    <string name="events_list_search_hint_default">Search events</string>
+    <string name="events_list_search_hint_closing_soon">Search closing soon</string>
+    <string name="events_list_search_hint_trending">Search trending</string>
+    <string name="events_list_search_hint_new">Search new on Lottofy</string>
+    <string name="events_list_search_hint_free">Search free events</string>
 </resources>
