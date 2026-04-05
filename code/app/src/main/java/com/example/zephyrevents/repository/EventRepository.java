@@ -181,15 +181,23 @@ public class EventRepository {
     public void deleteEvent(String eventId, RepositoryCallback<Void> callback) {
         db.collection(Collections.EVENTS).document(eventId).delete()
                 .addOnSuccessListener(aVoid -> {
-                    // Cascade delete associated waitlists
-                    db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
-                            .whereEqualTo("eventId", eventId)
-                            .get()
-                            .addOnSuccessListener(querySnapshot -> {
-                                for (DocumentSnapshot doc : querySnapshot) {
-                                    doc.getReference().delete();
-                                }
+                    // 1. Cascade delete waitlists
+                    db.collection(Collections.WAITLIST).whereEqualTo("eventId", eventId).get()
+                            .addOnSuccessListener(snap -> {
+                                for (DocumentSnapshot doc : snap) doc.getReference().delete();
                             });
+
+                    // 2. Cascade delete comments
+                    db.collection(Collections.EVENT_COMMENTS).whereEqualTo("eventId", eventId).get()
+                            .addOnSuccessListener(snap -> {
+                                for (DocumentSnapshot doc : snap) doc.getReference().delete();
+                            });
+
+                    // 3. Cascade delete image from storage
+                    new com.example.zephyrevents.repository.ImageRepository().deleteEventPoster(eventId, new RepositoryCallback<Void>() {
+                        @Override public void onSuccess(Void result) {}
+                        @Override public void onFailure(Exception e) {}
+                    });
 
                     callback.onSuccess(null);
                 })

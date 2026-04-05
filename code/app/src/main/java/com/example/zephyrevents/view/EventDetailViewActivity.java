@@ -188,6 +188,13 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
+                if (isFinishing() || isDestroyed()) return;
+
+                // If the event was just deleted, the document no longer exists, so show only one toast
+                if (e != null && e.getMessage() != null && e.getMessage().contains("doesn't exist")) {
+                    finish();
+                    return;
+                }
                 Toast.makeText(EventDetailViewActivity.this, "Failed to load event.", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -748,11 +755,13 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
     private void setupBackButton() {
         ImageButton back = findViewById(R.id.button_back);
-        if (back != null) back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        if (back != null) back.setOnClickListener(v -> navigateBack());
     }
 
     private void navigateBack() {
         boolean fromNotif = getIntent().getBooleanExtra("FROM_NOTIFICATION", false);
+
+        // If it's the root of the task or it came from a notification, rebuild the app stack
         if (isTaskRoot() || fromNotif) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1371,8 +1380,16 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void res) {
-                        SystemLogController.getInstance()
-                                .logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + event.getName() + "'", organizerName.getText().toString());
+                        // Log Manual Lottery with Real Name
+                        userRepository.getUserById(currentUserId, new RepositoryCallback<User>() {
+                            @Override
+                            public void onSuccess(User u) {
+                                String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                                SystemLogController.getInstance().logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + event.getName() + "'", actor);
+                            }
+                            @Override public void onFailure(Exception e) {}
+                        });
+
                         Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
                         populateUI();
                     }

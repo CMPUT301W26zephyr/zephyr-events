@@ -363,14 +363,31 @@ public class EventCreateFragment extends Fragment {
                 EventController.getInstance().deleteEvent(viewModel.eventId, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
+                        // NEW: Fetch real name for the log
+                        new com.example.zephyrevents.repository.UserRepository().getUserById(
+                                new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId(),
+                                new RepositoryCallback<com.example.zephyrevents.model.User>() {
+                                    @Override
+                                    public void onSuccess(com.example.zephyrevents.model.User u) {
+                                        String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                                        String eName = (viewModel.title != null && !viewModel.title.isEmpty()) ? viewModel.title : "Unknown Event";
+                                        com.example.zephyrevents.controller.SystemLogController.getInstance()
+                                                .logAction("EVENT_DELETED", "Event '" + eName + "' was deleted", actor);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Exception e) {
+                                    }
+                                });
+
                         Toast.makeText(requireContext(), "Event Deleted", Toast.LENGTH_SHORT).show();
                         requireActivity().finish();
                     }
-
                     @Override
                     public void onFailure(Exception e) {
                         Toast.makeText(requireContext(), "Failed to delete event", Toast.LENGTH_SHORT).show();
                     }
+
                 });
             });
 

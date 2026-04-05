@@ -224,18 +224,27 @@ public class EventConfirmationFragment extends Fragment {
                             new RepositoryCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
+                                    // Fetch organizer name for the log
+                                    new com.example.zephyrevents.repository.UserRepository().getUserById(
+                                            new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId(),
+                                            new RepositoryCallback<com.example.zephyrevents.model.User>() {
+                                                @Override
+                                                public void onSuccess(com.example.zephyrevents.model.User u) {
+                                                    String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                                                    String action = viewModel.isEditMode ? "EVENT_EDITED" : "EVENT_CREATED";
+                                                    String desc = "Event '" + newEvent.getName() + "' was " + (viewModel.isEditMode ? "edited" : "created");
+                                                    com.example.zephyrevents.controller.SystemLogController.getInstance().logAction(action, desc, actor);
+                                                }
+                                                @Override public void onFailure(Exception e) {}
+                                            });
+
                                     // If it's an edit AND the deadline was moved to the future, Reset the Waitlist
                                     if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
                                         new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
                                     }
 
-                                    String action = viewModel.isEditMode ? "EVENT_EDITED" : "EVENT_CREATED";
-                                    String desc = "Event '" + newEvent.getName() + "' was " + (viewModel.isEditMode ? "edited" : "created");
-                                    SystemLogController.getInstance().logAction(action, desc, "Organizer");
-
                                     Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
                                     requireActivity().finish();
-
                                 }
 
                                 @Override
