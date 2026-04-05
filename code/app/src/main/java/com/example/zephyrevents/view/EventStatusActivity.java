@@ -168,14 +168,6 @@ public class EventStatusActivity extends AppCompatActivity {
 
             statusMessage.setText(getString(R.string.invite_declined_message, eventName));
 
-
-
-            if (eventKey != null) {
-
-                EventController.getInstance().addDeclinedEvent(eventKey, currentUserId);
-
-            }
-
             viewEventsBtn.setOnClickListener(v -> {
 
                 Intent intent = new Intent(this, MainActivity.class);
