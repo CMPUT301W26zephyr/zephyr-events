@@ -225,6 +225,6 @@
             android:textStyle="bold"
             android:textColor="@color/white"
             app:backgroundTint="@color/primary_red"
-            app:cornerRadius="8dp" />
+            app:cornerRadius="12dp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

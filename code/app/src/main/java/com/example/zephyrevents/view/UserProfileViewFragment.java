@@ -9,12 +9,13 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.SystemLogController;
@@ -26,6 +27,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class UserProfileViewFragment extends Fragment {
 
@@ -164,30 +166,26 @@ public class UserProfileViewFragment extends Fragment {
     }
 
     private void showPasswordDialog() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_notify_message, null);
-        com.google.android.material.textfield.TextInputEditText input = dialogView.findViewById(R.id.et_notify_message);
-
-        input.setHint("Enter admin password");
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_admin_password, null);
+        TextInputEditText input = dialogView.findViewById(R.id.et_admin_password);
         input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-        androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Admin Authentication")
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
-                .setPositiveButton("Enter", (d, which) -> {
-                    String password = input.getText().toString();
-                    if (password.equals("1324")) {
-                        startActivity(new Intent(requireContext(), AdminHomeActivity.class));
-                    } else {
-                        Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+                .create();
 
-        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
-        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
-                .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
+        dialogView.findViewById(R.id.btn_admin_password_cancel).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.btn_admin_password_enter).setOnClickListener(v -> {
+            String password = input.getText() != null ? input.getText().toString() : "";
+            if (password.equals("1324")) {
+                dialog.dismiss();
+                startActivity(new Intent(requireContext(), AdminHomeActivity.class));
+            } else {
+                Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
     }
 
     private void openAdminHomeFragment() {
@@ -202,7 +200,7 @@ public class UserProfileViewFragment extends Fragment {
         View dialogView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_delete_profile_confirm, null);
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -267,7 +265,7 @@ public class UserProfileViewFragment extends Fragment {
 
     private void showConfirmRemoveAvatarDialog(){
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_remove_avatar, null);
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -302,7 +300,7 @@ public class UserProfileViewFragment extends Fragment {
         View dialogView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_edit_avatar, null);
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();

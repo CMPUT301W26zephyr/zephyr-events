@@ -506,7 +506,7 @@
                         android:textColor="#424242"
                         android:textSize="13sp"
                         android:visibility="gone"
-                        app:cornerRadius="8dp"
+                        app:cornerRadius="12dp"
                         app:strokeColor="@color/light_stroke"
                         app:strokeWidth="1dp" />
 
@@ -530,7 +530,7 @@
                         android:textColor="#424242"
                         android:textSize="13sp"
                         android:visibility="gone"
-                        app:cornerRadius="8dp"
+                        app:cornerRadius="12dp"
                         app:strokeColor="@color/light_stroke"
                         app:strokeWidth="1dp" />
                 </LinearLayout>

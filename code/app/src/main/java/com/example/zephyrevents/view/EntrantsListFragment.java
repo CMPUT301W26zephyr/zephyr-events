@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zephyrevents.R;
+import com.example.zephyrevents.util.DialogUiHelper;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.controller.LotteryController;
 import com.example.zephyrevents.controller.NotificationController;
@@ -174,12 +175,7 @@ public class EntrantsListFragment extends Fragment {
                     .create();
 
             dialog.show();
-
-            // Color the dialog buttons to match the app's red theme
-            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                    .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_red));
-            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
-                    .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_secondary));
+            DialogUiHelper.applyCompactMaterialActions(dialog);
         });
 
         loadData(recyclerView);

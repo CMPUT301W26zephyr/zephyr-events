@@ -172,7 +172,6 @@
     <string name="edit_profile_photo">Edit profile photo</string>
     <string name="admin_join_as_label">Join as</string>
     <string name="admin_role_admin">Admin</string>
-    <string name="admin_role_organizer">Organizer</string>
     <string name="admin_role_entrant">Entrant</string>
     <string name="admin_manage_user_profiles">Manage user profiles</string>
     <string name="admin_browse_events">Browse events</string>
@@ -192,4 +191,6 @@
     <string name="events_list_search_hint_trending">Search trending</string>
     <string name="events_list_search_hint_new">Search new on Lottofy</string>
     <string name="events_list_search_hint_free">Search free events</string>
+
+    <string name="enter_admin_password_title">Enter admin password:</string>
 </resources>
