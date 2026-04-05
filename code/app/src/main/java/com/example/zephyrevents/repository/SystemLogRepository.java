@@ -8,8 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SystemLogRepository {
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private final FirebaseFirestore db;
+
+    /** Default constructor. Uses the production Firestore instance. */
+    public SystemLogRepository() {
+        db = FirebaseFirestore.getInstance();
+    }
+
+    /** Constructor with dependency injection for testing. */
+    public SystemLogRepository(FirebaseFirestore db) {
+        this.db = db;
+    }
     public void addLog(SystemLog log) {
         db.collection("system_logs").document(log.getId()).set(log);
     }
