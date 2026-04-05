@@ -27,6 +27,7 @@ public class Event {
     private EventStatus status;
     private String organizerName;
     private int currentApplicants;
+    private int commentsCount;
 
     /** If true, event is hidden from public listings and has no promotional QR. */
     private boolean privateEvent;
@@ -176,14 +177,6 @@ public class Event {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
-    }
-
-    public int getApplicantCount() {
-        return applicantCount;
-    }
-
-    public void setApplicantCount(int applicantCount) {
-        this.applicantCount = applicantCount;
     }
 
     public long getRegistrationStartTime() {

@@ -378,7 +378,6 @@ public class HomeFragment extends Fragment {
 
     /**
      * Loads featured events
-     * NOTE: Placeholder logic currently just picks three random events.
      */
     private void loadFeaturedEvents() {
         progressBar.setVisibility(View.VISIBLE);
