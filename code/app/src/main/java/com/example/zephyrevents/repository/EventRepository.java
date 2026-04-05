@@ -15,6 +15,7 @@ import java.util.List;
 import com.example.zephyrevents.util.TimeHelper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -71,25 +72,42 @@ public class EventRepository {
         if (poster != null && poster.trim().isEmpty()){
             event.setImageUrl(null);
         }
+
+        // NOTE: Synchronize counts from the database before saving the event model
+        db.collection(Collections.WAITLIST)  // Update waitlist count
+                .whereEqualTo("eventId", event.getEventId())
+                .count()
+                .get(AggregateSource.SERVER)
+                .addOnSuccessListener(waitlistSnap -> {
+                    event.setCurrentApplicants((int) waitlistSnap.getCount());
+                    performSave(event, callback);
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Failed to fetch waitlist size", e);
+                    performSave(event, callback);
+                });
+    }
+
+    /**
+     * Method that actually saves an event to Firestore
+     *
+     * @param event
+     * @param callback
+     */
+    private void performSave(Event event, RepositoryCallback<Void> callback) {
         db.collection(Collections.EVENTS)
                 .document(event.getEventId())
                 .set(event)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Firestore event added object id: " + event.getEventId());
-                        callback.onSuccess(null);
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Firestore event added object id: " + event.getEventId());
+                    callback.onSuccess(null);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                        callback.onFailure(e);
-                    }
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error writing document", e);
+                    callback.onFailure(e);
                 });
-
     }
+
 
     /**
      * Creates a new event in Firestore. Delegates to saveEvent.

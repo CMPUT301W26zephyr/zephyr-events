@@ -233,14 +233,29 @@ public class HomeFragment extends Fragment {
     }
 
     private void openEventsList() {
-        openEventsList(EventsListFragment.HomeListCategory.NONE);
+        openEventsList(EventsListFragment.HomeListCategory.NONE, false);
     }
 
     private void openEventsList(@NonNull EventsListFragment.HomeListCategory category) {
+        openEventsList(category, false);
+    }
+
+    private void openEventsList(@NonNull EventsListFragment.HomeListCategory category, boolean focusSearch) {
+        EventsListFragment fragment = EventsListFragment.newInstance(category);
+
+        if (focusSearch) {
+            Bundle args = fragment.getArguments();
+            if (args == null) {
+                args = new Bundle();
+            }
+            args.putBoolean(EventsListFragment.ARG_FOCUS_SEARCH, true);
+            fragment.setArguments(args);
+        }
+
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .add(R.id.fragment_container, EventsListFragment.newInstance(category))
+                .add(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }
@@ -323,10 +338,9 @@ public class HomeFragment extends Fragment {
         }
 
         // Search icon does the same thing as the textView for now
-        // TODO: Possible to make it open the search box? Via intent
         ImageView searchIcon = view.findViewById(R.id.btn_search);
         if (searchIcon != null) {
-            searchIcon.setOnClickListener(v -> openEventsList());
+            searchIcon.setOnClickListener(v -> openEventsList(EventsListFragment.HomeListCategory.NONE, true));
         }
     }
 
@@ -378,7 +392,6 @@ public class HomeFragment extends Fragment {
 
     /**
      * Loads featured events
-     * NOTE: Placeholder logic currently just picks three random events.
      */
     private void loadFeaturedEvents() {
         progressBar.setVisibility(View.VISIBLE);
@@ -440,7 +453,10 @@ public class HomeFragment extends Fragment {
         if (desc != null && !desc.trim().isEmpty()) {
             score += 8 + Math.min(desc.length()/5, 12);
         }
-
+        int numEntrants = event.getCurrentApplicants();
+        if (numEntrants > 0) {
+            score += 5 + Math.min(numEntrants*3, 10);
+        }
         // TODO: add more heuristics for featured events
         return score;
     }

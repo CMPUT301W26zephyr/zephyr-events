@@ -184,7 +184,7 @@
     <string name="home_category_closing_soon">Closing soon</string>
     <string name="home_category_trending">Trending</string>
     <string name="home_category_new">New on Lottofy</string>
-    <string name="home_category_free">Free for all</string>
+    <string name="home_category_free">Free events</string>
     <string name="home_see_all">See all</string>
 
     <string name="events_list_search_hint_default">Search events</string>
