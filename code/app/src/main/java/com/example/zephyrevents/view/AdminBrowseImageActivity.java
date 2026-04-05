@@ -69,6 +69,9 @@ public class AdminBrowseImageActivity extends AppCompatActivity {
                     gridLayout.removeAllViews();
 
                     for (Event event : events) {
+                        if (!event.hasPosterImage()){
+                            continue;
+                        }
 
                         ImageView imageView = new ImageView(AdminBrowseImageActivity.this);
 
@@ -83,14 +86,11 @@ public class AdminBrowseImageActivity extends AppCompatActivity {
                         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
                         // Load image from Firebase URL
-                        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
-                            Glide.with(AdminBrowseImageActivity.this)
-                                    .load(event.getImageUrl())
-                                    .centerCrop()
-                                    .into(imageView);
-                        } else {
-                            imageView.setImageResource(R.drawable.ic_image_placeholder2);
-                        }
+                        Glide.with(AdminBrowseImageActivity.this)
+                                .load(event.getImageUrl())
+                                .centerCrop()
+                                .into(imageView);
+
 
                         // Click → open detail (admin mode)
                         imageView.setOnClickListener(v -> {

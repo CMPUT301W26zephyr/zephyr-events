@@ -11,6 +11,9 @@ import java.util.List;
 
 import android.media.Image;
 import android.net.Uri;
+
+import androidx.annotation.VisibleForTesting;
+
 import com.example.zephyrevents.repository.ImageRepository;
 
 
@@ -18,7 +21,7 @@ import com.example.zephyrevents.repository.ImageRepository;
 /**
  * Singleton controller managing event data and waitlist.
  * NOTE: Currently waitlisting is mocked/simulated in local memory. Singleton only needed due to this.
- * Acts as a centralized access pointe
+ * Acts as a centralized access pointe.
  */
 public class EventController {
 
@@ -28,7 +31,7 @@ public class EventController {
     private List<WaitlistEntry> mockLotteries = new ArrayList<>();
     private List<WaitlistEntry> mockHistory = new ArrayList<>();
 
-    private final ImageRepository imageRepository;
+    private ImageRepository imageRepository;
 
     /**
      * Private constructor to enforce the Singleton pattern.
@@ -36,6 +39,15 @@ public class EventController {
     private EventController() {
         eventRepository = new EventRepository();
         imageRepository = new ImageRepository();
+    }
+
+    /**
+     * Unit tests only: inject repository and skip real Firebase / {@link ImageRepository}.
+     */
+    @VisibleForTesting
+    public EventController(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+        this.imageRepository = null;
     }
 
     /**
@@ -112,13 +124,13 @@ public class EventController {
             });
         } else{
             final String eventId = event.getEventId();
-            if (existingImageUrl != null && !existingImageUrl.isEmpty()){
-                event.setImageUrl(existingImageUrl);
+            if (existingImageUrl != null && !existingImageUrl.trim().isEmpty()){
+                event.setImageUrl(existingImageUrl.trim());
             } else{
                 event.setImageUrl(null);
             }
 
-            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.isEmpty();
+            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.trim().isEmpty();
 
             eventRepository.saveEvent(event, new RepositoryCallback<Void>() {
                 @Override

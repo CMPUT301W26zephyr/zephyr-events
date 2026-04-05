@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +15,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+
+import android.net.Uri;
 
 import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
@@ -24,24 +27,12 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
-import android.text.TextUtils;
-import com.bumptech.glide.Glide;
-import android.net.Uri;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
-
-import android.widget.ImageView;
-
 public class UserProfileEditViewActivity extends AppCompatActivity {
 
     private UserController userController;
 
     private EditText etName;
     private EditText etEmail;
-    private Spinner spCountry;
     private EditText etPhone;
 
     private ImageView avatarImg;
@@ -104,7 +95,6 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         // Initialize views
         etName = findViewById(R.id.etName);
         etEmail = findViewById(R.id.etEmail);
-        spCountry = findViewById(R.id.spCountry);
         etPhone = findViewById(R.id.etPhone);
         avatarImg = findViewById(R.id.avatar_img);
 
@@ -132,7 +122,6 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
                 }
         );
 
-        setupCountrySpinner();
         setupClickListeners();
         loadProfileInfo();
 
@@ -143,7 +132,6 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
             etName.setEnabled(false);
             etEmail.setEnabled(false);
             etPhone.setEnabled(false);
-            spCountry.setEnabled(false);
             avatarImg.setEnabled(false);
 
             // Hide save/cancel buttons
@@ -157,22 +145,7 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
             View deleteBtn = findViewById(R.id.btnDeleteUser);
             if (deleteBtn != null) deleteBtn.setVisibility(View.VISIBLE);
 
-            // Hide country section
-            View lblCountry = findViewById(R.id.lblCountry);
-            View container = findViewById(R.id.countryContainer);
-
-            if (lblCountry != null) lblCountry.setVisibility(View.GONE);
-            if (container != null) container.setVisibility(View.GONE);
         }
-    }
-
-    // Setup spinner
-    private void setupCountrySpinner() {
-        String[] countries = {};
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countries);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCountry.setAdapter(adapter);
     }
 
     // Setup buttons
@@ -338,9 +311,8 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
-        String country = spCountry.getSelectedItem() != null ? spCountry.getSelectedItem().toString() : "";
 
-        userController.updateCurrentUserProfile(name, email, phone, country, new RepositoryCallback<Void>() {
+        userController.updateCurrentUserProfile(name, email, phone, "", new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 Toast.makeText(UserProfileEditViewActivity.this, "Profile saved", Toast.LENGTH_SHORT).show();

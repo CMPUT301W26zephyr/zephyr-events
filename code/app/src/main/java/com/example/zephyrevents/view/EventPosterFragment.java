@@ -61,4 +61,29 @@ public class EventPosterFragment extends DialogFragment {
 
         return view;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (getDialog() != null && getDialog().getWindow() != null) {
+
+            Window window = getDialog().getWindow();
+            WindowCompat.setDecorFitsSystemWindows(window, false);
+            WindowInsetsControllerCompat controller =
+                    WindowCompat.getInsetsController(window, window.getDecorView());
+
+            if (controller != null) {
+                controller.setSystemBarsBehavior(
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                );
+                controller.hide(WindowInsetsCompat.Type.systemBars());
+            }
+
+            window.setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            );
+        }
+    }
 }

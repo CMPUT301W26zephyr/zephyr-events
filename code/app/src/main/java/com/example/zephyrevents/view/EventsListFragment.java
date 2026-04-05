@@ -18,9 +18,10 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.repository.RepositoryCallback;
-
+import com.example.zephyrevents.util.HomeExploreConstants;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
@@ -33,11 +34,24 @@ import java.util.Locale;
 
 public class EventsListFragment extends Fragment {
 
+    /** When set from home "See all", the list is restricted (and ordered) for that explore row. */
+    public enum HomeListCategory {
+        NONE,
+        CLOSING_SOON,
+        TRENDING,
+        NEW_WITHIN_7_DAYS,
+        FREE
+    }
+
+    public static final String ARG_HOME_CATEGORY = "arg_home_category";
+
     private EventListAdapter adapter;
     private List<Event> allEvents = new ArrayList<>();
     private List<Event> displayedEvents = new ArrayList<>();
     private EventController controller;
     private EditText etSearchBar; // Added as a class variable to keep track of searches
+
+    private HomeListCategory homeListCategory = HomeListCategory.NONE;
 
     private boolean filterAnytime = true;
     private long filterRangeStartMs = -1L;
@@ -49,6 +63,20 @@ public class EventsListFragment extends Fragment {
     private static final String STATE_FILTER_RANGE_START = "state_filter_range_start";
     private static final String STATE_FILTER_RANGE_END = "state_filter_range_end";
     private static final String STATE_FILTER_ONLY_SPACE = "state_filter_only_space";
+    private static final String STATE_HOME_LIST_CATEGORY = "state_home_list_category";
+
+    /**
+     * @param category pass {@link HomeListCategory#NONE} for the full public list (e.g. View all from toolbar).
+     */
+    public static EventsListFragment newInstance(HomeListCategory category) {
+        EventsListFragment fragment = new EventsListFragment();
+        if (category != null && category != HomeListCategory.NONE) {
+            Bundle args = new Bundle();
+            args.putString(ARG_HOME_CATEGORY, category.name());
+            fragment.setArguments(args);
+        }
+        return fragment;
+    }
 
     private final ActivityResultLauncher<Intent> filterLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -70,14 +98,32 @@ public class EventsListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             filterAnytime = savedInstanceState.getBoolean(STATE_FILTER_ANYTIME, true);
             filterRangeStartMs = savedInstanceState.getLong(STATE_FILTER_RANGE_START, -1L);
             filterRangeEndMs = savedInstanceState.getLong(STATE_FILTER_RANGE_END, -1L);
             filterOnlyWithSpace = savedInstanceState.getBoolean(STATE_FILTER_ONLY_SPACE, false);
-
+            String cat = savedInstanceState.getString(STATE_HOME_LIST_CATEGORY);
+            if (cat != null) {
+                try {
+                    homeListCategory = HomeListCategory.valueOf(cat);
+                } catch (IllegalArgumentException ignored) {
+                    homeListCategory = HomeListCategory.NONE;
+                }
+            }
+        } else {
+            Bundle args = getArguments();
+            if (args != null) {
+                String cat = args.getString(ARG_HOME_CATEGORY);
+                if (cat != null) {
+                    try {
+                        homeListCategory = HomeListCategory.valueOf(cat);
+                    } catch (IllegalArgumentException ignored) {
+                        homeListCategory = HomeListCategory.NONE;
+                    }
+                }
+            }
         }
-
     }
 
     @Override
@@ -87,10 +133,7 @@ public class EventsListFragment extends Fragment {
         outState.putLong(STATE_FILTER_RANGE_START, filterRangeStartMs);
         outState.putLong(STATE_FILTER_RANGE_END, filterRangeEndMs);
         outState.putBoolean(STATE_FILTER_ONLY_SPACE, filterOnlyWithSpace);
-
-
-
-
+        outState.putString(STATE_HOME_LIST_CATEGORY, homeListCategory.name());
     }
 
     @Nullable
@@ -120,6 +163,7 @@ public class EventsListFragment extends Fragment {
 
         // Setup Search Bar Filtering
         etSearchBar = view.findViewById(R.id.etSearchBar);
+        applySearchHint();
         etSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -136,8 +180,14 @@ public class EventsListFragment extends Fragment {
         // Setup Toolbar Buttons
         view.findViewById(R.id.toolbar_back).setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        view.findViewById(R.id.btnSearchFilter).setOnClickListener(v ->
-                filterLauncher.launch(new Intent(requireContext(), FilterEventsActivity.class)));
+        view.findViewById(R.id.btnSearchFilter).setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), FilterEventsActivity.class);
+            intent.putExtra(FilterEventsActivity.EXTRA_ANYTIME, filterAnytime);
+            intent.putExtra(FilterEventsActivity.EXTRA_RANGE_START_MS, filterRangeStartMs);
+            intent.putExtra(FilterEventsActivity.EXTRA_RANGE_END_MS, filterRangeEndMs);
+            intent.putExtra(FilterEventsActivity.EXTRA_ONLY_WITH_SPACE, filterOnlyWithSpace);
+            filterLauncher.launch(intent);
+        });
     }
 
     // Refresh data every time the screen becomes visible
@@ -168,6 +218,32 @@ public class EventsListFragment extends Fragment {
         });
     }
 
+    private void applySearchHint() {
+        if (etSearchBar == null) {
+            return;
+        }
+        int hintRes;
+        switch (homeListCategory) {
+            case CLOSING_SOON:
+                hintRes = R.string.events_list_search_hint_closing_soon;
+                break;
+            case TRENDING:
+                hintRes = R.string.events_list_search_hint_trending;
+                break;
+            case NEW_WITHIN_7_DAYS:
+                hintRes = R.string.events_list_search_hint_new;
+                break;
+            case FREE:
+                hintRes = R.string.events_list_search_hint_free;
+                break;
+            case NONE:
+            default:
+                hintRes = R.string.events_list_search_hint_default;
+                break;
+        }
+        etSearchBar.setHint(hintRes);
+    }
+
     /**
      * Filters the master list based on the search query and updates the adapter.
      */
@@ -179,6 +255,8 @@ public class EventsListFragment extends Fragment {
         if(etSearchBar != null && etSearchBar.getText() != null){
             query = etSearchBar.getText().toString().trim().toLowerCase(Locale.getDefault());
         }
+
+        long now = System.currentTimeMillis();
 
         for (Event e : allEvents){
             if(e == null){
@@ -216,9 +294,62 @@ public class EventsListFragment extends Fragment {
                     continue;
                 }
             }
+
+            if (homeListCategory != HomeListCategory.NONE && !matchesHomeExploreCategory(e, now)) {
+                continue;
+            }
+
             displayedEvents.add(e);
         }
+
+        sortForHomeCategory();
         adapter.notifyDataSetChanged();
+    }
+
+    private boolean matchesHomeExploreCategory(Event e, long now) {
+        switch (homeListCategory) {
+            case CLOSING_SOON: {
+                long regEnd = e.getRegistrationEndTime();
+                return regEnd > now && regEnd <= now + HomeExploreConstants.CLOSING_SOON_MS;
+            }
+            case TRENDING:
+                return true;
+            case NEW_WITHIN_7_DAYS: {
+                long regStart = e.getRegistrationStartTime();
+                if (regStart <= 0 || regStart > now) {
+                    return false;
+                }
+                return now - regStart <= HomeExploreConstants.NEW_ON_LOTTOFY_MAX_AGE_MS;
+            }
+            case FREE:
+                return e.getPrice() <= 0;
+            case NONE:
+            default:
+                return true;
+        }
+    }
+
+    private void sortForHomeCategory() {
+        switch (homeListCategory) {
+            case CLOSING_SOON:
+                displayedEvents.sort(Comparator.comparingLong(Event::getRegistrationEndTime));
+                break;
+            case TRENDING:
+                displayedEvents.sort((a, b) ->
+                        Integer.compare(b.getCurrentApplicants(), a.getCurrentApplicants()));
+                break;
+            case NEW_WITHIN_7_DAYS:
+                displayedEvents.sort((a, b) ->
+                        Long.compare(b.getRegistrationStartTime(), a.getRegistrationStartTime()));
+                break;
+            case FREE:
+                displayedEvents.sort((a, b) ->
+                        Integer.compare(b.getCurrentApplicants(), a.getCurrentApplicants()));
+                break;
+            case NONE:
+            default:
+                break;
+        }
     }
 
     private void openEventDetail(String eventKey, boolean invited) {

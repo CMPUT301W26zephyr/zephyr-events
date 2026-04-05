@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.EventController;
+import com.example.zephyrevents.controller.SystemLogController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventTime;
 import com.example.zephyrevents.model.EventViewModel;
@@ -94,15 +95,20 @@ public class EventConfirmationFragment extends Fragment {
             description.setText(viewModel.description);
         }
 
+
         ImageView confirmImage = view.findViewById(R.id.confirm_event_image);
-        if (viewModel.pendingEventImageUri != null){
+
+        if (viewModel.pendingEventImageUri != null) {
             Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(confirmImage);
-        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()) {
+        } else if (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.trim().isEmpty()) {
             Glide.with(this).load(viewModel.existingImgUrl).centerCrop().into(confirmImage);
-        } else{
-            Glide.with(this).load(R.drawable.ic_image_placeholder2).centerCrop().into(confirmImage);
-            confirmImage.setImageTintList(androidx.core.content.ContextCompat.getColorStateList(requireContext(), android.R.color.darker_gray));
+        } else {
+            Glide.with(this).clear(confirmImage);
+            confirmImage.setImageDrawable(null);
+            confirmImage.setImageTintList(null);
         }
+
+
 
         String finalLocationStr = locationStr;
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
@@ -218,6 +224,11 @@ public class EventConfirmationFragment extends Fragment {
                                     if (viewModel.isEditMode && newEvent.getRegistrationEndTime() > System.currentTimeMillis()) {
                                         new com.example.zephyrevents.repository.WaitlistRepository().resetWaitlist(newEvent.getEventId(), null);
                                     }
+
+                                    String action = viewModel.isEditMode ? "EVENT_EDITED" : "EVENT_CREATED";
+                                    String desc = "Event '" + newEvent.getName() + "' was " + (viewModel.isEditMode ? "edited" : "created");
+                                    SystemLogController.getInstance().logAction(action, desc, newEvent.getOrganizerId());
+
                                     Toast.makeText(requireContext(), "Event Saved Successfully!", Toast.LENGTH_SHORT).show();
                                     requireActivity().finish();
 

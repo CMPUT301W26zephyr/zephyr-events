@@ -26,19 +26,15 @@ exports.sendPushNotification = onDocumentCreated("notifications/{notificationId}
 
     // Use 'notification' payload so OS handles the banner
     const payload = {
-        notification: {
-            title: "Zephyr Events",
-            body: text,
-        },
         data: {
+            title: "Lottofy",
+            body: text,
             TARGET_TAB: "MyEvents",
-            eventId: eventId
+            eventId: eventId || "",
+            type: notificationData.type || "SYSTEM"
         },
         android: {
-            priority: "high",
-            notification: {
-                channelId: "zephyr_events_channel"
-            }
+            priority: "high"
         },
         token: token
     };

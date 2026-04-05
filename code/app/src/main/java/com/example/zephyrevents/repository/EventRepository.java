@@ -67,6 +67,10 @@ public class EventRepository {
             callback.onFailure(e);
             return; // exit before network call.
         }
+        String poster = event.getImageUrl();
+        if (poster != null && poster.trim().isEmpty()){
+            event.setImageUrl(null);
+        }
         db.collection(Collections.EVENTS)
                 .document(event.getEventId())
                 .set(event)
@@ -329,5 +333,20 @@ public class EventRepository {
                         callback.onFailure(new IllegalArgumentException("document returned doesn't exist"));
                     }
                 });
+    }
+
+    /**
+     * Counts events where this user is the primary organizer (Firestore {@code organizerId}).
+     */
+    public void countEventsOrganizedBy(@NonNull String userId, @NonNull RepositoryCallback<Integer> callback) {
+        if (userId == null || userId.trim().isEmpty()) {
+            callback.onSuccess(0);
+            return;
+        }
+        db.collection(Collections.EVENTS)
+                .whereEqualTo("organizerId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> callback.onSuccess(querySnapshot.size()))
+                .addOnFailureListener(callback::onFailure);
     }
 }

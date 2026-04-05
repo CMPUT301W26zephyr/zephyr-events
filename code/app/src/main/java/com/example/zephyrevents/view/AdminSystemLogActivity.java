@@ -1,107 +1,86 @@
 package com.example.zephyrevents.view;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zephyrevents.R;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.zephyrevents.model.SystemLog;
+import com.example.zephyrevents.repository.RepositoryCallback;
+import com.example.zephyrevents.repository.SystemLogRepository;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class AdminSystemLogActivity extends AppCompatActivity {
-
-    private LinearLayout logContainer;
-    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_systemlog);
+        setContentView(R.layout.activity_admin_system_log);
 
-        // Back button
-        findViewById(R.id.button_back2).setOnClickListener(v -> finish());
+        TextView title = findViewById(R.id.toolbar_title);
+        if (title != null) title.setText("System Logs");
+        findViewById(R.id.btn_cancel).setVisibility(View.GONE);
+        findViewById(R.id.toolbar_back).setOnClickListener(v -> finish());
 
-        logContainer = findViewById(R.id.log_container);
-        db = FirebaseFirestore.getInstance();
+        RecyclerView recycler = findViewById(R.id.recycler_logs);
+        recycler.setLayoutManager(new LinearLayoutManager(this));
 
-        loadLogs();
+        new SystemLogRepository().getAllLogs(new RepositoryCallback<List<SystemLog>>() {
+            @Override
+            public void onSuccess(List<SystemLog> result) {
+                recycler.setAdapter(new LogAdapter(result));
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(AdminSystemLogActivity.this, "Failed to load logs", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void loadLogs() {
+    private static class LogAdapter extends RecyclerView.Adapter<LogAdapter.VH> {
+        private final List<SystemLog> logs;
+        private final SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy HH:mm:ss.SSS", Locale.getDefault());
 
-        db.collection("logs")
-                .get()
-                .addOnSuccessListener(query -> {
+        public LogAdapter(List<SystemLog> logs) { this.logs = logs; }
 
-                    // Keep existing UI logs if you want
-                    // logContainer.removeAllViews(); ← DO NOT use if UI must stay
+        @NonNull @Override
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new VH(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_system_log, parent, false));
+        }
 
-                    for (QueryDocumentSnapshot doc : query) {
+        @Override
+        public void onBindViewHolder(@NonNull VH holder, int position) {
+            SystemLog log = logs.get(position);
+            holder.type.setText(log.getActionType());
+            holder.desc.setText(log.getDescription());
+            holder.actor.setText("Actor: " + log.getActorName());
+            holder.time.setText(format.format(new Date(log.getTimestamp())));
+        }
 
-                        String message = doc.getString("message");
-                        String type = doc.getString("type");
-                        String timestamp = doc.getString("timestamp");
+        @Override
+        public int getItemCount() { return logs.size(); }
 
-                        addLogItem(message, type, timestamp);
-                    }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to load logs", Toast.LENGTH_SHORT).show()
-                );
-    }
-
-    private void addLogItem(String message, String type, String timestamp) {
-
-        // Create layout programmatically (NO extra XML needed)
-        LinearLayout row = new LinearLayout(this);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setPadding(0, 0, 0, 16);
-
-        View dot = new View(this);
-        LinearLayout.LayoutParams dotParams =
-                new LinearLayout.LayoutParams(10, 10);
-        dotParams.setMargins(0, 8, 8, 0);
-        dot.setLayoutParams(dotParams);
-        dot.setBackgroundColor(getColorByType(type));
-
-        TextView text = new TextView(this);
-        text.setText(timestamp + "\n" + message);
-        text.setTextSize(12);
-
-        LinearLayout.LayoutParams textParams =
-                new LinearLayout.LayoutParams(0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT, 1);
-        text.setLayoutParams(textParams);
-
-        row.addView(dot);
-        row.addView(text);
-
-        logContainer.addView(row);
-    }
-
-    private int getColorByType(String type) {
-
-        if (type == null) return Color.GRAY;
-
-        switch (type) {
-            case "created":
-                return Color.RED;
-            case "updated":
-                return Color.parseColor("#FF9800");
-            case "cancelled":
-                return Color.YELLOW;
-            case "selected":
-                return Color.GREEN;
-            case "admin":
-                return Color.BLUE;
-            default:
-                return Color.GRAY;
+        static class VH extends RecyclerView.ViewHolder {
+            TextView type, time, desc, actor;
+            VH(View v) {
+                super(v);
+                type = v.findViewById(R.id.log_type);
+                time = v.findViewById(R.id.log_timestamp);
+                desc = v.findViewById(R.id.log_desc);
+                actor = v.findViewById(R.id.log_actor);
+            }
         }
     }
 }

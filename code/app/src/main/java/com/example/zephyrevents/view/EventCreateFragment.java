@@ -25,6 +25,7 @@ import com.example.zephyrevents.controller.EventController;
 import com.example.zephyrevents.model.Event;
 import com.example.zephyrevents.model.EventViewModel;
 import com.example.zephyrevents.repository.RepositoryCallback;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -84,12 +85,14 @@ public class EventCreateFragment extends Fragment {
     private ActivityResultLauncher<PickVisualMediaRequest> pickEventImg;
     private ImageView eventImgPreview;
 
+    private MaterialButton btnPosterActions;
+
+
     private boolean eventHasPoster() {
         return viewModel != null
                 && (viewModel.pendingEventImageUri != null
-                || (viewModel.existingImgUrl != null && !viewModel.existingImgUrl.isEmpty()));
-
-
+                || (viewModel.existingImgUrl != null
+                && !viewModel.existingImgUrl.trim().isEmpty()));
     }
 
     private void launchPickEventPoster() {
@@ -103,7 +106,7 @@ public class EventCreateFragment extends Fragment {
         viewModel.existingImgUrl = "";
         if (eventImgPreview != null) {
             Glide.with(this).clear(eventImgPreview);
-            eventImgPreview.setImageResource(R.drawable.ic_image_placeholder2);
+            eventImgPreview.setImageDrawable(null);
         }
     }
 
@@ -122,6 +125,8 @@ public class EventCreateFragment extends Fragment {
         });
         dialog.show();
     }
+
+
 
     private void showPosterOptionDialog() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_event_poster, null);
@@ -344,15 +349,15 @@ public class EventCreateFragment extends Fragment {
         });
 
         eventImgPreview = view.findViewById(R.id.event_image_preview);
-        View eventImgContainer = view.findViewById(R.id.event_image_container);
+        btnPosterActions = view.findViewById(R.id.btn_event_poster_actions);
 
-        eventImgContainer.setOnClickListener(v -> {
-            if (eventHasPoster()) {
-                showPosterOptionDialog();
-            } else {
-                launchPickEventPoster();
-            }
-        });
+       btnPosterActions.setOnClickListener(v -> {
+           if (eventHasPoster()){
+               showPosterOptionDialog();
+           } else {
+               launchPickEventPoster();
+           }
+       });
 
         if (viewModel.pendingEventImageUri != null) {
             Glide.with(this).load(viewModel.pendingEventImageUri).centerCrop().into(eventImgPreview);
@@ -614,6 +619,9 @@ public class EventCreateFragment extends Fragment {
 
     private void setupDateAndTime(CalendarView calView, TimePicker timePicker, Calendar tracker, int type) {
         Calendar now = Calendar.getInstance();
+
+        // BUG FIX: Detach listener so setHour/setMinute don't instantly overwrite themselves
+        timePicker.setOnTimeChangedListener(null);
         timePicker.setHour(now.get(Calendar.HOUR_OF_DAY));
         timePicker.setMinute(now.get(Calendar.MINUTE));
 
@@ -628,22 +636,21 @@ public class EventCreateFragment extends Fragment {
             tracker.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             long selectedMillis = tracker.getTimeInMillis();
 
+            // BUG FIX: Only push dates forward if strictly necessary, DO NOT setMinDate!
             if (type == 1) { // Reg Start
                 startSelected = true;
-                if (calEnd.getDate() < selectedMillis) {
-                    calEnd.setDate(selectedMillis, false, true);
+                if (regEndCal.getTimeInMillis() < selectedMillis) {
                     regEndCal.setTimeInMillis(selectedMillis);
+                    calEnd.setDate(selectedMillis, false, true);
                 }
-                calEnd.setMinDate(selectedMillis);
                 scrollRegistration.postDelayed(() -> scrollRegistration.smoothScrollTo(columnRegEnd.getLeft(), 0), 300);
 
             } else if (type == 2) { // Reg End
                 endSelected = true;
-                if (calEvent.getDate() < selectedMillis) {
-                    calEvent.setDate(selectedMillis, false, true);
+                if (eventCal.getTimeInMillis() < selectedMillis) {
                     eventCal.setTimeInMillis(selectedMillis);
+                    calEvent.setDate(selectedMillis, false, true);
                 }
-                calEvent.setMinDate(selectedMillis);
                 scrollRegistration.postDelayed(() -> scrollRegistration.smoothScrollTo(columnEvent.getLeft(), 0), 300);
 
             } else if (type == 3) { // Event Date
@@ -653,16 +660,7 @@ public class EventCreateFragment extends Fragment {
             validateDates();
         });
 
-        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
-            tracker.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            tracker.set(Calendar.MINUTE, minute);
-
-            if (type == 1) startSelected = true;
-            else if (type == 2) endSelected = true;
-            else if (type == 3) eventSelected = true;
-
-            validateDates();
-        });
+        attachTimeListener(timePicker, tracker, type);
     }
 
     private void validateDates() {
@@ -715,15 +713,19 @@ public class EventCreateFragment extends Fragment {
                 if (startDate != null) {
                     regStartCal.setTime(startDate);
                     calStart.setDate(startDate.getTime(), false, true);
+                    timeStart.setOnTimeChangedListener(null); // Fix minutes bug
                     timeStart.setHour(regStartCal.get(Calendar.HOUR_OF_DAY));
                     timeStart.setMinute(regStartCal.get(Calendar.MINUTE));
+                    attachTimeListener(timeStart, regStartCal, 1);
                     startSelected = true;
                 }
                 if (endDate != null) {
                     regEndCal.setTime(endDate);
                     calEnd.setDate(endDate.getTime(), false, true);
+                    timeEnd.setOnTimeChangedListener(null); // Fix minutes bug
                     timeEnd.setHour(regEndCal.get(Calendar.HOUR_OF_DAY));
                     timeEnd.setMinute(regEndCal.get(Calendar.MINUTE));
+                    attachTimeListener(timeEnd, regEndCal, 2);
                     endSelected = true;
                 }
             }
@@ -732,8 +734,10 @@ public class EventCreateFragment extends Fragment {
                 if (eventD != null) {
                     eventCal.setTime(eventD);
                     calEvent.setDate(eventD.getTime(), false, true);
+                    timeEvent.setOnTimeChangedListener(null); // Fix minutes bug
                     timeEvent.setHour(eventCal.get(Calendar.HOUR_OF_DAY));
                     timeEvent.setMinute(eventCal.get(Calendar.MINUTE));
+                    attachTimeListener(timeEvent, eventCal, 3);
                     eventSelected = true;
                 }
             }
@@ -741,6 +745,17 @@ public class EventCreateFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void attachTimeListener(TimePicker timePicker, Calendar tracker, int type) {
+        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
+            tracker.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            tracker.set(Calendar.MINUTE, minute);
+            if (type == 1) startSelected = true;
+            else if (type == 2) endSelected = true;
+            else if (type == 3) eventSelected = true;
+            validateDates();
+        });
     }
 
     private Date parseDateLenient(String dateStr) {
