@@ -2,6 +2,7 @@ package com.example.zephyrevents.view;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -221,6 +222,10 @@ public class EntrantsListFragment extends Fragment {
                         currentFilteredList.clear();
                         currentFilteredList.addAll(filtered);
 
+                        if (getActivity() instanceof OrganizerEntrantsListView) {
+                            ((OrganizerEntrantsListView) getActivity()).updateTabCount(tabIndex, filtered.size());
+                        }
+
                         if (tabIndex == 0 && getView() != null) {
                             Button btnRunLottery = getView().findViewById(R.id.btn_run_lottery);
                             Button btnDrawReplacements = getView().findViewById(R.id.btn_draw_replacements);
@@ -252,6 +257,13 @@ public class EntrantsListFragment extends Fragment {
                                     }
                                 });
                             }
+                        }, entrant -> {
+                            if (entrant.userId == null || entrant.userId.isEmpty()) {
+                                return;
+                            }
+                            Intent profile = new Intent(requireContext(), PublicUserProfileActivity.class);
+                            profile.putExtra(PublicUserProfileActivity.EXTRA_USER_ID, entrant.userId);
+                            startActivity(profile);
                         });
 
                         recyclerView.setAdapter(adapter);
@@ -262,7 +274,9 @@ public class EntrantsListFragment extends Fragment {
                                 public void onSuccess(User user) {
                                     String name = (user != null && user.getName() != null) ? user.getName() : "Unknown User";
                                     boolean showCancel = (tabIndex == 2);
-                                    Entrant entrant = new Entrant(name, "Status: " + entry.getStatus().name(), showCancel);
+                                    String avatar = (user != null && user.getAvatarUrl() != null) ? user.getAvatarUrl().trim() : "";
+                                    Entrant entrant = new Entrant(entry.getUserId(), name, "Status: " + entry.getStatus().name(), showCancel,
+                                            avatar.isEmpty() ? null : avatar);
                                     entryMap.put(entrant, entry);
                                     entrantList.add(entrant);
                                     adapter.notifyDataSetChanged();
@@ -270,7 +284,7 @@ public class EntrantsListFragment extends Fragment {
                                 @Override
                                 public void onFailure(Exception e) {
                                     boolean showCancel = (tabIndex == 2);
-                                    Entrant entrant = new Entrant("Unknown User", "Status: " + entry.getStatus().name(), showCancel);
+                                    Entrant entrant = new Entrant(entry.getUserId(), "Unknown User", "Status: " + entry.getStatus().name(), showCancel, null);
                                     entryMap.put(entrant, entry);
                                     entrantList.add(entrant);
                                     adapter.notifyDataSetChanged();
@@ -281,6 +295,9 @@ public class EntrantsListFragment extends Fragment {
 
                     @Override
                     public void onFailure(Exception e) {
+                        if (getActivity() instanceof OrganizerEntrantsListView) {
+                            ((OrganizerEntrantsListView) getActivity()).updateTabCount(tabIndex, 0);
+                        }
                         Toast.makeText(requireContext(), "Error loading waitlist", Toast.LENGTH_SHORT).show();
                     }
                 });
