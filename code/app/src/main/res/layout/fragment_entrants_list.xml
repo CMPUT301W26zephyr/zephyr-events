@@ -34,7 +34,7 @@
             android:layout_weight="1"
             android:text="NOTIFY"
             android:textColor="@color/primary_red"
-            app:cornerRadius="8dp"
+            app:cornerRadius="12dp"
             app:strokeColor="@color/primary_red"
             app:strokeWidth="1dp"
             android:visibility="gone" />
@@ -49,7 +49,7 @@
             android:text="RUN LOTTERY EARLY"
             android:textColor="@color/white"
             app:backgroundTint="@color/primary_red"
-            app:cornerRadius="8dp"
+            app:cornerRadius="12dp"
             android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
@@ -62,7 +62,7 @@
             android:text="DRAW REPLACEMENTS"
             android:textColor="@color/white"
             app:backgroundTint="@color/primary_red"
-            app:cornerRadius="8dp"
+            app:cornerRadius="12dp"
             android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
@@ -75,7 +75,7 @@
             android:text="EXPORT CSV"
             android:textColor="@color/white"
             app:backgroundTint="@color/primary_red"
-            app:cornerRadius="8dp"
+            app:cornerRadius="12dp"
             android:visibility="gone" />
 
     </LinearLayout>

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="24dp"
     android:gravity="center_horizontal"
-    android:background="@android:color/white">
+    android:background="@drawable/bg_dialog_surface">
 
 
     <TextView
@@ -39,7 +39,7 @@
         <Button
             android:id="@+id/btnDialogCancel"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/dialog_action_button_height"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:text="CANCEL"
@@ -52,7 +52,7 @@
         <Button
             android:id="@+id/btnDialogConfirm"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/dialog_action_button_height"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:text="CONFIRM"

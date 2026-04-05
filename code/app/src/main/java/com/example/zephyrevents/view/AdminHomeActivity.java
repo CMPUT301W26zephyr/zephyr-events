@@ -1,6 +1,9 @@
 package com.example.zephyrevents.view;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,7 +18,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
@@ -36,6 +42,14 @@ public class AdminHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_home);
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        getWindow().setNavigationBarColor(Color.WHITE);
+        getWindow().setStatusBarColor(Color.BLACK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getWindow().setNavigationBarContrastEnforced(false);
+        }
 
         userController = new UserController(this);
         txtName = findViewById(R.id.admin_txt_name);
@@ -78,7 +92,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         suppressRoleChanges = false;
         joinAs.setOnCheckedChangeListener((group, checkedId) -> {
             if (suppressRoleChanges) return;
-            if (checkedId == R.id.admin_radio_organizer || checkedId == R.id.admin_radio_entrant) {
+            if (checkedId == R.id.admin_radio_entrant) {
                 Intent i = new Intent(this, MainActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(i);
@@ -154,7 +168,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     private void showDeleteConfirmDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_profile_confirm, null);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -192,7 +206,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     private void showConfirmRemoveAvatarDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirm_remove_avatar, null);
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -221,7 +235,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     private void showAvatarOptionDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_avatar, null);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();

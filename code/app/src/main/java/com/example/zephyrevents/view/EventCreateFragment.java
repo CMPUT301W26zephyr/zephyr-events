@@ -45,6 +45,8 @@ import com.bumptech.glide.Glide;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 
 public class EventCreateFragment extends Fragment {
 
@@ -112,7 +114,7 @@ public class EventCreateFragment extends Fragment {
 
     private void showConfirmRemovePoster() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_remove_poster, null);
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -130,7 +132,7 @@ public class EventCreateFragment extends Fragment {
 
     private void showPosterOptionDialog() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_event_poster, null);
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();

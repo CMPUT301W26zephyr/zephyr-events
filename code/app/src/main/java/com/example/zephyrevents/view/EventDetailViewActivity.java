@@ -16,7 +16,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+
+import com.example.zephyrevents.util.DialogUiHelper;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -397,7 +399,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.delete_comment_forbidden, Toast.LENGTH_SHORT).show();
             return;
         }
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog delCommentDialog = new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.delete_comment_title)
                 .setMessage(R.string.delete_comment_message)
                 .setNegativeButton(R.string.cancel, null)
@@ -413,7 +415,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
                                 Toast.makeText(EventDetailViewActivity.this, R.string.delete_comment_failed, Toast.LENGTH_SHORT).show();
                             }
                         }))
-                .show();
+                .create();
+        delCommentDialog.show();
+        DialogUiHelper.applyCompactMaterialActions(delCommentDialog);
     }
 
     private boolean mayDeleteComment(@NonNull EventComment comment) {
@@ -541,7 +545,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         View dialogView = LayoutInflater.from(this)
                 .inflate(R.layout.admin_delete_yesorno, null);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -601,7 +605,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         View dialogView = LayoutInflater.from(this)
                 .inflate(R.layout.admin_delete_yesorno, null);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
@@ -1007,7 +1011,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
                         buttonPrimary.setVisibility(View.VISIBLE);
                         buttonPrimary.setEnabled(false);
                         buttonPrimary.setText("REGISTRATION CLOSED");
-                        buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, android.R.color.darker_gray));
+                        buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_muted_rounded));
+                        buttonPrimary.setBackgroundTintList(null);
                         buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
                         buttonSecondary.setVisibility(View.GONE);
                     } else {
@@ -1022,12 +1027,14 @@ public class EventDetailViewActivity extends AppCompatActivity {
                             buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_filled));
                             buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
                             buttonPrimary.setOnClickListener(v -> {
-                                new MaterialAlertDialogBuilder(EventDetailViewActivity.this)
+                                AlertDialog runLotteryDialog = new MaterialAlertDialogBuilder(EventDetailViewActivity.this)
                                         .setTitle("Run Lottery")
                                         .setMessage("Are you sure you want to prematurely close registration and run the lottery?")
                                         .setPositiveButton("Run", (dialog, which) -> executeLottery())
                                         .setNegativeButton("Cancel", null)
-                                        .show();
+                                        .create();
+                                runLotteryDialog.show();
+                                DialogUiHelper.applyCompactMaterialActions(runLotteryDialog);
                             });
                         }
                         buttonSecondary.setVisibility(View.GONE);
@@ -1051,7 +1058,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
                             buttonPrimary.setEnabled(false);
                             String dateStr = new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(new Date(event.getRegistrationStartTime()));
                             buttonPrimary.setText("OPENS " + dateStr.toUpperCase(Locale.getDefault()));
-                            buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, android.R.color.darker_gray));
+                            buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_muted_rounded));
+                            buttonPrimary.setBackgroundTintList(null);
                             buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
                             buttonSecondary.setVisibility(View.GONE);
                         } else if (isClosedForNew) {
@@ -1067,14 +1075,16 @@ public class EventDetailViewActivity extends AppCompatActivity {
                                 buttonPrimary.setVisibility(View.VISIBLE);
                                 buttonPrimary.setEnabled(false);
                                 buttonPrimary.setText("STATUS: CONFIRMED");
-                                buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.youre_in_green));
+                                buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_success_rounded));
+                                buttonPrimary.setBackgroundTintList(null);
                                 buttonSecondary.setVisibility(View.GONE);
                                 break;
                             case DECLINED:
                                 buttonPrimary.setVisibility(View.VISIBLE);
                                 buttonPrimary.setEnabled(false);
                                 buttonPrimary.setText("STATUS: DECLINED");
-                                buttonPrimary.setBackgroundColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.invite_declined_red));
+                                buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_invite_declined_rounded));
+                                buttonPrimary.setBackgroundTintList(null);
                                 buttonSecondary.setVisibility(View.GONE);
                                 break;
                             case LOST:
@@ -1234,7 +1244,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
             buttonPrimary.setText(R.string.capacity_full);
         }
 
-        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_muted_rounded));
+        buttonPrimary.setBackgroundTintList(null);
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(null);
         buttonSecondary.setVisibility(View.GONE);
@@ -1244,7 +1255,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(false);
         buttonPrimary.setText("STATUS: NOT SELECTED");
-        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_muted_rounded));
+        buttonPrimary.setBackgroundTintList(null);
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(null);
         buttonSecondary.setVisibility(View.GONE);
@@ -1254,7 +1266,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
         buttonPrimary.setVisibility(View.VISIBLE);
         buttonPrimary.setEnabled(false);
         buttonPrimary.setText(R.string.private_event_need_invite);
-        buttonPrimary.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+        buttonPrimary.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_button_muted_rounded));
+        buttonPrimary.setBackgroundTintList(null);
         buttonPrimary.setTextColor(ContextCompat.getColor(this, R.color.white));
         buttonPrimary.setOnClickListener(null);
         buttonSecondary.setVisibility(View.GONE);
