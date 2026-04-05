@@ -111,16 +111,26 @@ public class EntrantsListFragment extends Fragment {
                 new LotteryController().runLottery(eventId, new RepositoryCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
-                        String eName = (eventName != null) ? eventName : "Unknown Event";
-                        SystemLogController.getInstance()
-                                .logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + eName + "'", "Organizer");
-                        Toast.makeText(requireContext(), "Lottery Complete!", Toast.LENGTH_SHORT).show();
+                        // Fetch organizer name for the log
+                        new com.example.zephyrevents.repository.UserRepository().getUserById(
+                                new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId(),
+                                new RepositoryCallback<com.example.zephyrevents.model.User>() {
+                                    @Override
+                                    public void onSuccess(com.example.zephyrevents.model.User u) {
+                                        String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                                        String eName = (eventName != null) ? eventName : "Unknown Event";
+                                        com.example.zephyrevents.controller.SystemLogController.getInstance()
+                                                .logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + eName + "'", actor);
+                                    }
+                                    @Override public void onFailure(Exception e) {}
+                                });
 
+                        Toast.makeText(requireContext(), "Lottery Complete!", Toast.LENGTH_SHORT).show();
                         btnRunLottery.setVisibility(View.GONE);
                         btnDrawReplacements.setVisibility(View.VISIBLE);
-
                         loadData(recyclerView);
                     }
+
                     @Override
                     public void onFailure(Exception e) {
                         Toast.makeText(requireContext(), "Failed to run lottery.", Toast.LENGTH_SHORT).show();
@@ -162,17 +172,27 @@ public class EntrantsListFragment extends Fragment {
                             return;
                         }
 
-                        // Get all user IDs currently visible in this tab
                         java.util.List<String> targetIds = new java.util.ArrayList<>();
                         for (WaitlistEntry entry : currentFilteredList) {
                             targetIds.add(entry.getUserId());
                         }
 
-                        // Send the manual notification
                         notificationController.notifyUsersWithCustomMessage(targetIds, eventId, msg);
-                        String eName = (eventName != null) ? eventName : "Unknown Event";
-                        SystemLogController.getInstance()
-                                .logAction("MANUAL_NOTIFICATION", "Organizer sent a custom notification to " + targetIds.size() + " entrants for event: '" + eName + "'", "Organizer");
+
+                        // Fetch organizer name for the log
+                        new com.example.zephyrevents.repository.UserRepository().getUserById(
+                                new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId(),
+                                new RepositoryCallback<com.example.zephyrevents.model.User>() {
+                                    @Override
+                                    public void onSuccess(com.example.zephyrevents.model.User u) {
+                                        String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                                        String eName = (eventName != null) ? eventName : "Unknown Event";
+                                        com.example.zephyrevents.controller.SystemLogController.getInstance()
+                                                .logAction("MANUAL_NOTIFICATION", "Organizer sent a custom notification to " + targetIds.size() + " entrants for event: '" + eName + "'", actor);
+                                    }
+                                    @Override public void onFailure(Exception e) {}
+                                });
+
                         Toast.makeText(requireContext(), "Notifications successfully sent!", Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton("Cancel", null)
