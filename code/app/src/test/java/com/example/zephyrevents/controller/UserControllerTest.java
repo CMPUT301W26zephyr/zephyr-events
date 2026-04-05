@@ -9,6 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.zephyrevents.model.ContactInfo;
+
+import org.junit.After;
 import org.mockito.ArgumentCaptor;
 
 import android.content.SharedPreferences;
@@ -29,9 +31,16 @@ public class UserControllerTest {
     private SharedPreferences mockPrefs;
     private SharedPreferences.Editor mockEditor;
     private UserController userController;
+    private org.mockito.MockedStatic<SystemLogController> mockedSystemLog;
+
 
     @Before
     public void setUp() {
+        // Prevent SystemLogController from hitting Firebase during local unit tests
+        mockedSystemLog = Mockito.mockStatic(SystemLogController.class);
+        mockedSystemLog.when(SystemLogController::getInstance)
+                .thenReturn(Mockito.mock(SystemLogController.class));
+
         mockRepo = Mockito.mock(UserRepository.class);
         mockPrefs = Mockito.mock(SharedPreferences.class);
         mockEditor = Mockito.mock(SharedPreferences.Editor.class);
@@ -124,5 +133,12 @@ public class UserControllerTest {
         assertTrue("new@gmail.com".equals(savedUser.getContactInfo().getEmail()));
         assertTrue("000".equals(savedUser.getContactInfo().getPhone()));
 
+    }
+
+    @After
+    public void tearDown() {
+        if (mockedSystemLog != null) {
+            mockedSystemLog.close();
+        }
     }
 }
