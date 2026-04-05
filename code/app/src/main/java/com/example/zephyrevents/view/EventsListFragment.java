@@ -1,5 +1,6 @@
 package com.example.zephyrevents.view;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -7,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -44,6 +46,7 @@ public class EventsListFragment extends Fragment {
     }
 
     public static final String ARG_HOME_CATEGORY = "arg_home_category";
+    public static final String ARG_FOCUS_SEARCH = "arg_focus_search";
 
     private EventListAdapter adapter;
     private List<Event> allEvents = new ArrayList<>();
@@ -58,11 +61,13 @@ public class EventsListFragment extends Fragment {
     private long filterRangeEndMs = -1L;
 
     private boolean filterOnlyWithSpace = false;
+    private boolean focusSearch = false;
 
     private static final String STATE_FILTER_ANYTIME = "state_filter_anytime";
     private static final String STATE_FILTER_RANGE_START = "state_filter_range_start";
     private static final String STATE_FILTER_RANGE_END = "state_filter_range_end";
     private static final String STATE_FILTER_ONLY_SPACE = "state_filter_only_space";
+    private static final String STATE_FOCUS_SEARCH = "state_focus_search";
     private static final String STATE_HOME_LIST_CATEGORY = "state_home_list_category";
 
     /**
@@ -103,6 +108,7 @@ public class EventsListFragment extends Fragment {
             filterRangeStartMs = savedInstanceState.getLong(STATE_FILTER_RANGE_START, -1L);
             filterRangeEndMs = savedInstanceState.getLong(STATE_FILTER_RANGE_END, -1L);
             filterOnlyWithSpace = savedInstanceState.getBoolean(STATE_FILTER_ONLY_SPACE, false);
+            focusSearch = savedInstanceState.getBoolean(STATE_FOCUS_SEARCH, false);
             String cat = savedInstanceState.getString(STATE_HOME_LIST_CATEGORY);
             if (cat != null) {
                 try {
@@ -114,6 +120,7 @@ public class EventsListFragment extends Fragment {
         } else {
             Bundle args = getArguments();
             if (args != null) {
+                focusSearch = args.getBoolean(ARG_FOCUS_SEARCH, false);
                 String cat = args.getString(ARG_HOME_CATEGORY);
                 if (cat != null) {
                     try {
@@ -133,6 +140,7 @@ public class EventsListFragment extends Fragment {
         outState.putLong(STATE_FILTER_RANGE_START, filterRangeStartMs);
         outState.putLong(STATE_FILTER_RANGE_END, filterRangeEndMs);
         outState.putBoolean(STATE_FILTER_ONLY_SPACE, filterOnlyWithSpace);
+        outState.putBoolean(STATE_FOCUS_SEARCH, focusSearch);
         outState.putString(STATE_HOME_LIST_CATEGORY, homeListCategory.name());
     }
 
@@ -188,6 +196,17 @@ public class EventsListFragment extends Fragment {
             intent.putExtra(FilterEventsActivity.EXTRA_ONLY_WITH_SPACE, filterOnlyWithSpace);
             filterLauncher.launch(intent);
         });
+
+        if (focusSearch && etSearchBar != null) {
+            etSearchBar.requestFocus();
+            etSearchBar.postDelayed(() -> {
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(etSearchBar, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }, 100); // Delay to wait for rendered
+            focusSearch = false; // Reset (so gone next time we visit hte fragment)
+        }
     }
 
     // Refresh data every time the screen becomes visible
