@@ -1,7 +1,27 @@
 package com.example.zephyrevents.util;
 
 import static org.junit.Assert.*;
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.example.zephyrevents.model.Coordinate;
 
@@ -79,4 +99,64 @@ public class DistenceHelperTest {
         //Should pass because same area, even with tiny distanceKm.
         assertTrue(val);
     }
+
+    /**
+     *  Ensures {@code getUserLocation} calls {@code onFailure} and never {@code onLocation}
+     * Check if onfailure is return when location permission isn't granted
+     */
+
+
+    @Test
+    public void getUserLocation_noLocationPermissionGranted() {
+        Context context = mock(Context.class);
+        DistanceHelper.LocationCallback callback = mock(DistanceHelper.LocationCallback.class);
+        try (MockedStatic<ContextCompat> compat = Mockito.mockStatic(ContextCompat.class)) {
+            compat.when(() -> ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_FINE_LOCATION))
+                    .thenReturn(PackageManager.PERMISSION_DENIED);
+            DistanceHelper.getUserLocation(context, callback);
+            verify(callback).onFailure();
+            verify(callback, never()).onLocation(org.mockito.ArgumentMatchers.anyDouble(),
+                    org.mockito.ArgumentMatchers.anyDouble());
+        }
+    }
+
+    /**
+     * Units test that check that when location permission is granted, then location is granted with longitude and latitude
+     */
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getUserLocation_LocationPermisionGranted() {
+        Context context = mock(Context.class);
+        DistanceHelper.LocationCallback callback = mock(DistanceHelper.LocationCallback.class);
+        FusedLocationProviderClient client = mock(FusedLocationProviderClient.class);
+
+        // Raw Task: avoids IDE/generic confusion with android.location.Location vs Play Services
+        Task<?> lastLocationTask = mock(Task.class);
+        when(client.getLastLocation()).thenReturn((Task) lastLocationTask);
+        when(lastLocationTask.addOnFailureListener(any(OnFailureListener.class))).thenReturn((Task) lastLocationTask);
+        doAnswer(invocation -> {
+            OnSuccessListener<android.location.Location> listener = invocation.getArgument(0);
+            android.location.Location mockFix = mock(android.location.Location.class);
+            when(mockFix.getLatitude()).thenReturn(53.5277);
+            when(mockFix.getLongitude()).thenReturn(-113.5286);
+            listener.onSuccess(mockFix);
+            return lastLocationTask;
+        }).when(lastLocationTask).addOnSuccessListener(any(OnSuccessListener.class));
+        try (MockedStatic<ContextCompat> compat = Mockito.mockStatic(ContextCompat.class);
+             MockedStatic<LocationServices> services = Mockito.mockStatic(LocationServices.class)) {
+            compat.when(() -> ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_FINE_LOCATION))
+                    .thenReturn(PackageManager.PERMISSION_GRANTED);
+            services.when(() -> LocationServices.getFusedLocationProviderClient(context))
+                    .thenReturn(client);
+            DistanceHelper.getUserLocation(context, callback);
+            verify(callback).onLocation(53.5277, -113.5286);
+            verify(callback, never()).onFailure();
+        }
+    }
+
 }
