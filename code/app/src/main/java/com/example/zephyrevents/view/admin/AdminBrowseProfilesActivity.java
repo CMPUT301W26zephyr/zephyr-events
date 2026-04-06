@@ -27,6 +27,8 @@ import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.List;
 
+// Lists user profiles for moderation and deep-links into profile-related admin actions; browse/search pattern over user directory data.
+
 public class AdminBrowseProfilesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;

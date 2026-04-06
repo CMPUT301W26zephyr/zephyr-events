@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.zephyrevents.R;
 
+// Presents terms of service during onboarding or consent
 /**
  * Full-screen terms dialog. Sign-up flow uses {@link OnTosAgreedListener} and “I agree”.
  * Profile and other screens can open in read-only mode with {@link #newReadOnly()}.

@@ -82,6 +82,12 @@ public final class DistanceHelper {
 
 
     // The following two functions are from Anthropic, Claude (claude.ai), "Android fused location provider helper methods to get current user location", 2025-03-30
+
+    /**
+     * Returns the best available last-known location or requests a fresh fix if none is cached.
+     * @param context used for permission check and location client
+     * @param callback receives coordinate or failure
+     */
     public static void getUserLocation(Context context, LocationCallback callback) {
         if (ContextCompat.checkSelfPermission(
                 context,
@@ -103,6 +109,12 @@ public final class DistanceHelper {
         }).addOnFailureListener(e -> callback.onFailure());
     }
 
+    /**
+     * Requests a single high-accuracy current location when
+     * @param context  used for permission checks
+     * @param client fused location client to call
+     * @param callback receives latitude/longitude on sucesss
+     */
     private static void requestFreshLocation(
             Context context,
             FusedLocationProviderClient client,

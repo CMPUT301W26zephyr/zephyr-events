@@ -12,6 +12,7 @@ import com.journeyapps.barcodescanner.CaptureActivity;
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
+// Camera/scan flow for reading QR codes (e.g. event check-in or deep links); standalone activity isolates permissions and scanner lifecycle from tabs.
 /**
  * Placeholder for custom QR Scanner interface
  */

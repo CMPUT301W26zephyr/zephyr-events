@@ -23,6 +23,9 @@ import com.example.zephyrevents.view.adapter.EventListAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// let the admins browse events for inspection; browse pattern over events with admin-only affordances.
+
 public class AdminBrowseEventActivity extends AppCompatActivity {
     private ListView listView;
     private EventListAdapter adapter;

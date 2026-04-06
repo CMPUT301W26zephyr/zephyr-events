@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+// Drives the featured-events pager so each page is a spotlight event.
 public class FeaturedEventPagerAdapter extends RecyclerView.Adapter<FeaturedEventPagerAdapter.EventViewHolder> {
 
     private final List<Event> eventList;

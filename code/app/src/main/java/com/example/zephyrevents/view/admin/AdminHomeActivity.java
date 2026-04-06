@@ -30,6 +30,7 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.util.DialogUiHelper;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+// Root screen for the admin area; hosts fragments or navigation and gates access to admin-only tools.
 public class AdminHomeActivity extends AppCompatActivity {
 
     private UserController userController;

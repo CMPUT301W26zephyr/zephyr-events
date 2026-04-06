@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Tab or embedded list of entrants inside organizer tooling; fragment composes with other organizer screens without duplicating list logic.
 public class EntrantsListFragment extends Fragment {
 
     private int tabIndex;

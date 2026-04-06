@@ -16,6 +16,8 @@ import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+// Bottom sheet for writing and submitting an event comment; modal pattern keeps compose UI off the main detail layout until needed.
+
 /**
  * Instagram/TikTok-style bottom sheet with text field and Post action, lifted above the keyboard.
  */

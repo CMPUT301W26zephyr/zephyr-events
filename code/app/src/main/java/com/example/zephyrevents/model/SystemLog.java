@@ -2,6 +2,9 @@ package com.example.zephyrevents.model;
 
 import com.example.zephyrevents.util.GenerateId;
 
+/**
+ * An audit style log entry: who did what, when, with a unique id.
+ */
 public class SystemLog {
     private String id;
     private long timestamp;
@@ -10,6 +13,13 @@ public class SystemLog {
     private String actorName;
 
     public SystemLog() {}
+
+    /**
+     * Creates a log with a new id and the current time as {@link #timestamp}.
+     * @param actionType  category of the action (e.g. admin or system event type)
+     * @param description what happened
+     * @param actorName who did the action
+     */
 
     public SystemLog(String actionType, String description, String actorName) {
         this.id = GenerateId.getUniqueId();
