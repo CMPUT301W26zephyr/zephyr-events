@@ -11,11 +11,11 @@ public class SystemLogRepository {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public void addLog(SystemLog log) {
-        db.collection("system_logs").document(log.getId()).set(log);
+        db.collection(Collections.SYSTEM_LOGS).document(log.getId()).set(log);
     }
 
     public void getAllLogs(RepositoryCallback<List<SystemLog>> callback) {
-        db.collection("system_logs")
+        db.collection(Collections.SYSTEM_LOGS)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
