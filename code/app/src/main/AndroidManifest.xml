@@ -28,15 +28,15 @@
         </service>
 
         <activity
-            android:name=".view.QrScannerActivity"
+            android:name=".view.main.QrScannerActivity"
             android:exported="false" />
 
         <activity
-            android:name=".view.SignUpActivity"
+            android:name=".view.auth.SignUpActivity"
             android:exported="false" />
 
         <activity
-            android:name=".view.WelcomeActivity"
+            android:name=".view.auth.WelcomeActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
@@ -46,11 +46,11 @@
         </activity>
 
         <activity
-            android:name=".view.MainActivity"
+            android:name=".view.main.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".view.EventDetailViewActivity"
+            android:name=".view.event.EventDetailViewActivity"
             android:exported="true"> <intent-filter android:label="Open Event">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -63,52 +63,52 @@
         </activity>
 
         <activity
-            android:name=".view.PublicUserProfileActivity"
+            android:name=".view.profile.PublicUserProfileActivity"
             android:exported="false" />
 
         <activity
-            android:name=".view.OrganizerEventAddEditView"
+            android:name=".view.organizer.OrganizerEventAddEditView"
             android:exported="true" />
 
         <activity
-            android:name=".view.OrganizerEntrantsListView"
+            android:name=".view.organizer.OrganizerEntrantsListView"
             android:exported="true" />
 
         <activity
-            android:name=".view.UserNotificationListView"
+            android:name=".view.notif.UserNotificationListView"
             android:exported="true" />
 
         <activity
-            android:name=".view.FilterEventsActivity"
+            android:name=".view.event.FilterEventsActivity"
             android:exported="true" />
 
         <activity
-            android:name=".view.UserProfileSettingsViewActivity"
+            android:name=".view.profile.UserProfileSettingsViewActivity"
             android:exported="true" />
 
         <activity
-            android:name=".view.EntrantsMapActivity"
+            android:name=".view.organizer.EntrantsMapActivity"
             android:exported="false" />
 
         <activity
-            android:name=".view.UserProfileEditViewActivity"
+            android:name=".view.profile.UserProfileEditViewActivity"
             android:exported="true" />
 
         <activity
-            android:name=".view.EventStatusActivity"
+            android:name=".view.notif.EventStatusActivity"
             android:exported="true" />
 
         <activity
-            android:name=".view.InviteUsersActivity"
+            android:name=".view.organizer.InviteUsersActivity"
             android:exported="false" />
 
-        <activity android:name=".view.AdminHomeActivity" />
-        <activity android:name=".view.AdminBrowseProfilesActivity" />
-        <activity android:name=".view.AdminBrowseImageActivity" />
-        <activity android:name=".view.AdminBrowseEventActivity" />
-        <activity android:name=".view.AdminSystemNotificationActivity" />
-        <activity android:name=".view.AdminSystemLogActivity" />
-        <activity android:name=".view.AdminTermsConditionsActivity" />
+        <activity android:name=".view.admin.AdminHomeActivity" />
+        <activity android:name=".view.admin.AdminBrowseProfilesActivity" />
+        <activity android:name=".view.admin.AdminBrowseImageActivity" />
+        <activity android:name=".view.admin.AdminBrowseEventActivity" />
+        <activity android:name=".view.admin.AdminSystemNotificationActivity" />
+        <activity android:name=".view.admin.AdminSystemLogActivity" />
+        <activity android:name=".view.admin.AdminTermsConditionsActivity" />
 
     </application>
 

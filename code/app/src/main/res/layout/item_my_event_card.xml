@@ -100,7 +100,7 @@
             </LinearLayout>
 
             <!-- Corrugated perforation (drawn as one continuous zigzag, not separate circles) -->
-            <com.example.zephyrevents.view.TicketPerforationView
+            <com.example.zephyrevents.view.event.TicketPerforationView
                 android:id="@+id/ticket_perforation"
                 android:layout_width="14dp"
                 android:layout_height="match_parent"

@@ -10,7 +10,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.example.zephyrevents.R;
-import com.example.zephyrevents.view.MainActivity;
+import com.example.zephyrevents.view.auth.WelcomeActivity;
 
 public class LocalNotificationHelper {
 
@@ -27,7 +27,7 @@ public class LocalNotificationHelper {
         }
 
         // Send to WelcomeActivity which will route based on the eventId
-        Intent intent = new Intent(context, com.example.zephyrevents.view.WelcomeActivity.class);
+        Intent intent = new Intent(context, WelcomeActivity.class);
         if (eventId != null && !eventId.isEmpty()) {
             intent.putExtra("eventId", eventId);
         } else {
