@@ -73,7 +73,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private final EventCommentRepository commentRepository = new EventCommentRepository();
     private WaitlistRepository pendingRepo; // store repo while waiting for permission
 
-    private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation;
+    private TextView statusTag, eventTitle, eventPrice, eventDate, eventLocation, eventGeoBadge;
     private TextView organizerName, eventAbout, totalCapacity, waitlistCapacity, waitlistApplicants, waitlistRegistrationEnds;
     private View eventImageContainer;
 
@@ -241,6 +241,7 @@ public class EventDetailViewActivity extends AppCompatActivity {
         eventPrice = findViewById(R.id.event_price);
         eventDate = findViewById(R.id.event_date);
         eventLocation = findViewById(R.id.event_location);
+        eventGeoBadge = findViewById(R.id.event_geo_badge);
         organizerName = findViewById(R.id.organizer_name);
         eventAbout = findViewById(R.id.event_about);
         totalCapacity = findViewById(R.id.total_capacity);
@@ -843,6 +844,11 @@ public class EventDetailViewActivity extends AppCompatActivity {
             eventLocation.setText(R.string.location);
         }
 
+        if (eventGeoBadge != null) {
+            boolean showGeoBadge = event.getLocation() != null && event.getLocation().isRequiresGeolocation();
+            eventGeoBadge.setVisibility(showGeoBadge ? View.VISIBLE : View.GONE);
+        }
+
         eventAbout.setText(event.getDescription() != null ? event.getDescription() : "No description provided.");
 
         if (totalCapacity != null) {
@@ -881,7 +887,8 @@ public class EventDetailViewActivity extends AppCompatActivity {
 
         View entrantMap = findViewById(R.id.manage_row_map);
         if (entrantMap != null) {
-            entrantMap.setVisibility(isManagingUser && event.getLocation().isRequiresGeolocation() ? View.VISIBLE : View.GONE);
+            boolean geoRequired = event.getLocation() != null && event.getLocation().isRequiresGeolocation();
+            entrantMap.setVisibility(isManagingUser && geoRequired ? View.VISIBLE : View.GONE);
         }
 
         MaterialCardView organizerCard = findViewById(R.id.organizer_card);
