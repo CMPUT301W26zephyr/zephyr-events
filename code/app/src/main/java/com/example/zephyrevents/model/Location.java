@@ -29,6 +29,14 @@ public class Location {
         this.requiresGeolocation = requiresGeolocation;
     }
 
+    /**
+     * Creates a location from a coordinate and a human-readable address string; defaults the extra flag to {@code false}
+     * (see the three-argument constructor).
+     *
+     * @param coordinate      geographic point for this location
+     * @param locationString  address or place description shown to users
+     */
+
     public Location(Coordinate coordinate,String locationString){
         this(coordinate, locationString, false);  // chain to 3-arg
     }

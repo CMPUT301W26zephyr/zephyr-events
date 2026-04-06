@@ -50,7 +50,16 @@ public class Notification {
         this.time = System.currentTimeMillis();
     }
 
-    // constructor but auto generate id.
+    /**
+     * Creates a notification with a newly generated id; all other fields are taken from the arguments.
+     *
+     * @param userId  recipient user id
+     * @param eventId related event id, if any
+     * @param type    kind of notification
+     * @param text    message body shown to the user
+     * @param sent    whether the notification has been sent/delivered
+     * @param read    whether the user has marked it as read
+     */
     public Notification(
             String userId,
             String eventId,

@@ -148,7 +148,6 @@ public class WaitlistRepository {
     /**
      * Selects a random subset of entrants from an event's waitlist based on event capacity;
      * fetches the entire waitlist, shuffles it (Random), and returns the top n users.
-     * TODO: make this happen remotely when?
      * @param eventId  The ID of the event to draw from.
      * @param capacity The maximum number of winners to select.
      * @param callback Callback returning a List of the selected WaitlistEntry objects.

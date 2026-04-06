@@ -92,6 +92,13 @@ public class QRController {
         return null;
     }
 
+    /**
+     * Saves the QR bitmap as a PNG into the gallery folder and shows a toast on success or failure.
+     *
+     * @param context  used for {@link android.content.ContentResolver} and toasts
+     * @param qrBitmap image to be saved
+     * @param eventId  included in the saved filename
+     */
     public static void saveQRCodeImage(Context context, Bitmap qrBitmap, String eventId) {
         String filename = "EventQR_" + eventId + "_" + System.currentTimeMillis() + ".png";
         OutputStream fos;

@@ -104,6 +104,12 @@ public final class TimeHelper {
      * @return the difference in times in milliseconds.
      */
     public static long timeDifference(long startTime, long endTime){return endTime-startTime;}
+
+    /**
+     *
+     * @param millis length of the interval in milliseconds
+     * @return formatted duration; omits larger units when they are zero
+     */
     public static String formatDuration(long millis) {
         if (millis <= 0) {
             return "0s";

@@ -16,8 +16,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import com.example.zephyrevents.view.EventDetailViewActivity;
-
 import org.junit.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
@@ -50,7 +48,8 @@ public class QRControllerTest {
             List<Intent> built = intentConstruction.constructed();
             assertEquals(1, built.size());
             assertSame(intent, built.get(0));
-            verify(intent).putExtra(EventDetailViewActivity.EXTRA_EVENT, "evt-123");
+            // Must match EventDetailViewActivity.EXTRA_EVENT ("extra_event")
+            verify(intent).putExtra("extra_event", "evt-123");
         }
     }
 

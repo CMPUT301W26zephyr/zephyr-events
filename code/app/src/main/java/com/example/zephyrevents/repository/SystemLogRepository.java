@@ -7,6 +7,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Persists and loads {@link SystemLog} records from Firestore (collection {@code system_logs}).
+ */
 public class SystemLogRepository {
 
     private final FirebaseFirestore db;
@@ -20,10 +23,20 @@ public class SystemLogRepository {
     public SystemLogRepository(FirebaseFirestore db) {
         this.db = db;
     }
+
+
+    /**
+     * Saves a log entry to Firestore using the log id as the document id
+     * @param log entry to store
+     */
     public void addLog(SystemLog log) {
         db.collection(Collections.SYSTEM_LOGS).document(log.getId()).set(log);
     }
 
+    /**
+     * Load all the logs, with the newest first and returns them on success.
+     * @param callback receives the list or an error
+     */
     public void getAllLogs(RepositoryCallback<List<SystemLog>> callback) {
         db.collection(Collections.SYSTEM_LOGS)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
