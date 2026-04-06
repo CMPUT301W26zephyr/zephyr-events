@@ -327,7 +327,7 @@ public class EntrantsListFragment extends Fragment {
     private void showCancelUnregisteredConfirmation(WaitlistEntry mappedEntry, RecyclerView recyclerView) {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.admin_delete_yesorno, null);
         DialogUiHelper.bindAdminDeleteContent(dialogView,
-                R.string.entrants_cancel_unregistered_title,
+                R.string.dialog_are_you_sure_title,
                 R.string.entrants_cancel_unregistered_message);
         MaterialButton confirmBtn = dialogView.findViewById(R.id.button_delete);
         confirmBtn.setText(R.string.dialog_action_confirm);
