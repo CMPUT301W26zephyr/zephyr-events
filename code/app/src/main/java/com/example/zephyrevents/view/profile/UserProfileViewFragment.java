@@ -33,6 +33,7 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
+import com.example.zephyrevents.BuildConfig;
 
 public class UserProfileViewFragment extends Fragment {
 
@@ -182,7 +183,7 @@ public class UserProfileViewFragment extends Fragment {
         dialogView.findViewById(R.id.btn_admin_password_cancel).setOnClickListener(v -> dialog.dismiss());
         dialogView.findViewById(R.id.btn_admin_password_enter).setOnClickListener(v -> {
             String password = input.getText() != null ? input.getText().toString() : "";
-            if (password.equals("1324")) {
+            if (password.equals(BuildConfig.ADMIN_PASSWORD)) {
                 dialog.dismiss();
                 startActivity(new Intent(requireContext(), AdminHomeActivity.class));
             } else {
