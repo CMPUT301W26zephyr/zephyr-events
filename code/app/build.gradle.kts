@@ -126,7 +126,11 @@ val generateJavadoc by tasks.registering(Javadoc::class) {
         }
 
         // Tell the Javadoc tool where everything is
-        classpath = project.files(androidBootClasspath, dependencyClasspath)
+        classpath = project.files(
+            androidBootClasspath,
+            dependencyClasspath,
+            "$buildDir/generated/source/buildConfig/debug"
+        )
     }
 
     // Ignore missing tags or minor doc errors so the build doesn't fail
