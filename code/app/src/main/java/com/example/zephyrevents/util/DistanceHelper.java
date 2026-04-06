@@ -24,18 +24,38 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 import android.location.Location;
 
 
+/**
+ * Utility class providing helper methods for distance calculations and user location retrieval.
+ * Uses the Haversine formula for great-circle distance between two geographic coordinates.
+ */
 public final class DistanceHelper {
 
     private static final double EARTH_RADIUS_KM = 6371.0;
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private DistanceHelper() {
     }
 
     ;
 
+    /**
+     * Callback interface for receiving the result of a location request.
+     */
     public interface LocationCallback {
+        /**
+         * Called when the user's location is successfully retrieved.
+         *
+         * @param lat the latitude of the user's current location
+         * @param lng the longitude of the user's current location
+         */
         void onLocation(double lat, double lng);
 
+        /**
+         * Called when the location request fails, for example due to missing
+         * permissions or unavailable location services.
+         */
         void onFailure();
     }
 
