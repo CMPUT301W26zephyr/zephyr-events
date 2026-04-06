@@ -5,13 +5,14 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="24dp"
-    android:paddingTop="16dp"
+    android:paddingTop="20dp"
     android:paddingBottom="8dp">
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:boxBackgroundColor="@android:color/transparent"
         app:boxStrokeColor="@color/primary_red"
         app:hintTextColor="@color/primary_red">
 

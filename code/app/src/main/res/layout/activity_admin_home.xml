@@ -9,8 +9,8 @@
     <View
         android:id="@+id/admin_profile_header"
         android:layout_width="0dp"
-        android:layout_height="168dp"
-        android:background="@drawable/bg_profile_header"
+        android:layout_height="@dimen/admin_header_height"
+        android:background="@drawable/bg_profile_user_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,17 +23,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <ImageButton
-            android:id="@+id/admin_back"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="start|center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/back"
-            android:padding="12dp"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/black" />
 
         <TextView
             android:id="@+id/admin_screen_title"
@@ -48,17 +37,17 @@
 
     <FrameLayout
         android:id="@+id/admin_avatar_container"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:layout_marginTop="-64dp"
+        android:layout_width="@dimen/admin_avatar_size"
+        android:layout_height="@dimen/admin_avatar_size"
+        android:layout_marginTop="@dimen/admin_avatar_margin_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/admin_profile_header">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            app:cardCornerRadius="64dp"
+            android:layout_width="@dimen/admin_avatar_size"
+            android:layout_height="@dimen/admin_avatar_size"
+            app:cardCornerRadius="54dp"
             app:cardElevation="0dp"
             app:cardPreventCornerOverlap="true"
             app:cardUseCompatPadding="false">
@@ -119,6 +108,7 @@
         android:clipToPadding="false"
         android:paddingTop="14dp"
         android:paddingBottom="24dp"
+        android:translationY="@dimen/admin_shift_content_up"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -161,17 +151,6 @@
                         android:paddingVertical="8dp"
                         android:paddingStart="8dp"
                         android:text="@string/admin_role_admin"
-                        android:textColor="@color/black"
-                        android:textSize="15sp" />
-
-                    <RadioButton
-                        android:id="@+id/admin_radio_organizer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="48dp"
-                        android:paddingVertical="8dp"
-                        android:paddingStart="8dp"
-                        android:text="@string/admin_role_organizer"
                         android:textColor="@color/black"
                         android:textSize="15sp" />
 

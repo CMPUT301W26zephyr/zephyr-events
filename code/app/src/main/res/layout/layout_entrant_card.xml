@@ -1,72 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="12dp"
-    android:background="@color/white">
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="1dp"
+    android:foreground="?attr/selectableItemBackground">
 
-    <FrameLayout
-        android:id="@+id/img_container"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/bg_comment_avatar">
-
-        <TextView
-            android:id="@+id/text_entrant_initial"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textColor="#616161"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="J" />
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:strokeColor="@color/light_stroke"
+        app:strokeWidth="1dp">
 
-        <TextView
-            android:id="@+id/text_entrant_name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            tools:text="John Doe" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="8dp">
 
-        <TextView
-            android:id="@+id/text_entrant_detail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            tools:text="Status: WAITLISTED" />
-    </LinearLayout>
+            <FrameLayout
+                android:id="@+id/img_container"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_comment_avatar">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_cancel_entrant"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="Cancel"
-        android:textAllCaps="false"
-        android:textColor="@color/primary_red"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:cornerRadius="8dp"
-        app:strokeColor="@color/primary_red"
-        app:strokeWidth="1dp"
-        tools:visibility="visible" />
-</LinearLayout>
+                <ImageView
+                    android:id="@+id/entrant_avatar_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/text_entrant_initial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textColor="#616161"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="J" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_entrant_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="John Doe" />
+
+                <TextView
+                    android:id="@+id/text_entrant_detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    tools:text="Status: WAITLISTED" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancel_entrant"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minWidth="0dp"
+                android:minHeight="32dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="0dp"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textColor="@color/primary_red"
+                android:textSize="11sp"
+                android:visibility="gone"
+                app:cornerRadius="6dp"
+                app:strokeColor="@color/primary_red"
+                app:strokeWidth="1dp"
+                tools:visibility="visible" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

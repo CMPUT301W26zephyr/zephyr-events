@@ -144,40 +144,48 @@ public class UserRepository {
      * @param callback  Handle completion of the user deletion.
      */
     public void deleteUser(String id, RepositoryCallback<Void> callback) {
-        if (id == null || id.trim().isEmpty()){
-            var e = new IllegalArgumentException("user id passed has no value");
+        if (id == null || id.trim().isEmpty()) {
+            IllegalArgumentException e = new IllegalArgumentException("user id passed has no value");
             Log.w(TAG, "invalid user id", e);
             callback.onFailure(e);
-            return; // exit before network call.
+            return; // exit before network call
         }
-        db.collection(Collections.USERS)
-                .document(id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "user deleted successfully id: " + id);
 
-                        // Cascade delete associated waitlists
-                        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
-                                .whereEqualTo("userId", id)
-                                .get()
-                                .addOnSuccessListener(querySnapshot -> {
-                                    for (DocumentSnapshot doc : querySnapshot) {
-                                        doc.getReference().delete();
-                                    }
-                                });
+        db.collection(Collections.USERS).document(id).delete()
+                .addOnSuccessListener(aVoid -> {
+                    // 1. Cascade delete waitlist entries
+                    db.collection(Collections.WAITLIST).whereEqualTo("userId", id).get()
+                            .addOnSuccessListener(snap -> {
+                                for (DocumentSnapshot doc : snap) doc.getReference().delete();
+                            });
 
-                        callback.onSuccess(null);
-                    }
+                    // 2. Cascade delete events they organized (which triggers event cascade delete)
+                    db.collection(Collections.EVENTS).whereEqualTo("organizerId", id).get()
+                            .addOnSuccessListener(snap -> {
+                                EventRepository eventRepo = new EventRepository(db);
+                                for (DocumentSnapshot doc : snap) {
+                                    eventRepo.deleteEvent(doc.getId(), new RepositoryCallback<Void>() {
+                                        @Override public void onSuccess(Void result) {}
+                                        @Override public void onFailure(Exception e) {}
+                                    });
+                                }
+                            });
+
+                    // 3. Cascade delete notifications directed to them
+                    new com.example.zephyrevents.repository.NotificationRepository().deleteAllUserNotifications(id, new RepositoryCallback<Void>() {
+                        @Override public void onSuccess(Void result) {}
+                        @Override public void onFailure(Exception e) {}
+                    });
+
+                    // 4. Cascade delete profile image
+                    new com.example.zephyrevents.repository.ImageRepository().deleteProfileAvatar(id, new RepositoryCallback<Void>() {
+                        @Override public void onSuccess(Void result) {}
+                        @Override public void onFailure(Exception e) {}
+                    });
+
+                    callback.onSuccess(null);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "error deleting user with id: "+id+"\n exception returned: ", e);
-                        callback.onFailure(e);
-                    }
-                });
+                .addOnFailureListener(callback::onFailure);
     }
 
     // Potential race condition, but... realistically how many people are updating user?

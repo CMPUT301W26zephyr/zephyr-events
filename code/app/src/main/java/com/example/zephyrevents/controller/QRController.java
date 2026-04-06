@@ -3,7 +3,6 @@ package com.example.zephyrevents.controller;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,17 +10,13 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.widget.Toast;
 
-import com.example.zephyrevents.repository.UserRepository;
-import com.example.zephyrevents.view.EventDetailViewActivity;
+import com.example.zephyrevents.view.event.EventDetailViewActivity;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import java.io.OutputStream;
-import java.util.EnumMap;
-import java.util.Map;
 
 /**
  * Handles creation and parsing of QR codes
