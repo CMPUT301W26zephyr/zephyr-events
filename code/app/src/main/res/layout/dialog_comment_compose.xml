@@ -42,6 +42,15 @@
             android:layout_height="40dp"
             android:background="@drawable/bg_comment_avatar">
 
+            <ImageView
+                android:id="@+id/compose_avatar_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
             <TextView
                 android:id="@+id/compose_avatar_letter"
                 android:layout_width="match_parent"

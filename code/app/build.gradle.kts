@@ -1,8 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 //    id("com.android.application")
     id("com.google.gms.google-services")
 }
+
+val localProps = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) localProps.load(localPropsFile.inputStream())
 
 android {
     namespace = "com.example.zephyrevents"
@@ -18,6 +24,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "ADMIN_PASSWORD", "\"${localProps["ADMIN_PASSWORD"] ?: ""}\"")
     }
 
     buildTypes {
@@ -28,6 +35,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -116,7 +126,11 @@ val generateJavadoc by tasks.registering(Javadoc::class) {
         }
 
         // Tell the Javadoc tool where everything is
-        classpath = project.files(androidBootClasspath, dependencyClasspath)
+        classpath = project.files(
+            androidBootClasspath,
+            dependencyClasspath,
+            "$buildDir/generated/source/buildConfig/debug"
+        )
     }
 
     // Ignore missing tags or minor doc errors so the build doesn't fail

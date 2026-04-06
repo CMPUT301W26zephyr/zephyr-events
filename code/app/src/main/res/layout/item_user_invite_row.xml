@@ -64,6 +64,8 @@
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:text="@string/invite_action"
+        android:textAllCaps="false"
         android:textSize="12sp"
-        app:backgroundTint="@color/primary_red" />
+        app:backgroundTint="@color/primary_red"
+        app:cornerRadius="12dp" />
 </LinearLayout>

@@ -7,6 +7,7 @@ import com.example.zephyrevents.model.Status;
 import com.example.zephyrevents.model.WaitlistEntry;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -54,7 +55,14 @@ public class WaitlistRepository {
 
         db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
                 .add(entry)
-                .addOnSuccessListener(documentReference -> callback.onSuccess(null))
+                .addOnSuccessListener(documentReference -> {
+                    if (entry.getEventId() != null) {  // increment the event's current applicant count
+                        db.collection(com.example.zephyrevents.repository.Collections.EVENTS)
+                                .document(entry.getEventId())
+                                .update("currentApplicants", FieldValue.increment(1));
+                    }
+                    callback.onSuccess(null);
+                })
                 .addOnFailureListener(callback::onFailure);
     }
 
@@ -119,9 +127,17 @@ public class WaitlistRepository {
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-
+                    int removedCount = 0;
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         doc.getReference().delete();
+                        removedCount++;
+                    }
+
+                    // Decrement the event's current applicant count
+                    if (removedCount > 0 && eventId != null) {
+                        db.collection(com.example.zephyrevents.repository.Collections.EVENTS)
+                                .document(eventId)
+                                .update("currentApplicants", FieldValue.increment(-removedCount));
                     }
 
                     callback.onSuccess(null);
@@ -132,7 +148,6 @@ public class WaitlistRepository {
     /**
      * Selects a random subset of entrants from an event's waitlist based on event capacity;
      * fetches the entire waitlist, shuffles it (Random), and returns the top n users.
-     * TODO: make this happen remotely when?
      * @param eventId  The ID of the event to draw from.
      * @param capacity The maximum number of winners to select.
      * @param callback Callback returning a List of the selected WaitlistEntry objects.

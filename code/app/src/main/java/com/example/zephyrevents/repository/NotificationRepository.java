@@ -191,6 +191,26 @@ public class NotificationRepository {
                 });
     }
 
+    /**
+     * Finds all unread notifications for a user and marks them as read.
+     * This instantly turns off the red notification dot on the UI.
+     */
+    public void markAllAsRead(String userId) {
+        db.collection(Collections.NOTIFICATIONS)
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("read", false)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (querySnapshot.isEmpty()) return;
+
+                    com.google.firebase.firestore.WriteBatch batch = db.batch();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        batch.update(doc.getReference(), "read", true);
+                    }
+                    batch.commit();
+                });
+    }
+
     // when a user want to see all the notifications that received from system (when clicked icon)
 
     /**
@@ -222,6 +242,12 @@ public class NotificationRepository {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
+    /**
+     * Remove all notifications for a given user
+     * @param userId id of user whose notifications to be deleted
+     * @param callback called when the operation failed or finishes
+     */
 
     public void deleteAllUserNotifications(String userId, RepositoryCallback<Void> callback) {
         db.collection(Collections.NOTIFICATIONS)

@@ -155,6 +155,7 @@
                 style="@style/FormInput"
                 android:hint="e.g. 1234 State Avenue" />
 
+            <!-- GEOLOCATION SECTION -->
             <LinearLayout
                 android:id="@+id/geo_controls"
                 android:layout_width="match_parent"
@@ -162,27 +163,30 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <Button
-                    android:id="@+id/btn_find_address"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Find Address"
-                    android:textColor="#FF3B5C"
-                    android:background="@drawable/bg_button_outline"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    app:backgroundTint="@null" />
+                <LinearLayout style="@style/FormLabelRow">
+                    <TextView style="@style/FormLabel" android:text="Geolocation Radius (Meters)" />
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/input_radius"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="Radius in meters (e.g. 500)"
+                    style="@style/FormInput"
+                    android:hint="e.g. 500"
                     android:inputType="number" />
 
+                <Button
+                    android:id="@+id/btn_find_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Find Address"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_button_filled"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    app:backgroundTint="@null" />
+
             </LinearLayout>
+
             <FrameLayout
                 android:id="@+id/map_frame"
                 android:layout_width="match_parent"
@@ -193,7 +197,8 @@
                 <org.osmdroid.views.MapView
                     android:id="@+id/map_view"
                     android:layout_width="match_parent"
-                    android:layout_height="220dp"/>
+                    android:layout_height="match_parent" />
+
                 <View
                     android:id="@+id/map_touch_interceptor"
                     android:layout_width="match_parent"
@@ -215,15 +220,25 @@
                 app:trackTint="@color/switch_track_tint"
                 android:checked="false"/>
 
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Event Poster"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_red"
+                android:layout_marginBottom="12dp"/>
+
             <FrameLayout
                 android:id = "@+id/event_image_container"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="16dp"
                 android:background="#E0E0E0"
-                android:clickable = "true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground">
+                android:clickable = "false"
+                android:focusable="false">
 
 
                 <ImageView
@@ -231,7 +246,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_image_placeholder2"/>
+                    android:contentDescription="@null" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_event_poster_actions"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:text="+"
+                    android:textSize="20sp"
+                    app:backgroundTint="@color/primary_red"
+                    app:cornerRadius="20dp" />
             </FrameLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="24dp"/>
@@ -476,7 +506,7 @@
                         android:textColor="#424242"
                         android:textSize="13sp"
                         android:visibility="gone"
-                        app:cornerRadius="8dp"
+                        app:cornerRadius="12dp"
                         app:strokeColor="@color/light_stroke"
                         app:strokeWidth="1dp" />
 
@@ -500,7 +530,7 @@
                         android:textColor="#424242"
                         android:textSize="13sp"
                         android:visibility="gone"
-                        app:cornerRadius="8dp"
+                        app:cornerRadius="12dp"
                         app:strokeColor="@color/light_stroke"
                         app:strokeWidth="1dp" />
                 </LinearLayout>

@@ -5,13 +5,12 @@
     android:id="@+id/profile_user_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:translationY="-60dp">
+    android:background="@android:color/white">
 
     <View
         android:id="@+id/profile_header"
         android:layout_width="0dp"
-        android:layout_height="312dp"
+        android:layout_height="250dp"
         android:background="@drawable/bg_profile_user_header"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"

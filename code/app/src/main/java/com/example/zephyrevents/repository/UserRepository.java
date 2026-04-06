@@ -144,40 +144,48 @@ public class UserRepository {
      * @param callback  Handle completion of the user deletion.
      */
     public void deleteUser(String id, RepositoryCallback<Void> callback) {
-        if (id == null || id.trim().isEmpty()){
-            var e = new IllegalArgumentException("user id passed has no value");
+        if (id == null || id.trim().isEmpty()) {
+            IllegalArgumentException e = new IllegalArgumentException("user id passed has no value");
             Log.w(TAG, "invalid user id", e);
             callback.onFailure(e);
-            return; // exit before network call.
+            return; // exit before network call
         }
-        db.collection(Collections.USERS)
-                .document(id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "user deleted successfully id: " + id);
 
-                        // Cascade delete associated waitlists
-                        db.collection(com.example.zephyrevents.repository.Collections.WAITLIST)
-                                .whereEqualTo("userId", id)
-                                .get()
-                                .addOnSuccessListener(querySnapshot -> {
-                                    for (DocumentSnapshot doc : querySnapshot) {
-                                        doc.getReference().delete();
-                                    }
-                                });
+        db.collection(Collections.USERS).document(id).delete()
+                .addOnSuccessListener(aVoid -> {
+                    // 1. Cascade delete waitlist entries
+                    db.collection(Collections.WAITLIST).whereEqualTo("userId", id).get()
+                            .addOnSuccessListener(snap -> {
+                                for (DocumentSnapshot doc : snap) doc.getReference().delete();
+                            });
 
-                        callback.onSuccess(null);
-                    }
+                    // 2. Cascade delete events they organized (which triggers event cascade delete)
+                    db.collection(Collections.EVENTS).whereEqualTo("organizerId", id).get()
+                            .addOnSuccessListener(snap -> {
+                                EventRepository eventRepo = new EventRepository(db);
+                                for (DocumentSnapshot doc : snap) {
+                                    eventRepo.deleteEvent(doc.getId(), new RepositoryCallback<Void>() {
+                                        @Override public void onSuccess(Void result) {}
+                                        @Override public void onFailure(Exception e) {}
+                                    });
+                                }
+                            });
+
+                    // 3. Cascade delete notifications directed to them
+                    new com.example.zephyrevents.repository.NotificationRepository().deleteAllUserNotifications(id, new RepositoryCallback<Void>() {
+                        @Override public void onSuccess(Void result) {}
+                        @Override public void onFailure(Exception e) {}
+                    });
+
+                    // 4. Cascade delete profile image
+                    new com.example.zephyrevents.repository.ImageRepository().deleteProfileAvatar(id, new RepositoryCallback<Void>() {
+                        @Override public void onSuccess(Void result) {}
+                        @Override public void onFailure(Exception e) {}
+                    });
+
+                    callback.onSuccess(null);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "error deleting user with id: "+id+"\n exception returned: ", e);
-                        callback.onFailure(e);
-                    }
-                });
+                .addOnFailureListener(callback::onFailure);
     }
 
     // Potential race condition, but... realistically how many people are updating user?
@@ -215,6 +223,13 @@ public class UserRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Returns whether {@code q} matches the user name, email, or phone
+     * @param u user to search
+     * @param q query already trimmed and in lowercase for name/email checks
+     * @return true if name, email, or digit-stripped phone contains the query
+     */
+
     private static boolean matchesUserQuery(User u, String q) {
         if (u.getName() != null && u.getName().toLowerCase(Locale.getDefault()).contains(q)) {
             return true;
@@ -236,6 +251,14 @@ public class UserRepository {
         return false;
     }
 
+    /**
+     * Sets the user notifications opt-out flag and saves the user; skips the write if the value is unchanged.
+     * @param user user to update(must not be null)
+     * @param userId id used for logging
+     * @param optOut true to opt out, false to opt in
+     * @param callback called after save or on failure
+     */
+
     public void updateNotificationOptOut(User user, String userId,
                                          boolean optOut,
                                          RepositoryCallback<Void> callback) {
@@ -250,6 +273,10 @@ public class UserRepository {
         saveUser(user, callback);
     }
 
+    /**
+     * Client-side search across name, email, and phone
+     * @param callback receives matching users or an error
+     */
     public void getAllUsers(RepositoryCallback<List<User>> callback) {
 
         db.collection(Collections.USERS)

@@ -18,6 +18,8 @@ import org.mockito.Mockito;
 import java.lang.reflect.Field;
 import java.util.List;
 
+// Gemini 3.1 Pro Preview, Google AiStudio, "Could you rewrite these tests for the updated EventController using junit and mockito." - 2023-04-05
+
 public class EventControllerTest {
 
     private EventRepository mockRepo;
@@ -26,15 +28,33 @@ public class EventControllerTest {
     @Before
     public void setUp() throws Exception {
         mockRepo = Mockito.mock(EventRepository.class);
-        eventController = new EventController(mockRepo);
 
+        // To use mock Firebase
+        eventController = newEventControllerWithoutConstructor();
+
+        // Inject mock repository into the controller via reflection
+        Field repoField = EventController.class.getDeclaredField("eventRepository");
+        repoField.setAccessible(true);
+        repoField.set(eventController, mockRepo);
+
+        // Also set the singleton instance field to our test instance (defensive)
         Field instanceField = EventController.class.getDeclaredField("instance");
         instanceField.setAccessible(true);
         instanceField.set(null, eventController);
     }
 
+    private static EventController newEventControllerWithoutConstructor() throws Exception {
+        // Use Unsafe to allocate without running the private constructor.
+        Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+        Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
+        theUnsafe.setAccessible(true);
+        Object unsafe = theUnsafe.get(null);
+        return (EventController) unsafeClass
+                .getMethod("allocateInstance", Class.class)
+                .invoke(unsafe, EventController.class);
+    }
+
     @Test
-    // Verifies that when you ask the controller to create an event, it forwards the request to the repository
     public void createEvent_callsRepo() {
         Event event = new Event();
         RepositoryCallback<Void> callback = Mockito.mock(RepositoryCallback.class);
@@ -45,49 +65,31 @@ public class EventControllerTest {
     }
 
     @Test
-    // Verifies that when you ask the controller to create an event, it forwards the request to the repository
-    // this checks the controller's waitlist logic works and stores the right data
-    public void addToWaitlist_addsEntry() {
-        String eventKey = "event123";
-        String userId = "userABC";
+    public void deleteEvent_callsRepo() {
+        String eventId = "event123";
+        RepositoryCallback<Void> callback = Mockito.mock(RepositoryCallback.class);
 
-        assertFalse(eventController.isOnWaitlist(eventKey, userId));
+        eventController.deleteEvent(eventId, callback);
 
-        eventController.addToWaitlist(eventKey, userId);
-
-        List<WaitlistEntry> entries = eventController.getLotteryEntries();
-        assertTrue(entries.stream().anyMatch(e ->
-                eventKey.equals(e.getEventId())
-                        && userId.equals(e.getUserId())
-                        && e.getStatus() == Status.WAITLISTED
-        ));
+        verify(mockRepo).deleteEvent(eq(eventId), eq(callback));
     }
 
     @Test
-    // Verifies the “decline invite” behavior:
-    // if a user is on the waitlist and addDeclinedEvent(eventId, userId) is called,
-    // the controller should remove them from the waitlist and then record that declined result in the history list with status DECLINED
+    public void getAllEvents_callsRepo() {
+        RepositoryCallback<List<Event>> callback = Mockito.mock(RepositoryCallback.class);
 
-    public void decline_movesToHistory() {
-        String eventKey = "event456";
-        String userId = "userXYZ";
+        eventController.getAllEvents(callback);
 
-        // Start with user on waitlist
-        eventController.addToWaitlist(eventKey, userId);
-        assertTrue(eventController.isOnWaitlist(eventKey, userId));
+        verify(mockRepo).getAllEvents(eq(callback));
+    }
 
-        // Decline the event
-        eventController.addDeclinedEvent(eventKey, userId);
+    @Test
+    public void getEventById_callsRepo() {
+        String eventId = "event123";
+        RepositoryCallback<Event> callback = Mockito.mock(RepositoryCallback.class);
 
-        // User should be removed from waitlist
-        assertFalse(eventController.isOnWaitlist(eventKey, userId));
+        eventController.getEventById(eventId, callback);
 
-        // And an entry should be present in history with DECLINED status
-        List<WaitlistEntry> history = eventController.getHistoryEntries();
-        assertTrue(history.stream().anyMatch(e ->
-                eventKey.equals(e.getEventId())
-                        && userId.equals(e.getUserId())
-                        && e.getStatus() == Status.DECLINED
-        ));
+        verify(mockRepo).getEventById(eq(eventId), eq(callback));
     }
 }

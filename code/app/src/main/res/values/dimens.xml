@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ~2mm smaller than 48dp action buttons on typical phones -->
+    <dimen name="dialog_action_button_height">40dp</dimen>
+    <dimen name="dialog_surface_corner_radius">28dp</dimen>
+
+    <!-- Admin home: compact header + avatar; vertical offset for NestedScrollView (0 = natural layout below name/contact) -->
+    <dimen name="admin_header_height">216dp</dimen>
+    <dimen name="admin_avatar_size">108dp</dimen>
+    <dimen name="admin_avatar_margin_top">-54dp</dimen>
+    <dimen name="admin_shift_content_up">0dp</dimen>
+</resources>

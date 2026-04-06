@@ -27,6 +27,7 @@ public class Event {
     private EventStatus status;
     private String organizerName;
     private int currentApplicants;
+    private int commentsCount;
 
     /** If true, event is hidden from public listings and has no promotional QR. */
     private boolean privateEvent;
@@ -89,10 +90,47 @@ public class Event {
         this.status = status;
     }
 
+    /**
+     * Creates an event with a newly generated id; all other fields are taken from the arguments.
+     *
+     * @param name                 display name of the event
+     * @param description          full description text
+     * @param time                 scheduled date/time details for the event
+     * @param location             where the event takes place
+     * @param price                ticket or entry price
+     * @param capacity             maximum number of entrants or attendees allowed
+     * @param applicantCount       stored applicant count (often same as current applicants at creation)
+     * @param registrationEndTime  registration deadline as epoch milliseconds
+     * @param organizerId          id of the organizing user
+     * @param imageUrl             URL for the event image, or null if none
+     * @param status               lifecycle status (e.g. draft, open, closed)
+     * @param organizerName        display name of the organizer
+     * @param currentApplicants    current number of applicants
+     */
+
     // Constructor to autogenerate string id.
     public Event(String name, String description, EventTime time, Location location, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status, String organizerName, int currentApplicants) {
         this(GenerateId.getUniqueId(), name, description, time, location, price, capacity, applicantCount, registrationEndTime, organizerId, imageUrl, status, organizerName, currentApplicants);
     }
+
+    /**
+     * Builds an event using the given id and field values (typically used when loading from storage or tests).
+     *
+     * @param eventId              unique id for this event document
+     * @param name                 display name of the event
+     * @param description          full description text
+     * @param time                 scheduled date/time details for the event
+     * @param location             where the event takes place
+     * @param price                ticket or entry price
+     * @param capacity             maximum number of entrants or attendees allowed
+     * @param applicantCount       stored applicant count
+     * @param registrationEndTime  registration deadline as epoch milliseconds
+     * @param organizerId          id of the organizing user
+     * @param imageUrl             URL for the event poster image, or null if none
+     * @param status               lifecycle status (e.g. draft, open, closed)
+     * @param organizerName        display name of the organizer
+     * @param currentApplicants    current number of applicants
+     */
 
     public Event(String eventId, String name, String description, EventTime time, Location location, double price, int capacity, int applicantCount, long registrationEndTime, String organizerId, String imageUrl, EventStatus status, String organizerName, int currentApplicants) {
         this.eventId = eventId;
@@ -176,14 +214,6 @@ public class Event {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
-    }
-
-    public int getApplicantCount() {
-        return applicantCount;
-    }
-
-    public void setApplicantCount(int applicantCount) {
-        this.applicantCount = applicantCount;
     }
 
     public long getRegistrationStartTime() {
@@ -289,5 +319,15 @@ public class Event {
 
     public void setPendingCoOrganizerUserIds(List<String> pendingCoOrganizerUserIds) {
         this.pendingCoOrganizerUserIds = pendingCoOrganizerUserIds;
+    }
+
+    /**
+     * Returns whether this event has a non-empty poster URL set.
+     *
+     * @return {@code true} if {@code imageUrl} is non-null and not blank after trimming
+     */
+
+    public boolean hasPosterImage(){
+        return imageUrl != null && !imageUrl.trim().isEmpty();
     }
 }

@@ -17,20 +17,14 @@ import androidx.annotation.VisibleForTesting;
 import com.example.zephyrevents.repository.ImageRepository;
 
 
-// TODO: Once no longer mocked, I recommend to convert into non-singleton class for consistency - Jason
 /**
- * Singleton controller managing event data and waitlist.
- * NOTE: Currently waitlisting is mocked/simulated in local memory. Singleton only needed due to this.
- * Acts as a centralized access pointe
+ * Singleton controller managing event data.
+ * Acts as a centralized access point.
  */
 public class EventController {
 
     private static volatile EventController instance;
     private EventRepository eventRepository;
-
-    private List<WaitlistEntry> mockLotteries = new ArrayList<>();
-    private List<WaitlistEntry> mockHistory = new ArrayList<>();
-
     private ImageRepository imageRepository;
 
     /**
@@ -124,13 +118,13 @@ public class EventController {
             });
         } else{
             final String eventId = event.getEventId();
-            if (existingImageUrl != null && !existingImageUrl.isEmpty()){
-                event.setImageUrl(existingImageUrl);
+            if (existingImageUrl != null && !existingImageUrl.trim().isEmpty()){
+                event.setImageUrl(existingImageUrl.trim());
             } else{
                 event.setImageUrl(null);
             }
 
-            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.isEmpty();
+            final boolean deletePosterInStorage = existingImageUrl == null || existingImageUrl.trim().isEmpty();
 
             eventRepository.saveEvent(event, new RepositoryCallback<Void>() {
                 @Override
@@ -160,70 +154,6 @@ public class EventController {
                 }
             });
         }
-    }
-
-    /**
-     * Checks if user is in the mock waitlist for specific event.
-     * @param eventKey  event ID
-     * @param userId    user ID
-     * @return  true if user is in mock waitlist, false otherwise
-     */
-    public boolean isOnWaitlist(String eventKey, String userId) {
-        for (WaitlistEntry entry : mockLotteries) {
-            if (entry.getEventId() != null && entry.getEventId().equals(eventKey) &&
-                    entry.getUserId() != null && entry.getUserId().equals(userId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Adds a user to mock waitlist with status.WAITLISTED.
-     * @param eventKey  event ID
-     * @param userId    user ID
-     */
-    public void addToWaitlist(String eventKey, String userId) {
-        if (!isOnWaitlist(eventKey, userId)) {
-            WaitlistEntry entry = new WaitlistEntry(userId, eventKey, 0.0, 0.0, Status.WAITLISTED);
-            mockLotteries.add(entry);
-        }
-    }
-    /**
-     * Removes a user from mock waitlist based on ID.
-     * @param eventKey  event ID
-     * @param userId    user ID
-     */
-    public void removeFromWaitlist(String eventKey, String userId) {
-        mockLotteries.removeIf(e -> e.getEventId() != null && e.getEventId().equals(eventKey) &&
-                e.getUserId() != null && e.getUserId().equals(userId));
-    }
-
-    /**
-     * Retrieves the current list of entries in the mock lottery system.
-     * @return List of all mock WaitlistEntry objects
-     */
-    public List<WaitlistEntry> getLotteryEntries() {
-        return mockLotteries;
-    }
-
-    /**
-     * Retrieves the history of finalized entries (declined or completed).
-     * @return A list of historical {@link WaitlistEntry} objects.
-     */
-    public List<WaitlistEntry> getHistoryEntries() {
-        return mockHistory;
-    }
-
-    /**
-     * Moves a user from the waitlist to the history list with status.DECLINED.
-     * @param eventKey  event ID
-     * @param userId    user ID
-     */
-    public void addDeclinedEvent(String eventKey, String userId) {
-        removeFromWaitlist(eventKey, userId);
-        WaitlistEntry entry = new WaitlistEntry(userId, eventKey, 0.0, 0.0, Status.DECLINED);
-        mockHistory.add(entry);
     }
 
     /**

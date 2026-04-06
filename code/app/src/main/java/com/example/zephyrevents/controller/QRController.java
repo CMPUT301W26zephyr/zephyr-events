@@ -3,7 +3,6 @@ package com.example.zephyrevents.controller;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,17 +10,13 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.widget.Toast;
 
-import com.example.zephyrevents.repository.UserRepository;
-import com.example.zephyrevents.view.EventDetailViewActivity;
+import com.example.zephyrevents.view.event.EventDetailViewActivity;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import java.io.OutputStream;
-import java.util.EnumMap;
-import java.util.Map;
 
 /**
  * Handles creation and parsing of QR codes
@@ -97,6 +92,13 @@ public class QRController {
         return null;
     }
 
+    /**
+     * Saves the QR bitmap as a PNG into the gallery folder and shows a toast on success or failure.
+     *
+     * @param context  used for {@link android.content.ContentResolver} and toasts
+     * @param qrBitmap image to be saved
+     * @param eventId  included in the saved filename
+     */
     public static void saveQRCodeImage(Context context, Bitmap qrBitmap, String eventId) {
         String filename = "EventQR_" + eventId + "_" + System.currentTimeMillis() + ".png";
         OutputStream fos;

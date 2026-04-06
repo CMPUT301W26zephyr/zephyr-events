@@ -15,4 +15,5 @@ public final class Collections {
 
     /** Event discussion threads; documents include {@code eventId} for querying. */
     public static final String EVENT_COMMENTS = "event_comments";
+    public static final String SYSTEM_LOGS = "system_logs";
 }

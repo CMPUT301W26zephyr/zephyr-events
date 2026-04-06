@@ -24,18 +24,38 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 import android.location.Location;
 
 
+/**
+ * Utility class providing helper methods for distance calculations and user location retrieval.
+ * Uses the Haversine formula for great-circle distance between two geographic coordinates.
+ */
 public final class DistanceHelper {
 
     private static final double EARTH_RADIUS_KM = 6371.0;
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private DistanceHelper() {
     }
 
     ;
 
+    /**
+     * Callback interface for receiving the result of a location request.
+     */
     public interface LocationCallback {
+        /**
+         * Called when the user's location is successfully retrieved.
+         *
+         * @param lat the latitude of the user's current location
+         * @param lng the longitude of the user's current location
+         */
         void onLocation(double lat, double lng);
 
+        /**
+         * Called when the location request fails, for example due to missing
+         * permissions or unavailable location services.
+         */
         void onFailure();
     }
 
@@ -82,6 +102,12 @@ public final class DistanceHelper {
 
 
     // The following two functions are from Anthropic, Claude (claude.ai), "Android fused location provider helper methods to get current user location", 2025-03-30
+
+    /**
+     * Returns the best available last-known location or requests a fresh fix if none is cached.
+     * @param context used for permission check and location client
+     * @param callback receives coordinate or failure
+     */
     public static void getUserLocation(Context context, LocationCallback callback) {
         if (ContextCompat.checkSelfPermission(
                 context,
@@ -103,6 +129,12 @@ public final class DistanceHelper {
         }).addOnFailureListener(e -> callback.onFailure());
     }
 
+    /**
+     * Requests a single high-accuracy current location when
+     * @param context  used for permission checks
+     * @param client fused location client to call
+     * @param callback receives latitude/longitude on sucesss
+     */
     private static void requestFreshLocation(
             Context context,
             FusedLocationProviderClient client,
