@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+// Surfaces audit/system logs so admins can review actions; read-mostly view backed by log data from the backend.
 
 public class AdminSystemLogActivity extends AppCompatActivity {
 

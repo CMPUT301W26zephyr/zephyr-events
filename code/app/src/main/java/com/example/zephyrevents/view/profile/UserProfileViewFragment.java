@@ -34,6 +34,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
 
+// Shows the signed-in user’s own profile inside the main shell; fragment keeps read-only profile display reusable in the tab navigation pattern.
+
 public class UserProfileViewFragment extends Fragment {
 
     private UserController userController;

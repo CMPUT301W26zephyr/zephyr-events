@@ -20,7 +20,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
 import java.util.List;
-
+// Map of entrant/check-in locations for an event; map-centric activity separates geospatial UI from the flat entrant list.
 // The following class is from Anthropic, Claude (claude.ai), "Android map activity showing waitlist entrant locations using osmdroid", 2025-03-30
 public class EntrantsMapActivity extends AppCompatActivity {
 

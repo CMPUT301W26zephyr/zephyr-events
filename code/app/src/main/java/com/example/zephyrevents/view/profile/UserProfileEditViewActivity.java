@@ -29,6 +29,8 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.model.User;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+// Form for updating profile fields and saving changes; dedicated edit activity isolates validation and submit from the read-only profile fragment.
+
 public class UserProfileEditViewActivity extends AppCompatActivity {
 
     private UserController userController;

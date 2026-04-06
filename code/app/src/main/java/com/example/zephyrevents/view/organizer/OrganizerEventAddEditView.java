@@ -19,6 +19,7 @@ import com.example.zephyrevents.model.EventViewModel;
 
 import java.util.UUID;
 
+// Organizer UI for creating or editing an event’s core fields; keeps add/edit form logic scoped to the organizer workflow.
 public class OrganizerEventAddEditView extends AppCompatActivity {
 
     @Override

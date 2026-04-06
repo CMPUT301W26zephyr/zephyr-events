@@ -28,6 +28,8 @@ import com.example.zephyrevents.view.profile.UserProfileViewFragment;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+// Primary shell after login: hosts bottom navigation or fragments for home, lists, and profile areas; single activity pattern for the main user journey.
+
 public class MainActivity extends AppCompatActivity {
 
     private Fragment homeFragment;

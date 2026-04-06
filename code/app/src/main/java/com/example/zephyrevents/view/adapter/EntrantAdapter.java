@@ -17,6 +17,7 @@ import com.example.zephyrevents.model.Entrant;
 
 import java.util.List;
 
+// Presents entrants (waitlist/lottery views) to organizers with per-row actions; Adapter pattern between entrant data and the list UI.
 public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantViewHolder> {
 
     private List<Entrant> entrants;

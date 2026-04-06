@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.example.zephyrevents.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+// Lets admins view or maintain the app’s terms and conditions text; activity-focused screen with content loaded for policy display.
 public class AdminTermsConditionsActivity extends AppCompatActivity {
 
     private EditText termsContent;

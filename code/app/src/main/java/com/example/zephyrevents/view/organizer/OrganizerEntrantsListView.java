@@ -18,6 +18,7 @@ import com.example.zephyrevents.view.event.EventDetailViewActivity;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+// Lists entrants for an organizer’s event (waitlist, lottery, etc.); view/activity layer for roster management separate from public event views.
 public class OrganizerEntrantsListView extends AppCompatActivity {
 
     private final String[] tabTitles = new String[]{"Waitlist", "Winners", "Unregistered", "Final List"};

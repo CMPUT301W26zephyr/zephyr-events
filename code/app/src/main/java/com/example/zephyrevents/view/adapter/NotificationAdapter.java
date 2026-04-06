@@ -20,6 +20,7 @@ import com.example.zephyrevents.view.event.EventDetailViewActivity;
 
 import java.util.List;
 
+// List notifications for the users and routes taps into the event/welcome flow
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
 
     private final List<Notification> notifications;

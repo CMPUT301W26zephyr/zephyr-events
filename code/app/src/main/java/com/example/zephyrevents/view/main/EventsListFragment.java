@@ -36,7 +36,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import java.util.Locale;
 
-
+// Scrollable list of events for browsing/search; fragment pairs with filters and adapters to show the catalog independent of home layout.
 public class EventsListFragment extends Fragment {
 
     /** When set from home "See all", the list is restricted (and ordered) for that explore row. */

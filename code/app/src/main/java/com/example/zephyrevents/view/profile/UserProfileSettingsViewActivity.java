@@ -14,6 +14,9 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.example.zephyrevents.R;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+
+// Screen for account/settings toggles (e.g. notifications, preferences); activity separates settings from profile viewing and editing flows.
+
 public class UserProfileSettingsViewActivity extends AppCompatActivity {
     private SharedPreferences user_prefs;
     private SwitchMaterial swOrganizer, swLottery;

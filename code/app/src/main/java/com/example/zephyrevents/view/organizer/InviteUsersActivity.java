@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// Flow for inviting users to an event; activity isolates invite selection and callbacks from the create/edit fragments.
 /**
  * Search users and invite them as co-organizers or to a private waitlist.
  */

@@ -18,6 +18,7 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.view.main.MainActivity;
 
+// Collects registration details and completes account creation; dedicated activity isolates sign-up from the rest of the navigation graph.
 /**
  * SignUpActivity allows the user to create an account if not signed in;
  * Navigated to from WelcomeActivity;

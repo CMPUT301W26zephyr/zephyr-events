@@ -17,6 +17,8 @@ import com.example.zephyrevents.repository.EventRepository;
 import com.example.zephyrevents.repository.RepositoryCallback;
 import com.example.zephyrevents.repository.UserRepository;
 
+// Read-only profile when viewing another user (e.g. from an event or list); activity pattern carries user id via intent and avoids mixing with self-profile UI.
+
 /**
  * Read-only profile for an event organizer (or any user id), shown from the event detail card.
  */
