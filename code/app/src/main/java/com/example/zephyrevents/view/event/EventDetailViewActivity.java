@@ -1054,9 +1054,23 @@ public class EventDetailViewActivity extends AppCompatActivity {
                         buttonSecondary.setVisibility(View.GONE);
                     } else {
                         if (pastDeadline) {
-                            // AUTO-RUN THE LOTTERY
-                            Toast.makeText(EventDetailViewActivity.this, "Registration ended. Running lottery...", Toast.LENGTH_SHORT).show();
-                            executeLottery();
+                            // This is just a manual fallback for the organizer if the Cloud Functions fail
+                            buttonPrimary.setVisibility(View.VISIBLE);
+                            buttonPrimary.setEnabled(true);
+                            buttonPrimary.setText(R.string.run_lottery);
+                            buttonPrimary.setBackground(ContextCompat.getDrawable(EventDetailViewActivity.this, R.drawable.bg_button_filled));
+                            buttonPrimary.setBackgroundTintList(null);
+                            buttonPrimary.setTextColor(ContextCompat.getColor(EventDetailViewActivity.this, R.color.white));
+                            buttonPrimary.setOnClickListener(v -> {
+                                AlertDialog runLotteryDialog = new MaterialAlertDialogBuilder(EventDetailViewActivity.this)
+                                        .setTitle("Run Lottery")
+                                        .setMessage("The registration deadline has passed. If the automatic lottery hasn't executed yet, you can run it manually here.")
+                                        .setPositiveButton("Run", (dialog, which) -> executeLottery())
+                                        .setNegativeButton("Cancel", null)
+                                        .create();
+                                runLotteryDialog.show();
+                                DialogUiHelper.applyCompactMaterialActions(runLotteryDialog);
+                            });
                         } else {
                             buttonPrimary.setVisibility(View.VISIBLE);
                             buttonPrimary.setEnabled(true);

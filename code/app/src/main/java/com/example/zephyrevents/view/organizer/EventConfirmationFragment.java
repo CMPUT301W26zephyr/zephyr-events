@@ -115,7 +115,14 @@ public class EventConfirmationFragment extends Fragment {
 
         String finalLocationStr = locationStr;
         ((OrganizerEventAddEditView) requireActivity()).setupTopAndBottomUI(
-                "Review Event Details", "CONFIRM & CREATE", v -> {
+                "Review Event Details", "CONFIRM & SAVE", v -> {
+
+                    // Show loading state immediately
+                    Button nextBtn = requireActivity().findViewById(R.id.next_button);
+                    if (nextBtn != null) {
+                        nextBtn.setText("LOADING...");
+                        nextBtn.setEnabled(false);
+                    }
 
                     Event newEvent = new Event();
 

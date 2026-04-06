@@ -51,6 +51,7 @@ public class DrawReplacementsDialog extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        view.findViewById(R.id.btn_draw_cancel).setOnClickListener(v -> dismiss());
         Button confirmBtn = view.findViewById(R.id.btn_draw_confirm);
         confirmBtn.setOnClickListener(v -> {
             confirmBtn.setEnabled(false);

@@ -396,7 +396,11 @@ public class EventCreateFragment extends Fragment {
                     public void onSuccess(Event e) {
                         if (e != null) {
                             viewModel.title = e.getName() != null ? e.getName() : "";
-                            viewModel.price = String.valueOf(e.getPrice());
+                            if (e.getPrice() <= 0.0) {
+                                viewModel.price = "";
+                            } else {
+                                viewModel.price = String.format(java.util.Locale.getDefault(), "%.2f", e.getPrice());
+                            }
                             viewModel.description = e.getDescription() != null ? e.getDescription() : "";
                             viewModel.attendeeCount = String.valueOf(e.getCapacity());
                             viewModel.organizerId = e.getOrganizerId();

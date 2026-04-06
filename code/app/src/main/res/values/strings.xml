@@ -174,7 +174,7 @@
     <string name="my_events_empty_history">Nothing here yet</string>
     <string name="my_events_empty_history_hint">Past events and results will appear here.</string>
 
-    <string name="public_profile_title">Meet your organizer!</string>
+    <string name="public_profile_title">User Information</string>
     <string name="public_profile_contact_header">Contact</string>
     <string name="public_profile_unavailable">Could not load profile.</string>
     <plurals name="events_organized_count">

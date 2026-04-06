@@ -108,35 +108,45 @@ public class EntrantsListFragment extends Fragment {
             });
 
             btnRunLottery.setOnClickListener(v -> {
-                Toast.makeText(requireContext(), "Running Lottery...", Toast.LENGTH_SHORT).show();
-                new LotteryController().runLottery(eventId, new RepositoryCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        // Fetch organizer name for the log
-                        new com.example.zephyrevents.repository.UserRepository().getUserById(
-                                new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId(),
-                                new RepositoryCallback<com.example.zephyrevents.model.User>() {
-                                    @Override
-                                    public void onSuccess(com.example.zephyrevents.model.User u) {
-                                        String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
-                                        String eName = (eventName != null) ? eventName : "Unknown Event";
-                                        com.example.zephyrevents.controller.SystemLogController.getInstance()
-                                                .logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + eName + "'", actor);
-                                    }
-                                    @Override public void onFailure(Exception e) {}
-                                });
+                androidx.appcompat.app.AlertDialog runLotteryDialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Run Lottery")
+                        .setMessage("Are you sure you want to prematurely close registration and run the lottery?")
+                        .setPositiveButton("Run", (dialog, which) -> {
+                            Toast.makeText(requireContext(), "Running Lottery...", Toast.LENGTH_SHORT).show();
+                            new LotteryController().runLottery(eventId, new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    // Fetch organizer name for the log
+                                    new com.example.zephyrevents.repository.UserRepository().getUserById(
+                                            new com.example.zephyrevents.controller.UserController(requireContext()).getCurrentUserId(),
+                                            new RepositoryCallback<com.example.zephyrevents.model.User>() {
+                                                @Override
+                                                public void onSuccess(com.example.zephyrevents.model.User u) {
+                                                    String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                                                    String eName = (eventName != null) ? eventName : "Unknown Event";
+                                                    com.example.zephyrevents.controller.SystemLogController.getInstance()
+                                                            .logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + eName + "'", actor);
+                                                }
+                                                @Override public void onFailure(Exception e) {}
+                                            });
 
-                        Toast.makeText(requireContext(), "Lottery Complete!", Toast.LENGTH_SHORT).show();
-                        btnRunLottery.setVisibility(View.GONE);
-                        btnDrawReplacements.setVisibility(View.VISIBLE);
-                        loadData(recyclerView);
-                    }
+                                    Toast.makeText(requireContext(), "Lottery Complete!", Toast.LENGTH_SHORT).show();
+                                    btnRunLottery.setVisibility(View.GONE);
+                                    btnDrawReplacements.setVisibility(View.VISIBLE);
+                                    loadData(recyclerView);
+                                }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(requireContext(), "Failed to run lottery.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                                @Override
+                                public void onFailure(Exception e) {
+                                    Toast.makeText(requireContext(), "Failed to run lottery.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create();
+
+                runLotteryDialog.show();
+                com.example.zephyrevents.util.DialogUiHelper.applyCompactMaterialActions(runLotteryDialog);
             });
 
         } else if (tabIndex == 1) {
@@ -231,24 +241,39 @@ public class EntrantsListFragment extends Fragment {
                             lotteryHasRun = true;
                         }
 
+                        // Batch update all 4 tab counts AND filter the current tab's list
+                        int waitlistCount = 0, winnersCount = 0, unregisteredCount = 0, finalCount = 0;
                         for (WaitlistEntry e : result) {
+                            // Failsafe: if anyone has a post-lottery status, mark lottery as run
                             if (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED ||
                                     e.getStatus() == Status.DECLINED || e.getStatus() == Status.LOST) {
                                 lotteryHasRun = true;
                             }
 
+                            // Tally Counts
+                            if (e.getStatus() == Status.WAITLISTED) waitlistCount++;
+                            if (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED || e.getStatus() == Status.DECLINED) winnersCount++;
+                            if (e.getStatus() == Status.SELECTED) unregisteredCount++;
+                            if (e.getStatus() == Status.ACCEPTED) finalCount++;
+
+                            // Filter into the RecyclerView for the current tab
                             if (tabIndex == 0 && e.getStatus() == Status.WAITLISTED) filtered.add(e);
                             if (tabIndex == 1 && (e.getStatus() == Status.SELECTED || e.getStatus() == Status.ACCEPTED || e.getStatus() == Status.DECLINED)) filtered.add(e);
                             if (tabIndex == 2 && e.getStatus() == Status.SELECTED) filtered.add(e);
                             if (tabIndex == 3 && e.getStatus() == Status.ACCEPTED) filtered.add(e);
                         }
 
+                        // Push counts to the parent Activity's tabs
+                        if (getActivity() instanceof OrganizerEntrantsListView) {
+                            OrganizerEntrantsListView parent = (OrganizerEntrantsListView) getActivity();
+                            parent.updateTabCount(0, waitlistCount);
+                            parent.updateTabCount(1, winnersCount);
+                            parent.updateTabCount(2, unregisteredCount);
+                            parent.updateTabCount(3, finalCount);
+                        }
+
                         currentFilteredList.clear();
                         currentFilteredList.addAll(filtered);
-
-                        if (getActivity() instanceof OrganizerEntrantsListView) {
-                            ((OrganizerEntrantsListView) getActivity()).updateTabCount(tabIndex, filtered.size());
-                        }
 
                         if (tabIndex == 0 && getView() != null) {
                             Button btnRunLottery = getView().findViewById(R.id.btn_run_lottery);

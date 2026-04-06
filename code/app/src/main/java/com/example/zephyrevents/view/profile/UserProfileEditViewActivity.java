@@ -317,6 +317,15 @@ public class UserProfileEditViewActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
 
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Please enter a valid email address.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!phone.isEmpty() && !android.util.Patterns.PHONE.matcher(phone).matches()) {
+            Toast.makeText(this, "Please enter a valid phone number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         userController.updateCurrentUserProfile(name, email, phone, "", new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {

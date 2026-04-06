@@ -13,9 +13,9 @@
         android:id="@+id/admin_delete_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="#000000"
-        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         android:textStyle="bold"
         tools:text="Delete this image?" />
 
@@ -23,10 +23,11 @@
         android:id="@+id/admin_delete_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
-        android:textColor="#9E9E9E"
-        android:textSize="12sp"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:textAlignment="center"
         tools:text="This action cannot be undone." />
 
     <LinearLayout
@@ -37,26 +38,29 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_cancel"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="@dimen/dialog_action_button_height"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
+            android:background="@drawable/bg_button_outline"
             android:text="CANCEL"
+            android:textAllCaps="true"
             android:textColor="@color/primary_red"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/primary_red"
-            app:strokeWidth="1dp" />
+            android:textSize="14sp"
+            app:backgroundTint="@null" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_delete"
             android:layout_width="0dp"
             android:layout_height="@dimen/dialog_action_button_height"
             android:layout_weight="1"
-            android:backgroundTint="@color/primary_red"
-            android:text="DELETE"
-            android:textColor="#FFFFFF"
-            app:cornerRadius="12dp" />
+            android:layout_marginStart="8dp"
+            android:text="CONFIRM"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_filled"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            app:backgroundTint="@null"/>
     </LinearLayout>
 
 </LinearLayout>
