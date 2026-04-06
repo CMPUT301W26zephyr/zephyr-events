@@ -1,7 +1,0 @@
-{
-  "plugins": {
-    "firebase": {
-      "enabled": true
-    }
-  }
-}
