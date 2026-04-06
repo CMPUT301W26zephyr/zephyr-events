@@ -223,6 +223,13 @@ public class UserRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Returns whether {@code q} matches the user name, email, or phone
+     * @param u user to search
+     * @param q query already trimmed and in lowercase for name/email checks
+     * @return true if name, email, or digit-stripped phone contains the query
+     */
+
     private static boolean matchesUserQuery(User u, String q) {
         if (u.getName() != null && u.getName().toLowerCase(Locale.getDefault()).contains(q)) {
             return true;
@@ -244,6 +251,14 @@ public class UserRepository {
         return false;
     }
 
+    /**
+     * Sets the user notifications opt-out flag and saves the user; skips the write if the value is unchanged.
+     * @param user user to update(must not be null)
+     * @param userId id used for logging
+     * @param optOut true to opt out, false to opt in
+     * @param callback called after save or on failure
+     */
+
     public void updateNotificationOptOut(User user, String userId,
                                          boolean optOut,
                                          RepositoryCallback<Void> callback) {
@@ -258,6 +273,10 @@ public class UserRepository {
         saveUser(user, callback);
     }
 
+    /**
+     * Client-side search across name, email, and phone
+     * @param callback receives matching users or an error
+     */
     public void getAllUsers(RepositoryCallback<List<User>> callback) {
 
         db.collection(Collections.USERS)

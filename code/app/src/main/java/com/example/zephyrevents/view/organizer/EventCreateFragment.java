@@ -45,7 +45,7 @@ import com.bumptech.glide.Glide;
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
+// Multi-step or sectioned event creation for organizers; fragment hosts the create flow while delegating persistence to controllers/repositories.
 
 public class EventCreateFragment extends Fragment {
 

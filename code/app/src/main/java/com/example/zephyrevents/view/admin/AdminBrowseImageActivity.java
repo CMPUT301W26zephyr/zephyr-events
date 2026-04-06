@@ -27,6 +27,8 @@ import com.example.zephyrevents.repository.RepositoryCallback;
 
 import java.util.List;
 
+// Lets admins browse and moderate stored images (e.g. posters/avatars); separates image review from regular event browsing.
+
 public class AdminBrowseImageActivity extends AppCompatActivity {
 
     private GridLayout gridLayout;

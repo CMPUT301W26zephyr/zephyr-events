@@ -29,7 +29,7 @@ import java.util.Locale;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
-
+// Shows the user's events at "My events" and links each row to the right details and actions.
 public class MyEventListAdapter extends ArrayAdapter<WaitlistEntry> {
 
     private final LayoutInflater inflater;

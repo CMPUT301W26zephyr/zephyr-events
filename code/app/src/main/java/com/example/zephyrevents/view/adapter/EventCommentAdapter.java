@@ -32,6 +32,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+// Displays an event’s comment thread and keeps list cells in sync with comment models; Adapter pattern for the discussion list.
+
 /**
  * Top-level comments with expandable reply threads. Organizers/admins may delete any comment;
  * other users may delete only their own. Host badge = primary organizer or co-organizer for this event.

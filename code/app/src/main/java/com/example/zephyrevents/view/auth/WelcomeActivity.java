@@ -15,6 +15,8 @@ import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.view.event.EventDetailViewActivity;
 import com.example.zephyrevents.view.main.MainActivity;
 
+// Entry hub after launch or notification taps; routes users into the main app, sign-up, or deep links (e.g. event id) while keeping auth state outside feature screens.
+
 /**
  * This activity is the entry point to the application
  * Informed by userController via SharedPreferences whether tracking account locally

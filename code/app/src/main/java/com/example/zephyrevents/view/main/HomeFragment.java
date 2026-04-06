@@ -42,6 +42,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.ArrayList;
 import java.util.List;
 
+// Home dashboard (featured content, categories, shortcuts); fragment is the default landing tab and aggregates discovery entry points.
+
 /**
  * HomeActivity is the default first screen after the authentication (log in) step
  * Shows large cards of featured events (e.g. by popularity, proximity)

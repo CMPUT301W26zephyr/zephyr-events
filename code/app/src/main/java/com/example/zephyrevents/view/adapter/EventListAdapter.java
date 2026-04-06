@@ -21,6 +21,8 @@ import java.util.Locale;
 
 import com.bumptech.glide.Glide;
 
+// Reusable event list for browsing or searching, Adapter pattern maps Event items to rows and click targets.
+
 
 /**
  * Adapter that fills the "All Events" list with event cards.

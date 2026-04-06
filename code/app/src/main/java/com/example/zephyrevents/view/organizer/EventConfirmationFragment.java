@@ -27,7 +27,7 @@ import com.bumptech.glide.Glide;
 
 import android.widget.Button;
 
-
+// Confirmation step after event setup (review before publish); fragment pattern splits “confirm” from editing so navigation stays clear.
 
 
 public class EventConfirmationFragment extends Fragment {

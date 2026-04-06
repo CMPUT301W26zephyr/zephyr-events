@@ -18,6 +18,8 @@ import androidx.fragment.app.DialogFragment;
 import com.bumptech.glide.Glide;
 import com.example.zephyrevents.R;
 
+// Displays or edits the event poster in context; fragment isolates poster UI from the rest of event detail.
+
 public class EventPosterFragment extends DialogFragment {
 
     private String imageUrl;

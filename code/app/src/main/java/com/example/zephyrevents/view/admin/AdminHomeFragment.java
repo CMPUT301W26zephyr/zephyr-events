@@ -3,7 +3,7 @@ package com.example.zephyrevents.view.admin;
 import android.content.Intent;
 
 import androidx.fragment.app.Fragment;
-
+// Hosts the main admin navigation hub inside the admin shell; fragment keeps admin entry points modular from the activity container.
 public class AdminHomeFragment extends Fragment {
 
     public AdminHomeFragment() {

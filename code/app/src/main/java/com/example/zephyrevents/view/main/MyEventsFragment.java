@@ -30,6 +30,7 @@ import com.example.zephyrevents.view.event.EventDetailViewActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+// Tab content for events the user joined or follows; fragment keeps “my events” list and navigation separate from global browse.
 public class MyEventsFragment extends Fragment {
 
     private ListView listView;

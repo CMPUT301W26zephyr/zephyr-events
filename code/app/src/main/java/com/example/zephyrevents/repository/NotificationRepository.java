@@ -243,6 +243,12 @@ public class NotificationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Remove all notifications for a given user
+     * @param userId id of user whose notifications to be deleted
+     * @param callback called when the operation failed or finishes
+     */
+
     public void deleteAllUserNotifications(String userId, RepositoryCallback<Void> callback) {
         db.collection(Collections.NOTIFICATIONS)
                 .whereEqualTo("userId", userId)

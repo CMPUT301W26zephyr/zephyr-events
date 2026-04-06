@@ -22,6 +22,7 @@ import com.example.zephyrevents.view.adapter.NotificationAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+// In-app list of notifications for the signed-in user; surfaces alerts and routes taps to the related event or screen while keeping notification UI out of generic fragments.
 public class UserNotificationListView extends AppCompatActivity {
 
     @Override

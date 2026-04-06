@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+// Renders events inside a home category section so browse UI stays driven by category data; Adapter pattern for the category list.
+
 /**
  * Compact horizontal cards for home explore category rows (below featured carousel).
  */

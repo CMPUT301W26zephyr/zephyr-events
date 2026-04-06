@@ -12,6 +12,9 @@ import androidx.core.content.ContextCompat;
 
 import com.example.zephyrevents.R;
 
+
+// Custom view for drawing or animating a “torn ticket” / perforation effect on the event ticket UI; keeps ticket visuals encapsulated in one widget.
+
 /** Dashed vertical line for ticket tear styling. */
 public class TicketPerforationView extends View {
 

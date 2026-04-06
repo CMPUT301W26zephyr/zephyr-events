@@ -17,6 +17,7 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.LotteryController;
 import com.example.zephyrevents.repository.RepositoryCallback;
 
+// Dialog for replacement draws or lottery follow-up actions; modal pattern keeps a focused organizer decision on top of the current screen.
 public class DrawReplacementsDialog extends DialogFragment {
 
     private String eventId;

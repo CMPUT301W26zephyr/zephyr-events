@@ -17,6 +17,7 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.NotificationController;
 import com.example.zephyrevents.model.NotificationType;
 
+// Admin UI for sending or reviewing system-wide notifications; separates broadcast messaging from normal user flows.
 public class AdminSystemNotificationActivity extends AppCompatActivity {
 
     private EditText messageInput;

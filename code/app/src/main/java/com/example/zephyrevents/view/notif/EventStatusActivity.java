@@ -29,6 +29,7 @@ import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.UserController;
 import com.example.zephyrevents.view.main.MainActivity;
 
+// Shows status updates for an event (e.g. lottery or enrollment outcome); dedicated activity carries event context via intents and separates status messaging from event detail.
 
 public class EventStatusActivity extends AppCompatActivity {
 

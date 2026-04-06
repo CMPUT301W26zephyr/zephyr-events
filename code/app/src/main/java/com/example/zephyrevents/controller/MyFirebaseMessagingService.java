@@ -5,7 +5,19 @@ import com.example.zephyrevents.util.LocalNotificationHelper;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+/**
+ * Receives Firebase push messages and shows local notifications when allowed by user settings.
+ * Refreshes the device token with the server when FCM issues a new one.
+ */
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+    /**
+     * Handles incoming Firebase data messages based on user notification settings
+     * - FCM delivers a data message
+     * - Drop the message if notification setting is turn off
+     * - Or show local notification with payload’s title, body, and event id.
+     * @param remoteMessage Remote message that has been received.
+     */
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
@@ -37,6 +49,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             LocalNotificationHelper.showNotification(this, title, body, uniqueId, eventId);
         }
     }
+
+    /**
+     * Keeps the servers copy of the device FCM token up to date when Firebase makes a new one
+     * @param token The token used for sending messages to this application instance.
+     */
 
     @Override
     public void onNewToken(@NonNull String token) {

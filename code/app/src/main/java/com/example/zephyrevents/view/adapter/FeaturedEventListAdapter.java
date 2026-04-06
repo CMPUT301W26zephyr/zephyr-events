@@ -23,6 +23,8 @@ import android.text.TextUtils;
 import com.bumptech.glide.Glide;
 
 
+// // Binds the featured-events list on home to event models and click handling; Adapter pattern for that list.
+
 /**
  * Adapter that fills the "Featured Events" list with event cards.
  * Each row shows the event image, title, date and location.

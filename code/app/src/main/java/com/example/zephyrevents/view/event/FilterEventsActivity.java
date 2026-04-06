@@ -24,7 +24,7 @@ import com.example.zephyrevents.R;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
-
+// Screen where users pick filters for the event list; separates filter state and apply/cancel flow from browse fragments.
 public class FilterEventsActivity extends AppCompatActivity {
 
     public static final String EXTRA_ANYTIME = "filter_anytime";

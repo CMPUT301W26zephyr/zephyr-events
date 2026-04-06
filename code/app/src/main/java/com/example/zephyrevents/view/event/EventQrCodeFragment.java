@@ -14,8 +14,7 @@ import android.widget.ImageView;
 import com.example.zephyrevents.R;
 import com.example.zephyrevents.controller.QRController;
 
-/**
- */
+// Shows the event’s QR code for check-in or sharing; fragment keeps QR display scoped to the event detail flow.
 public class EventQrCodeFragment extends DialogFragment {
     private String eventID;
     private Bitmap qrBitmap;

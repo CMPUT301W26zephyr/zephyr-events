@@ -65,6 +65,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
 
+// Full event detail hub (info, actions, related fragments); activity anchors deep links and notification entry with a single event id.
 public class EventDetailViewActivity extends AppCompatActivity {
     public static final String EXTRA_EVENT = "extra_event";
     public static final String EXTRA_INVITED = "extra_invited";
