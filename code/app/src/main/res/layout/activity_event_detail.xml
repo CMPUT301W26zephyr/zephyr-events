@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".view.EventDetailViewActivity">
+    tools:context=".view.event.EventDetailViewActivity">
 
     <LinearLayout
         android:id="@+id/event_detail_main_column"
