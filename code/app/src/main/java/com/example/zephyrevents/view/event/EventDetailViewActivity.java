@@ -1045,7 +1045,9 @@ public class EventDetailViewActivity extends AppCompatActivity {
                 }
 
                 if (isManagingUser) {
-                    if (lotteryRun) {
+                    if ("RUNNING...".equals(buttonPrimary.getText().toString())) {
+                        // Prevent UI flickering by ignoring snapshot updates while the lottery executes
+                    } else if (lotteryRun) {
                         buttonPrimary.setVisibility(View.VISIBLE);
                         buttonPrimary.setEnabled(false);
                         buttonPrimary.setText("REGISTRATION CLOSED");
@@ -1397,33 +1399,25 @@ public class EventDetailViewActivity extends AppCompatActivity {
     private void executeLottery() {
         buttonPrimary.setEnabled(false);
         buttonPrimary.setText("RUNNING...");
+
         new com.example.zephyrevents.controller.LotteryController().runLottery(event.getEventId(), new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                // Force deadline to NOW and set CLOSED so Cloud Function skips it
-                event.setRegistrationEndTime(System.currentTimeMillis());
-                event.setStatus(com.example.zephyrevents.model.EventStatus.CLOSED);
-
-                EventController.getInstance().createEvent(event, new RepositoryCallback<Void>() {
+                // Log Manual Lottery with Real Name
+                userRepository.getUserById(currentUserId, new RepositoryCallback<User>() {
                     @Override
-                    public void onSuccess(Void res) {
-                        // Log Manual Lottery with Real Name
-                        userRepository.getUserById(currentUserId, new RepositoryCallback<User>() {
-                            @Override
-                            public void onSuccess(User u) {
-                                String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
-                                SystemLogController.getInstance().logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + event.getName() + "'", actor);
-                            }
-                            @Override public void onFailure(Exception e) {}
-                        });
-
-                        Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
-                        populateUI();
+                    public void onSuccess(User u) {
+                        String actor = (u != null && u.getName() != null) ? u.getName() : "Organizer";
+                        SystemLogController.getInstance().logAction("MANUAL_LOTTERY_RUN", "Lottery manually executed for event: '" + event.getName() + "'", actor);
                     }
-                    @Override
-                    public void onFailure(Exception e) { populateUI(); }
+                    @Override public void onFailure(Exception e) {}
                 });
+
+                Toast.makeText(EventDetailViewActivity.this, "Lottery complete!", Toast.LENGTH_SHORT).show();
+                buttonPrimary.setText("REGISTRATION CLOSED"); // Break the RUNNING... lock
+                populateUI();
             }
+
             @Override
             public void onFailure(Exception e) {
                 buttonPrimary.setEnabled(true);
